@@ -40,12 +40,18 @@ npx supabase db reset      # wipe, re-run migrations + seed
 ## Testing the database
 
 ```bash
-docker exec -i supabase_db_inmore-ops psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < supabase/tests/rls_test.sql
+for f in supabase/tests/*.sql; do docker exec -i supabase_db_inmore-ops psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < "$f"; done
 ```
 
-41 assertions covering the money boundary, the quotation invariants, the write guards and the
-public website RPC. It creates its own fixture data and rolls back, so it is safe against a
-database with real records in it. Run it after any change to a policy, a trigger or a view.
+78 assertions in two files:
+
+- `rls_test.sql` — the money boundary, the quotation invariants, the write guards, the public
+  website RPC.
+- `customers_requests_test.sql` — phone normalization, customer search and duplicate detection,
+  `create_request`.
+
+Both create their own fixture data and roll back, so they are safe to run against a database
+with real records in it. Run them after any change to a policy, a trigger, a view or an RPC.
 
 ## Running the desktop app
 
@@ -78,4 +84,15 @@ corrections are new events. Every future metric depends on that staying true.
 
 ## Status
 
-Step 0 of the V1 slice (blueprint §G): database foundation and desktop shell.
+Blueprint §G slice:
+
+| Step | | |
+|---|---|---|
+| 0 | Foundation — schema, RLS, triggers, seed, tests | database done; desktop shell written, not yet run |
+| 1 | Customers — search, duplicate detection | database done; screens pending |
+| 2 | Requests + items — atomic creation | database done; screens pending |
+| 3–7 | Tasks, quotations, timeline, payments, Excel | not started |
+
+The Flutter apps are written but have never been compiled — the SDK is not installed on this
+machine, so `apps/ops_desktop` has no `windows/` folder yet and nothing has been type-checked.
+Treat the Dart as a first draft until it builds.
