@@ -1,0 +1,42 @@
+# --- secrets -----------------------------------------------------------------
+.env
+.env.*
+!.env.example
+supabase/.env
+supabase/.temp/
+supabase/.branches/
+
+# --- dart / flutter ----------------------------------------------------------
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+*.g.dart
+*.freezed.dart
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+doc/api/
+
+# Generated platform scaffolding (recreate with `flutter create .`)
+apps/*/windows/flutter/ephemeral/
+apps/*/android/.gradle/
+apps/*/ios/Pods/
+apps/*/macos/Pods/
+
+# --- editors -----------------------------------------------------------------
+.idea/
+.vscode/*
+!.vscode/settings.json
+*.iml
+*.swp
+
+# --- os ----------------------------------------------------------------------
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# --- exports produced at runtime ---------------------------------------------
+*.xlsx
+!docs/**/*.xlsx
