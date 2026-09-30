@@ -65,7 +65,7 @@ cd apps/ops_desktop && flutter create --platforms=windows . && flutter run -d wi
 written. Defaults point at the local stack, so no arguments are needed — see `lib/env.dart` for
 pointing it at a hosted project.
 
-## Two things to know before writing code
+## Three things to know before writing code
 
 **Money is visible to OWNER and SUPERVISOR only.** It is enforced in the database, at the table
 level — `quotations`, `quotation_lines`, `payments`, `task_costs` — because Supabase gives every
@@ -81,6 +81,13 @@ an owner from a designer. Consequences worth remembering:
 events from Dart. If an event is missing, add it to a trigger in
 `supabase/migrations/..._functions.sql`. The log has no UPDATE or DELETE grant for anyone —
 corrections are new events. Every future metric depends on that staying true.
+
+**A denied write fails in two different ways, and the client must handle both.** An RLS policy
+filters the row out *silently* — the update affects zero rows and no error is raised. A trigger
+guard *raises* an exception. So a repository that treats "no exception" as success will show a
+fake "saved" when a designer tries to update someone else's task. Check the returned row, not
+just the absence of an error: prefer `.select()` on updates and treat an empty result as a
+denial.
 
 ## Status
 
