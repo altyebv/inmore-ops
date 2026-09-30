@@ -1,0 +1,26 @@
+name: ops_desktop
+description: Inmore internal operations — desktop application for supervisors, designers and production.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  inmore_core:
+    path: ../../packages/inmore_core
+  supabase_flutter: ^2.5.6
+  flutter_riverpod: ^2.5.1
+  go_router: ^14.2.0
+  window_manager: ^0.3.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
