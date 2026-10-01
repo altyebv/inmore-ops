@@ -62,33 +62,42 @@ begin
   perform _assert((select phone_normalized from customers where id = v_a) = '55551234',
                   'phone_normalized is generated');
 
-  perform _assert((select count(*) from search_customers('Khalid')) = 1,
+  -- Assertions are scoped to the rows this test created, never to a global
+  -- count. A test that asserts "search finds exactly one Khalid" passes on an
+  -- empty database and fails the moment the business has two — which is a
+  -- failing test reporting healthy code, the worst kind.
+  perform _assert(exists(select 1 from search_customers('Khalid') where id = v_a),
                   'search by first name');
-  perform _assert((select count(*) from search_customers('mansour')) = 1,
+  perform _assert(exists(select 1 from search_customers('mansour') where id = v_a),
                   'search is case-insensitive');
-  perform _assert((select count(*) from search_customers('Cafe')) = 1,
+  perform _assert(exists(select 1 from search_customers('Hassan Cafe') where id = v_b),
                   'search matches on company as well as name');
-  perform _assert((select count(*) from search_customers('Al Waab')) = 1,
+  perform _assert(exists(select 1 from search_customers('Al Waab') where id = v_c),
                   'search by full name');
 
   -- the point of normalizing: any spelling of the number finds both records
-  perform _assert((select count(*) from search_customers('+974 5555 1234')) = 2,
+  perform _assert((select count(*) from search_customers('+974 5555 1234')
+                    where id in (v_a, v_b)) = 2,
                   'search by international phone format');
-  perform _assert((select count(*) from search_customers('5555-1234')) = 2,
+  perform _assert((select count(*) from search_customers('5555-1234')
+                    where id in (v_a, v_b)) = 2,
                   'search by punctuated phone format');
 
   perform _assert((select count(*) from search_customers(null)) >= 3,
                   'empty query lists customers');
 
-  perform _assert((select count(*) from customers_sharing_phone('97455551234')) = 2,
+  perform _assert((select count(*) from customers_sharing_phone('97455551234')
+                    where id in (v_a, v_b)) = 2,
                   'duplicate warning finds both spellings');
-  perform _assert((select count(*) from customers_sharing_phone('97455551234', v_a)) = 1,
+  perform _assert(not exists(select 1 from customers_sharing_phone('97455551234', v_a)
+                              where id = v_a),
                   'the record being edited excludes itself');
-  perform _assert((select count(*) from customers_sharing_phone('+974 6600 9988')) = 1,
+  perform _assert((select count(*) from customers_sharing_phone('+974 6600 9988')
+                    where id = v_c) = 1,
                   'a unique number has no duplicates');
 
   update customers set is_archived = true where id = v_c;
-  perform _assert((select count(*) from search_customers('Al Waab')) = 0,
+  perform _assert(not exists(select 1 from search_customers('Al Waab') where id = v_c),
                   'archived customers drop out of search');
 end;
 $$;
