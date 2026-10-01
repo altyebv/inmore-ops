@@ -121,9 +121,17 @@ declare
 begin
   raise notice 'As DESIGNER, working her own task:';
 
-  perform _assert((select count(*) from v_task_summary
-                    where assignee_id = current_employee_id()) = 1,
-                  'My Work shows exactly her task');
+  -- Scoped to this fixture: Sara may legitimately have other work in a
+  -- database with real data in it.
+  perform _assert(exists(select 1 from v_task_summary
+                          where id = v_design
+                            and assignee_id = current_employee_id()),
+                  'My Work includes her task');
+  perform _assert(not exists(select 1 from v_task_summary
+                              where request_id = v_request
+                                and type = 'PRODUCTION'
+                                and assignee_id = current_employee_id()),
+                  'My Work excludes production''s task');
   perform _assert((select request_number from v_task_summary where id = v_design) is not null,
                   'the read model carries the request number');
   perform _assert((select customer_name from v_task_summary where id = v_design)
