@@ -182,6 +182,17 @@ class RequestRepository {
     requireRow(rows, 'edit this request');
   }
 
+  /// Money across every request, for the owner's overview.
+  ///
+  /// Returns empty for a designer or production user — the view yields no rows
+  /// for them, which is the answer rather than an error. Small enough to
+  /// aggregate on the client at this size; if Inmore ever has thousands of
+  /// open requests, this becomes a SQL sum.
+  Future<List<RequestFinancials>> financialsAll() async {
+    final rows = await _db.from('v_request_financials').select();
+    return rows.map(RequestFinancials.fromJson).toList();
+  }
+
   /// Money for one request. Returns null for a designer or production user:
   /// the view yields no rows for them, which is the correct answer, not an
   /// error to surface.
