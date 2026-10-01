@@ -24,5 +24,7 @@ export 'src/models/request.dart';
 export 'src/models/task.dart';
 export 'src/providers/auth_providers.dart';
 export 'src/providers/data_providers.dart';
+export 'src/providers/owner_providers.dart';
 export 'src/providers/repository_providers.dart';
+export 'src/util/activity_text.dart';
 export 'src/util/formatting.dart';
