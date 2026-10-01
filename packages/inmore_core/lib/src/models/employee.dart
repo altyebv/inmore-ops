@@ -1,6 +1,7 @@
 import '../enums/employee_role.dart';
+import 'converters.dart';
 
-/// A member of staff. `id` is also the Supabase auth user id.
+/// A member of staff. [id] is also the Supabase auth user id.
 class Employee {
   const Employee({
     required this.id,
@@ -11,13 +12,13 @@ class Employee {
     this.phone,
   });
 
-  factory Employee.fromJson(Map<String, dynamic> json) => Employee(
-        id: json['id'] as String,
-        fullName: json['full_name'] as String,
-        email: json['email'] as String,
-        role: EmployeeRole.fromWire(json['role'] as String),
-        isActive: json['is_active'] as bool,
-        phone: json['phone'] as String?,
+  factory Employee.fromJson(Map<String, dynamic> j) => Employee(
+        id: j['id'] as String,
+        fullName: j['full_name'] as String,
+        email: j['email'] as String,
+        role: EmployeeRole.fromWire(j['role'] as String),
+        isActive: parseBool(j['is_active']),
+        phone: str(j['phone']),
       );
 
   final String id;
