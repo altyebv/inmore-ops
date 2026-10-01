@@ -132,3 +132,36 @@ Runs the real repositories against the local stack. **This is the only thing tha
 mis-mapped column** — models are hand-written, so `waiting_on` vs `waitingOn` is a runtime
 failure the analyzer cannot see, and a field that silently reads null looks exactly like an empty
 one on screen. It writes real rows; run `npx supabase db reset` afterwards.
+
+## Apps
+
+| App | Target | Who | Writes? |
+|---|---|---|---|
+| `apps/ops_desktop` | Windows desktop | Supervisors, designers, production | yes |
+| `apps/owner_mobile` | Android (web target kept for quick verification) | The owner | **no** — read only |
+
+The owner's app is deliberately read-only. If the owner could move a status from his phone, the
+history would stop reflecting who actually did the work, and the history is the whole point.
+
+### Demo data
+
+```bash
+docker exec -i supabase_db_inmore-ops psql -U postgres -d postgres -q < supabase/demo_data.sql
+```
+
+Six requests spread across the pipeline — blocked, overdue, unassigned, finished — so the
+screens have something real in them. Not part of `seed.sql` on purpose: an empty database is the
+honest starting point, and tests should not lean on fixtures they did not create.
+
+### Running the owner app
+
+```bash
+cd apps/owner_mobile && flutter run
+```
+
+On a phone, `127.0.0.1` is the phone itself. Use `10.0.2.2` for an Android emulator, or the
+machine's LAN address for a real handset:
+
+```bash
+flutter run --dart-define=SUPABASE_URL=http://10.0.2.2:54321
+```
