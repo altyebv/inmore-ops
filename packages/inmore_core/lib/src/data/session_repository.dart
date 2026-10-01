@@ -35,11 +35,8 @@ class SessionRepository {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return null;
 
-    final row = await _client
-        .from('employees')
-        .select()
-        .eq('id', userId)
-        .maybeSingle();
+    final row =
+        await _client.from('employees').select().eq('id', userId).maybeSingle();
 
     if (row == null) throw const InactiveAccountException();
 
