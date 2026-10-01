@@ -106,18 +106,29 @@ Blueprint §G slice:
 
 | Step | | |
 |---|---|---|
-| 0 | Foundation — schema, RLS, triggers, seed, tests | database done; shell written and analyzing clean |
-| 1 | Customers — search, duplicate detection | database done; screens pending |
-| 2 | Requests + items — atomic creation | database done; screens pending |
-| 3 | Tasks — assignment, My Work read model | database done; screens pending |
-| 4 | Quotations — creation, versioning, revision | database done; screens pending |
-| 5 | Status + timeline — waiting states, activity feed | database done; screens pending |
-| 6 | Payments — balance per request | database done; screens pending |
-| 7 | Excel reports — Items and Requests read models | database done; export code pending |
+| 0 | Foundation — schema, RLS, triggers, seed, tests | done |
+| 1 | Customers — search, duplicate warning | done |
+| 2 | Requests + items — atomic creation | done |
+| 3 | Tasks — assignment, My Work | done |
+| 4 | Quotations — versioning, revision, approval | done |
+| 5 | Status + timeline — waiting states, history | done |
+| 6 | Payments — balance per request | done |
+| 7 | Excel reports — two sheets, saved to Documents\Inmore | done |
 
-The whole operational backend is in place and covered by 175 assertions. What remains is the
-Flutter side: every screen, plus the `.xlsx` writer in `inmore_core/export/`.
+The V1 slice is complete and runs: sign in, find a customer, create a request with several
+products, assign work, price it, approve, record a payment, read the history, export the month.
 
-`apps/ops_desktop` passes `flutter analyze` with no issues but has never been run — it has no
-`windows/` folder yet. Create it with `flutter create --platforms=windows .` before the first
-`flutter run`.
+Not yet built: the owner's mobile app, the website RPC wired into the React site, partner
+management screens, and a user-management screen (staff accounts are created from the Supabase
+dashboard).
+
+## Testing the Dart layer
+
+```bash
+cd packages/inmore_core && flutter test
+```
+
+Runs the real repositories against the local stack. **This is the only thing that catches a
+mis-mapped column** — models are hand-written, so `waiting_on` vs `waitingOn` is a runtime
+failure the analyzer cannot see, and a field that silently reads null looks exactly like an empty
+one on screen. It writes real rows; run `npx supabase db reset` afterwards.
