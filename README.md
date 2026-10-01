@@ -101,11 +101,18 @@ Blueprint §G slice:
 
 | Step | | |
 |---|---|---|
-| 0 | Foundation — schema, RLS, triggers, seed, tests | database done; desktop shell written, not yet run |
+| 0 | Foundation — schema, RLS, triggers, seed, tests | database done; shell written and analyzing clean |
 | 1 | Customers — search, duplicate detection | database done; screens pending |
 | 2 | Requests + items — atomic creation | database done; screens pending |
-| 3–7 | Tasks, quotations, timeline, payments, Excel | not started |
+| 3 | Tasks — assignment, My Work read model | database done; screens pending |
+| 4 | Quotations — creation, versioning, revision | database done; screens pending |
+| 5 | Status + timeline — waiting states, activity feed | database done; screens pending |
+| 6 | Payments — balance per request | database done; screens pending |
+| 7 | Excel reports — Items and Requests read models | database done; export code pending |
 
-The Flutter apps are written but have never been compiled — the SDK is not installed on this
-machine, so `apps/ops_desktop` has no `windows/` folder yet and nothing has been type-checked.
-Treat the Dart as a first draft until it builds.
+The whole operational backend is in place and covered by 173 assertions. What remains is the
+Flutter side: every screen, plus the `.xlsx` writer in `inmore_core/export/`.
+
+`apps/ops_desktop` passes `flutter analyze` with no issues but has never been run — it has no
+`windows/` folder yet. Create it with `flutter create --platforms=windows .` before the first
+`flutter run`.
