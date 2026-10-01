@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:inmore_core/inmore_core.dart';
 
 /// The persistent frame: left nav, current user, sign out.
 ///
 /// Nav items are role-shaped. This is presentation only — a designer who
 /// reached a money screen anyway would still get zero rows, because the real
-/// boundary is RLS (blueprint §E).
+/// boundary is RLS, not this list.
 class AppShell extends ConsumerWidget {
   const AppShell({required this.child, super.key});
 
@@ -14,15 +15,15 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final employeeAsync = ref.watch(currentEmployeeProvider);
+    final employee = ref.watch(currentEmployeeProvider);
 
-    return employeeAsync.when(
+    return employee.when(
       loading: () => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, _) => _AccountProblem(message: error.toString()),
-      data: (employee) {
-        if (employee == null) {
+      data: (me) {
+        if (me == null) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -30,7 +31,7 @@ class AppShell extends ConsumerWidget {
         return Scaffold(
           body: Row(
             children: [
-              _NavRail(employee: employee),
+              _NavRail(employee: me),
               const VerticalDivider(width: 1),
               Expanded(child: child),
             ],
@@ -49,7 +50,8 @@ class _NavRail extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final isStaffSide = !employee.role.canManageRequests;
+    final location = GoRouterState.of(context).matchedLocation;
+    final manages = employee.role.canManageRequests;
 
     return SizedBox(
       width: 232,
@@ -77,32 +79,31 @@ class _NavRail extends ConsumerWidget {
               children: [
                 _NavItem(
                   icon: Icons.dashboard_outlined,
-                  label: isStaffSide ? 'My Work' : 'Work board',
-                  selected: true,
-                  onTap: () {},
+                  label: manages ? 'Work board' : 'My work',
+                  path: '/',
+                  current: location,
                 ),
-                // Step 1 onwards. Present but inert, so the shape of the app is
-                // visible without pretending the screens exist.
-                const _NavItem(
+                if (manages)
+                  _NavItem(
+                    icon: Icons.task_alt,
+                    label: 'My work',
+                    path: '/work',
+                    current: location,
+                  ),
+                _NavItem(
                   icon: Icons.people_outline,
                   label: 'Customers',
-                  enabled: false,
+                  path: '/customers',
+                  current: location,
                 ),
-                const _NavItem(
-                  icon: Icons.receipt_long_outlined,
-                  label: 'Requests',
-                  enabled: false,
-                ),
-                const _NavItem(
-                  icon: Icons.inventory_2_outlined,
-                  label: 'Products',
-                  enabled: false,
-                ),
-                const _NavItem(
-                  icon: Icons.handshake_outlined,
-                  label: 'Partners',
-                  enabled: false,
-                ),
+                // Money. The nav hides it; RLS is what actually stops it.
+                if (employee.role.canSeeMoney)
+                  _NavItem(
+                    icon: Icons.table_chart_outlined,
+                    label: 'Reports',
+                    path: '/reports',
+                    current: location,
+                  ),
               ],
             ),
           ),
@@ -153,36 +154,26 @@ class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
     required this.label,
-    this.selected = false,
-    this.enabled = true,
-    this.onTap,
+    required this.path,
+    required this.current,
   });
 
   final IconData icon;
   final String label;
-  final bool selected;
-  final bool enabled;
-  final VoidCallback? onTap;
+  final String path;
+  final String current;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final selected = current == path;
     return ListTile(
       dense: true,
-      enabled: enabled,
       selected: selected,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       leading: Icon(icon, size: 20),
       title: Text(label, style: theme.textTheme.bodyMedium),
-      trailing: enabled
-          ? null
-          : Text(
-              'soon',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-      onTap: enabled ? onTap : null,
+      onTap: () => context.go(path),
     );
   }
 }
