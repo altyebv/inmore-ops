@@ -4,8 +4,12 @@ linter:
   rules:
     prefer_single_quotes: true
     always_declare_return_types: true
-    require_trailing_commas: true
+    # require_trailing_commas is deliberately off: it disagrees with
+    # `dart format`, so enabling it means every formatted file reports
+    # lints that formatting then re-introduces.
 
 analyzer:
   errors:
     invalid_annotation_target: ignore
+  exclude:
+    - build/**
