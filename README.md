@@ -65,7 +65,7 @@ cd apps/ops_desktop && flutter create --platforms=windows . && flutter run -d wi
 written. Defaults point at the local stack, so no arguments are needed — see `lib/env.dart` for
 pointing it at a hosted project.
 
-## Three things to know before writing code
+## Four things to know before writing code
 
 **Money is visible to OWNER and SUPERVISOR only.** It is enforced in the database, at the table
 level — `quotations`, `quotation_lines`, `payments`, `task_costs` — because Supabase gives every
@@ -81,6 +81,12 @@ an owner from a designer. Consequences worth remembering:
 events from Dart. If an event is missing, add it to a trigger in
 `supabase/migrations/..._functions.sql`. The log has no UPDATE or DELETE grant for anyone —
 corrections are new events. Every future metric depends on that staying true.
+
+**Order the timeline by `activities.id`, never by `occurred_at`.** `now()` is the transaction
+timestamp, so every event written by one operation shares it — `create_request` alone writes
+`request.created` plus one `item.added` per item, all with the identical value. Sorting by
+`occurred_at` scrambles those groups at random. `occurred_at` is for date filtering and
+durations; `id` is the order things happened in.
 
 **A denied write fails in two different ways, and the client must handle both.** An RLS policy
 filters the row out *silently* — the update affects zero rows and no error is raised. A trigger
