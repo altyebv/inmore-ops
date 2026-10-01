@@ -21,6 +21,16 @@ class TaskRepository {
     return rows.map(TaskSummary.fromJson).toList();
   }
 
+  /// Every unfinished task, for the owner's "who is handling what".
+  Future<List<TaskSummary>> allOpen() async {
+    final rows = await _db
+        .from('v_task_summary')
+        .select()
+        .not('status', 'in', '(DONE,CANCELLED)')
+        .order('due_at', ascending: true, nullsFirst: false);
+    return rows.map(TaskSummary.fromJson).toList();
+  }
+
   Future<List<TaskSummary>> forRequest(String requestId) async {
     final rows = await _db
         .from('v_task_summary')
