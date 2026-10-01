@@ -43,19 +43,24 @@ npx supabase db reset      # wipe, re-run migrations + seed
 for f in supabase/tests/*.sql; do docker exec -i supabase_db_inmore-ops psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < "$f"; done
 ```
 
-78 assertions in two files:
+175 assertions in six files:
 
 - `rls_test.sql` — the money boundary, the quotation invariants, the write guards, the public
   website RPC.
 - `customers_requests_test.sql` — phone normalization, customer search and duplicate detection,
   `create_request`.
+- `tasks_test.sql` — responsibility vs execution, self-assignment, partner turnaround.
+- `quotations_test.sql` — versioning, per-product totalling, revision, approval overlap.
+- `lifecycle_payments_test.sql` — stage vs waiting, cancellation and reopening, stage durations,
+  payments and balance, the activity feed per role.
+- `export_test.sql` — the two Excel sheets, and that they sum to the same number.
 
-Both create their own fixture data and roll back, so they are safe to run against a database
+They all create their own fixture data and roll back, so they are safe to run against a database
 with real records in it. Run them after any change to a policy, a trigger, a view or an RPC.
 
 ## Running the desktop app
 
-Needs the Flutter SDK (not yet installed on this machine) and the local stack running.
+Needs the local stack running. Flutter is installed at `C:\Users\meste\flutter`.
 
 ```bash
 cd apps/ops_desktop && flutter create --platforms=windows . && flutter run -d windows
@@ -110,7 +115,7 @@ Blueprint §G slice:
 | 6 | Payments — balance per request | database done; screens pending |
 | 7 | Excel reports — Items and Requests read models | database done; export code pending |
 
-The whole operational backend is in place and covered by 173 assertions. What remains is the
+The whole operational backend is in place and covered by 175 assertions. What remains is the
 Flutter side: every screen, plus the `.xlsx` writer in `inmore_core/export/`.
 
 `apps/ops_desktop` passes `flutter analyze` with no issues but has never been run — it has no
