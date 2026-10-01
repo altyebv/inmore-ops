@@ -13,14 +13,23 @@ dependencies:
   supabase_flutter: ^2.5.6
   flutter_riverpod: ^2.5.1
   intl: ^0.19.0
+  excel: ^4.0.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
 
-# NOTE: freezed / json_serializable are the decided approach for models
-# (blueprint §F) but are deliberately not wired up yet. Step 0 has exactly one
-# model; pulling in build_runner for it would add a codegen step before there is
-# anything to generate. They come in with step 1, when Customer, Request and
-# RequestItem arrive together and hand-written fromJson stops being free.
+# NO CODE GENERATION.
+#
+# The blueprint picked freezed + json_serializable for models. In practice
+# build_runner hangs on this machine — twice, reproducibly, at the same point,
+# with the process idle at 0% CPU and no output. Rather than spend the project's
+# first week debugging a build toolchain, models are hand-written: plain
+# immutable classes with a fromJson. It is more lines, but they are obvious
+# lines, every one of them is checked by `flutter analyze` immediately, and
+# there is no generated code to regenerate on a new machine.
+#
+# What we give up: copyWith and value equality. Nothing currently needs either
+# (lists from a fetch are new objects regardless). Revisit if a screen starts
+# wanting copyWith — by then the toolchain may also behave.
