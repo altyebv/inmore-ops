@@ -55,7 +55,7 @@ class _Entry extends StatelessWidget {
                 size: 15, color: scheme.onSurfaceVariant),
           ),
           const SizedBox(width: 10),
-          Expanded(child: Text(describe(entry))),
+          Expanded(child: Text(activityDescription(entry))),
           const SizedBox(width: 12),
           SizedBox(
             width: 110,
@@ -87,55 +87,3 @@ class _Entry extends StatelessWidget {
   }
 }
 
-/// Turn an event row into a sentence.
-///
-/// Deliberately reads the stored `from`/`to` rather than re-deriving anything:
-/// the log is the record, and a description that disagrees with it would be
-/// worse than a terse one.
-String describe(ActivityEntry e) {
-  String enumLabel(String? wire) {
-    if (wire == null) return '—';
-    return wire
-        .split('_')
-        .map((w) =>
-            w.isEmpty ? w : w[0].toUpperCase() + w.substring(1).toLowerCase())
-        .join(' ');
-  }
-
-  final money = e.metadata['amount'];
-  final moneyText =
-      money == null ? '' : ' ${Fmt.money(num.tryParse('$money'))}';
-
-  return switch (e.eventType) {
-    'request.created' => 'Request created',
-    'request.status_changed' =>
-      'Moved from ${enumLabel(e.fromValue)} to ${enumLabel(e.toValue)}',
-    'request.waiting_set' => 'Blocked: waiting on ${enumLabel(e.toValue)}',
-    'request.waiting_cleared' => 'Unblocked',
-    'request.supervisor_changed' => 'Supervisor changed',
-    'request.completed' => 'Request completed',
-    'request.cancelled' =>
-      'Request cancelled — ${e.metadata['reason'] ?? 'no reason given'}',
-    'request.reopened' => 'Reopened from ${enumLabel(e.fromValue)}',
-    'item.added' => 'Added ${e.toValue}',
-    'item.removed' => 'Removed ${e.fromValue}',
-    'item.decision_changed' =>
-      '${e.metadata['item'] ?? 'Item'}: ${enumLabel(e.toValue).toLowerCase()}',
-    'quotation.created' => 'Quotation v${e.toValue} drafted',
-    'quotation.presented' => 'Quotation told to the customer$moneyText',
-    'quotation.approved' => 'Customer approved$moneyText',
-    'quotation.rejected' => 'Customer rejected$moneyText',
-    'quotation.superseded' => 'Quotation replaced by a new version',
-    'task.created' => 'Work added: ${e.toValue}',
-    'task.assigned' => 'Work assigned',
-    'task.partner_assigned' => 'Sent to an external partner',
-    'task.status_changed' => 'Work ${enumLabel(e.toValue).toLowerCase()}',
-    'task.completed' => 'Work finished',
-    'task_cost.recorded' => 'External cost recorded$moneyText',
-    'payment.recorded' =>
-      'Payment received$moneyText (${enumLabel('${e.metadata['method']}')})',
-    'customer.created' => 'Customer created',
-    'customer.updated' => 'Customer details updated',
-    _ => e.eventType,
-  };
-}
