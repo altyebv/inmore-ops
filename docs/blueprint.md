@@ -1023,8 +1023,15 @@ Each step is one migration (if needed) plus one feature folder, and is usable on
 13. The website writes through one `security definer` RPC, never through tables.
 14. Flutter Desktop (Windows) + Flutter Mobile + one shared `inmore_core` package; path deps, no
     Melos.
-15. Riverpod, go_router, freezed, `supabase_flutter` in concrete repositories. No abstract
-    interfaces, no use-case layer, no `get_it`.
+15. Riverpod, go_router, `supabase_flutter` in concrete repositories. No abstract interfaces, no
+    use-case layer, no `get_it`.
+15a. **Reversed: no code generation.** This decision originally said freezed + json_serializable.
+    In practice `build_runner` hangs on the development machine — twice, reproducibly, at the
+    same point, idle at 0% CPU with no output. Models are hand-written plain immutable classes
+    with a `fromJson`. More lines, but obvious ones, checked by `flutter analyze` immediately,
+    and nothing to regenerate on a new machine. What we gave up is `copyWith` and value
+    equality; nothing currently needs either. The cost landed elsewhere and was caught: see
+    decision 21.
 16. No offline support, no SQLite, no local cache.
 17. Files/storage are out of V1; the bucket and path convention are agreed so adding them is
     additive.
@@ -1037,6 +1044,12 @@ Each step is one migration (if needed) plus one feature folder, and is usable on
 18. Owner mobile is read-only in V1, lists and counts, no charts.
 19. Currency is QAR only; money is `numeric(12,2)`; no tax fields.
 20. No deletes in the UI — requests are cancelled, customers archived.
+21. **Hand-written models require an integration test.** Mapping `snake_case` columns by hand is
+    exactly the kind of thing the analyzer cannot check: a wrong column name reads null, and a
+    null field looks identical to an empty one on screen. `packages/inmore_core/test/` runs the
+    real repositories against the local database. It immediately caught that postgrest-dart's
+    `.order()` defaults to **descending**, which had silently reversed the product catalog, the
+    staff list, request items and both Excel sheets.
 
 ### PROPOSED (sensible defaults; say the word and they change)
 
