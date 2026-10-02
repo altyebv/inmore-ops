@@ -1,7 +1,7 @@
 name: ops_desktop
 description: Inmore internal operations — desktop application for supervisors, designers and production.
 publish_to: none
-version: 0.1.0
+version: 0.2.0
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -10,18 +10,34 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   inmore_core:
     path: ../../packages/inmore_core
+  inmore_ui:
+    path: ../../packages/inmore_ui
   supabase_flutter: ^2.5.6
   flutter_riverpod: ^2.5.1
   go_router: ^14.2.0
   window_manager: ^0.3.9
   path_provider: ^2.1.4
+  shared_preferences: ^2.3.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+
+# The Windows taskbar and title-bar icon. Regenerate after changing the logo:
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: false
+  ios: false
+  windows:
+    generate: true
+    image_path: ../../docs/brand/icon.png
+    icon_size: 256
