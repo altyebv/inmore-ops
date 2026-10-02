@@ -12,10 +12,11 @@ Decision Register before changing anything structural.
 
 ```
 supabase/            PostgreSQL schema, RLS, triggers, local seed
-packages/inmore_core Shared Dart: models, enums, repositories, providers, Excel export
+packages/inmore_core Shared Dart: models, enums, repositories, providers, realtime, Excel export
+packages/inmore_ui   Shared look and language: theme, brand, English/Arabic, shared widgets
 apps/ops_desktop     Flutter Desktop (Windows) — the main app for staff
-apps/owner_mobile    Flutter Mobile — the owner's read-only dashboard (not started)
-docs/                Blueprint and design notes
+apps/owner_mobile    Flutter Mobile (Android) — the owner's read-only dashboard
+docs/                Blueprint; docs/brand/ holds the icon and splash sources
 ```
 
 ## Running the database locally
@@ -132,6 +133,44 @@ Runs the real repositories against the local stack. **This is the only thing tha
 mis-mapped column** — models are hand-written, so `waiting_on` vs `waitingOn` is a runtime
 failure the analyzer cannot see, and a field that silently reads null looks exactly like an empty
 one on screen. It writes real rows; run `npx supabase db reset` afterwards.
+
+## Testing the screens
+
+```bash
+cd apps/ops_desktop && flutter test
+cd apps/owner_mobile && flutter test
+```
+
+No database needed. Every screen is drawn with sample data (`package:inmore_ui/testing.dart`) in
+English and Arabic, light and dark. The run **fails on any layout overflow** — the usual way a
+longer Arabic label breaks a row — and leaves a PNG of each screen in `build/screenshots/`, so a
+change can be looked at without signing in.
+
+## Look and language
+
+Everything both apps draw with lives in `packages/inmore_ui`: the theme (neutral ink and paper,
+the logo's CMYK inks for meaning and brand moments), the Rubik font (Latin and Arabic in one
+family), and the shared widgets — loading placeholders, error and empty states, the stage
+stepper. Decisions 22 and 23 in the blueprint say why.
+
+- **Translations** are in `packages/inmore_ui/lib/l10n/app_en.arb` and `app_ar.arb`. After
+  editing either, run `flutter gen-l10n` in `packages/inmore_ui` and commit the generated files.
+  Every key needs both languages. Screens read `context.l10n`; enums use `.tr(l10n)`. Their
+  English `label` is kept for the Excel export, which is always in English.
+- **Right-to-left**: use `EdgeInsetsDirectional`, `AlignmentDirectional` and `start`/`end`,
+  never `left`/`right`. Text a person typed goes through `UserText` or `AppField`, which lay it
+  out in its own direction.
+- **Theme and language** are chosen per device in Settings (sidebar account menu on the
+  desktop, avatar on the phone), and on the sign-in screen.
+- **Icons and splash** are generated from `docs/brand/`: `dart run flutter_launcher_icons` in
+  either app, and `dart run flutter_native_splash:create` in `apps/owner_mobile`.
+
+**Live updates.** Both apps subscribe to realtime on `requests`, `tasks` and `activities`, so
+screens refresh themselves when someone else changes something. The owner's phone also keeps its
+last overview on disk, encrypted, so it opens instantly and still works on a weak signal. That
+data is wiped on sign-out.
+
+**Desktop shortcuts:** Ctrl+K finds any request, Ctrl+N starts a new one, F5 refreshes.
 
 ## Apps
 
