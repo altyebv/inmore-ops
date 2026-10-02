@@ -3,9 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 import 'package:path_provider/path_provider.dart';
-
-import '../../widgets/common.dart';
 
 /// Replaces the sheet a supervisor keeps by hand.
 ///
@@ -13,6 +12,9 @@ import '../../widgets/common.dart';
 /// shape is kept — it is also what Excel can pivot — and widened with columns
 /// the database already fills by itself. Nothing here asks anyone to type
 /// something they do not type today.
+///
+/// The workbook is always in English, whatever language the screen is in, so
+/// the same file reads the same on every desk and in the accountant's hands.
 class ExportScreen extends ConsumerStatefulWidget {
   const ExportScreen({super.key});
 
@@ -26,127 +28,191 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   String? _supervisorId;
   bool _busy = false;
   String? _lastPath;
+  String? _lastSummary;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final l = context.l10n;
     final staff = ref.watch(activeEmployeesProvider).valueOrNull ?? [];
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Reports')),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          child: ListView(
-            padding: const EdgeInsets.all(24),
-            children: [
-              SectionCard(
-                title: 'What to include',
+    return Column(
+      children: [
+        PageHeader(title: l.reportsTitle, subtitle: l.reportsSubtitle),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 32),
+            child: Align(
+              alignment: AlignmentDirectional.topStart,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 760),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('Date range'),
-                      subtitle: Text(
-                        _range == null
-                            ? 'Everything'
-                            : '${Fmt.date(_range!.start)} – '
-                                '${Fmt.date(_range!.end)}',
-                      ),
-                      trailing: Wrap(
+                    SectionCard(
+                      icon: Icons.filter_list_rounded,
+                      title: l.whatToInclude,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (_range != null)
-                            IconButton(
-                              icon: const Icon(Icons.clear, size: 18),
-                              onPressed: () => setState(() => _range = null),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(Radii.md),
+                            onTap: _pickRange,
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                labelText: l.dateRange,
+                                prefixIcon: const Icon(
+                                    Icons.date_range_outlined,
+                                    size: 18),
+                                suffixIcon: _range == null
+                                    ? null
+                                    : IconButton(
+                                        tooltip: l.clear,
+                                        icon: const Icon(Icons.close_rounded,
+                                            size: 16),
+                                        onPressed: () =>
+                                            setState(() => _range = null),
+                                      ),
+                              ),
+                              child: Text(
+                                _range == null
+                                    ? l.everything
+                                    : '${Fmt.date(_range!.start)} – '
+                                        '${Fmt.date(_range!.end)}',
+                              ),
                             ),
-                          TextButton(
-                            onPressed: _pickRange,
-                            child: const Text('Choose'),
+                          ),
+                          const SizedBox(height: Space.md),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DropdownButtonFormField<RequestStatus?>(
+                                  initialValue: _status,
+                                  decoration:
+                                      InputDecoration(labelText: l.stage),
+                                  items: [
+                                    DropdownMenuItem(
+                                        value: null, child: Text(l.allStages)),
+                                    for (final s in RequestStatus.values)
+                                      DropdownMenuItem(
+                                          value: s, child: Text(s.tr(l))),
+                                  ],
+                                  onChanged: (s) => setState(() => _status = s),
+                                ),
+                              ),
+                              const SizedBox(width: Space.md),
+                              Expanded(
+                                child: DropdownButtonFormField<String?>(
+                                  initialValue: _supervisorId,
+                                  decoration:
+                                      InputDecoration(labelText: l.supervisor),
+                                  items: [
+                                    DropdownMenuItem(
+                                        value: null, child: Text(l.everyone)),
+                                    for (final e in staff
+                                        .where((e) => e.role.canManageRequests))
+                                      DropdownMenuItem(
+                                          value: e.id,
+                                          child: UserText(e.fullName)),
+                                  ],
+                                  onChanged: (v) =>
+                                      setState(() => _supervisorId = v),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                    const Divider(height: 1),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<RequestStatus?>(
-                      initialValue: _status,
-                      decoration: const InputDecoration(labelText: 'Stage'),
-                      items: [
-                        const DropdownMenuItem(
-                            value: null, child: Text('All stages')),
-                        ...RequestStatus.values.map((s) =>
-                            DropdownMenuItem(value: s, child: Text(s.label))),
-                      ],
-                      onChanged: (s) => setState(() => _status = s),
+                    const SizedBox(height: Space.lg),
+                    SectionCard(
+                      icon: Icons.table_chart_outlined,
+                      title: l.whatYouGet,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _Sheet(
+                              icon: Icons.list_alt_rounded,
+                              text: l.reportItemsSheet),
+                          const SizedBox(height: Space.md),
+                          _Sheet(
+                              icon: Icons.summarize_outlined,
+                              text: l.reportRequestsSheet),
+                          const SizedBox(height: Space.md),
+                          Text(l.reportFormatNote,
+                              style: context.text.bodySmall),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String?>(
-                      initialValue: _supervisorId,
-                      decoration:
-                          const InputDecoration(labelText: 'Supervisor'),
-                      items: [
-                        const DropdownMenuItem(
-                            value: null, child: Text('Everyone')),
-                        ...staff.where((e) => e.role.canManageRequests).map(
-                            (e) => DropdownMenuItem(
-                                value: e.id, child: Text(e.fullName))),
-                      ],
-                      onChanged: (v) => setState(() => _supervisorId = v),
+                    const SizedBox(height: Space.xl),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FilledButton.icon(
+                        onPressed: _busy ? null : _export,
+                        icon: _busy
+                            ? const SizedBox(
+                                height: 16,
+                                width: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.download_rounded, size: 18),
+                        label: Text(l.createWorkbook),
+                      ),
                     ),
+                    if (_lastPath != null) ...[
+                      const SizedBox(height: Space.lg),
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(Space.lg),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: context.tokens.success
+                                      .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(Radii.md),
+                                ),
+                                child: Icon(Icons.task_rounded,
+                                    color: context.tokens.success),
+                              ),
+                              const SizedBox(width: Space.lg),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(l.workbookSaved,
+                                        style: context.text.titleSmall),
+                                    if (_lastSummary != null)
+                                      Text(_lastSummary!,
+                                          style: context.text.bodySmall),
+                                    SelectableText(
+                                      _lastPath!,
+                                      textDirection: TextDirection.ltr,
+                                      style: context.text.bodySmall,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: Space.md),
+                              OutlinedButton.icon(
+                                onPressed: () => _reveal(_lastPath!),
+                                icon: const Icon(Icons.folder_open_outlined,
+                                    size: 18),
+                                label: Text(l.showInFolder),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
-              SectionCard(
-                title: 'What you get',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _Bullet(
-                      'Items — one row per product, the way the current sheet '
-                      'already reads. Line totals sum correctly here.',
-                    ),
-                    const _Bullet(
-                      'Requests — one row per request. The totals live here '
-                      'and only here, so summing a column gives the real '
-                      'figure instead of counting each job once per product.',
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Dates are real Excel dates, money is a number with two '
-                      'decimals, and phone numbers stay text so the leading '
-                      'zero survives.',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              FilledButton.icon(
-                onPressed: _busy ? null : _export,
-                icon: _busy
-                    ? const SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.download, size: 18),
-                label: const Text('Create the workbook'),
-              ),
-              if (_lastPath != null) ...[
-                const SizedBox(height: 16),
-                Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.description_outlined),
-                    title: const Text('Saved'),
-                    subtitle: SelectableText(_lastPath!),
-                  ),
-                ),
-              ],
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -165,7 +231,15 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
     if (picked != null) setState(() => _range = picked);
   }
 
+  /// Opens Explorer with the file selected.
+  Future<void> _reveal(String path) async {
+    if (Platform.isWindows) {
+      await Process.run('explorer.exe', ['/select,', path]);
+    }
+  }
+
   Future<void> _export() async {
+    final l = context.l10n;
     setState(() => _busy = true);
     try {
       final repo = ref.read(exportRepositoryProvider);
@@ -189,13 +263,13 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
       );
 
       if (items.isEmpty && requests.isEmpty) {
-        if (mounted) showError(context, 'Nothing matches those filters.');
+        if (mounted) showError(context, l.nothingMatchesFilters);
         return;
       }
 
       final bytes = ExcelReport.build(items: items, requests: requests);
       if (bytes == null) {
-        if (mounted) showError(context, 'The workbook could not be written.');
+        if (mounted) showError(context, l.workbookFailed);
         return;
       }
 
@@ -213,9 +287,12 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
       await file.writeAsBytes(bytes, flush: true);
 
       if (mounted) {
-        setState(() => _lastPath = file.path);
-        showDone(
-            context, '${items.length} item rows, ${requests.length} requests');
+        final summary = l.exportSummary(items.length, requests.length);
+        setState(() {
+          _lastPath = file.path;
+          _lastSummary = summary;
+        });
+        showDone(context, summary);
       }
     } catch (e) {
       if (mounted) showError(context, e);
@@ -225,20 +302,19 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
   }
 }
 
-class _Bullet extends StatelessWidget {
-  const _Bullet(this.text);
+class _Sheet extends StatelessWidget {
+  const _Sheet({required this.icon, required this.text});
 
+  final IconData icon;
   final String text;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 3),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('·  '),
-            Expanded(child: Text(text)),
-          ],
-        ),
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: context.colors.onSurfaceVariant),
+          const SizedBox(width: Space.md),
+          Expanded(child: Text(text, style: context.text.bodyMedium)),
+        ],
       );
 }
