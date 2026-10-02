@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The debug and profile manifests add INTERNET for hot reload; a release
+         build only gets what is declared here, so without it the app cannot
+         reach the server at all. Network state is for the offline banner. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <application
-        android:label="owner_mobile"
+        android:label="Inmore"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
