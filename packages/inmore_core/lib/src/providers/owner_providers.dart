@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../enums/enums.dart';
 import '../models/request.dart';
 import '../models/task.dart';
+import 'auth_providers.dart';
 import 'repository_providers.dart';
 
 /// What the owner's overview answers: what is active, what is stuck, what came
@@ -19,6 +20,24 @@ class OwnerSnapshot {
     required this.completedThisWeek,
     required this.arrivedThisWeek,
   });
+
+  /// For the owner's phone, which keeps the last overview on disk.
+  factory OwnerSnapshot.fromJson(Map<String, dynamic> j) => OwnerSnapshot(
+        open: _requests(j['open']),
+        completedThisWeek: _requests(j['completed_this_week']),
+        arrivedThisWeek: _requests(j['arrived_this_week']),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'open': [for (final r in open) r.toJson()],
+        'completed_this_week': [for (final r in completedThisWeek) r.toJson()],
+        'arrived_this_week': [for (final r in arrivedThisWeek) r.toJson()],
+      };
+
+  static List<RequestSummary> _requests(Object? v) => [
+        for (final r in (v as List? ?? const []))
+          RequestSummary.fromJson(Map<String, dynamic>.from(r as Map)),
+      ];
 
   final List<RequestSummary> open;
   final List<RequestSummary> completedThisWeek;
@@ -57,6 +76,7 @@ class OwnerSnapshot {
 }
 
 final ownerSnapshotProvider = FutureProvider<OwnerSnapshot>((ref) async {
+  ref.watch(currentUserIdProvider);
   final repo = ref.watch(requestRepositoryProvider);
   final weekAgo = DateTime.now().subtract(const Duration(days: 7));
 
@@ -66,8 +86,7 @@ final ownerSnapshotProvider = FutureProvider<OwnerSnapshot>((ref) async {
   return OwnerSnapshot(
     open: open,
     completedThisWeek: all
-        .where((r) =>
-            r.completedAt != null && r.completedAt!.isAfter(weekAgo))
+        .where((r) => r.completedAt != null && r.completedAt!.isAfter(weekAgo))
         .toList(growable: false),
     arrivedThisWeek:
         all.where((r) => r.createdAt.isAfter(weekAgo)).toList(growable: false),
@@ -83,6 +102,20 @@ class MoneySnapshot {
     required this.requestsOwing,
   });
 
+  factory MoneySnapshot.fromJson(Map<String, dynamic> j) => MoneySnapshot(
+        outstanding: (j['outstanding'] as num).toDouble(),
+        approved: (j['approved'] as num).toDouble(),
+        received: (j['received'] as num).toDouble(),
+        requestsOwing: j['requests_owing'] as int,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'outstanding': outstanding,
+        'approved': approved,
+        'received': received,
+        'requests_owing': requestsOwing,
+      };
+
   /// Only counted where a quotation has actually been approved. Without that
   /// guard, a down payment taken before pricing shows as negative money owed,
   /// which is nonsense rather than a number.
@@ -93,6 +126,7 @@ class MoneySnapshot {
 }
 
 final moneySnapshotProvider = FutureProvider<MoneySnapshot>((ref) async {
+  ref.watch(currentUserIdProvider);
   final rows = await ref.watch(requestRepositoryProvider).financialsAll();
   final priced = rows.where((f) => f.hasApprovedQuotation);
 
@@ -113,9 +147,28 @@ class Workload {
     required this.tasks,
   });
 
+  factory Workload.fromJson(Map<String, dynamic> j) => Workload(
+        employeeId: j['employee_id'] as String?,
+        name: j['name'] as String,
+        tasks: [
+          for (final t in (j['tasks'] as List? ?? const []))
+            TaskSummary.fromJson(Map<String, dynamic>.from(t as Map)),
+        ],
+      );
+
+  Map<String, dynamic> toJson() => {
+        'employee_id': employeeId,
+        'name': name,
+        'tasks': [for (final t in tasks) t.toJson()],
+      };
+
   final String? employeeId;
   final String name;
   final List<TaskSummary> tasks;
+
+  /// The row for work nobody has been given yet. The UI names it, in the
+  /// reader's language.
+  bool get isUnassigned => name.isEmpty;
 
   int get overdueCount => tasks.where((t) => t.isOverdue).length;
   int get inProgressCount =>
@@ -123,13 +176,14 @@ class Workload {
 }
 
 final workloadProvider = FutureProvider<List<Workload>>((ref) async {
+  ref.watch(currentUserIdProvider);
   final tasks = await ref.watch(taskRepositoryProvider).allOpen();
 
   final grouped = <String, List<TaskSummary>>{};
   for (final t in tasks) {
     // Unassigned work and partner work both matter to the owner, so they get
     // their own rows rather than being dropped.
-    final key = t.assigneeName ?? t.partnerName ?? 'Unassigned';
+    final key = t.assigneeName ?? t.partnerName ?? '';
     grouped.putIfAbsent(key, () => []).add(t);
   }
 
