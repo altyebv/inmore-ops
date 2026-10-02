@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
 import 'features/auth/login_screen.dart';
 import 'features/board/board_screen.dart';
@@ -30,34 +31,58 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) => _fade(state, const LoginScreen()),
       ),
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
           // Role-shaped landing: supervisors and the owner get the board,
           // designers and production get their own work.
-          GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          GoRoute(
+            path: '/',
+            pageBuilder: (context, state) => _fade(state, const HomeScreen()),
+          ),
           GoRoute(
             path: '/work',
-            builder: (context, state) => const MyWorkScreen(),
+            pageBuilder: (context, state) => _fade(state, const MyWorkScreen()),
           ),
           GoRoute(
             path: '/customers',
-            builder: (context, state) => const CustomersScreen(),
+            pageBuilder: (context, state) =>
+                _fade(state, const CustomersScreen()),
           ),
           GoRoute(
             path: '/reports',
-            builder: (context, state) => const ExportScreen(),
+            pageBuilder: (context, state) => _fade(state, const ExportScreen()),
           ),
           GoRoute(
             path: '/requests/new',
-            builder: (context, state) => const NewRequestScreen(),
+            pageBuilder: (context, state) =>
+                _fade(state, const NewRequestScreen()),
+            // A half-filled request is easy to lose with one click on the
+            // sidebar. Ask first.
+            onExit: (context, state) async {
+              if (!ref.read(newRequestDirtyProvider)) return true;
+              final l = context.l10n;
+              final leave = await confirm(
+                context,
+                title: l.unsavedTitle,
+                body: l.unsavedBody,
+                confirmLabel: l.discard,
+                cancelLabel: l.keepEditing,
+                destructive: true,
+              );
+              if (leave) {
+                ref.read(newRequestDirtyProvider.notifier).state = false;
+              }
+              return leave;
+            },
           ),
           GoRoute(
             path: '/requests/:id',
-            builder: (context, state) => RequestDetailScreen(
-              requestId: state.pathParameters['id']!,
+            pageBuilder: (context, state) => _fade(
+              state,
+              RequestDetailScreen(requestId: state.pathParameters['id']!),
             ),
           ),
         ],
@@ -65,6 +90,19 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+/// A short cross-fade. Desktop screens swap in place; sliding them in from
+/// the side reads as a phone.
+Page<void> _fade(GoRouterState state, Widget child) => CustomTransitionPage(
+      key: state.pageKey,
+      child: child,
+      transitionDuration: const Duration(milliseconds: 160),
+      reverseTransitionDuration: const Duration(milliseconds: 120),
+      transitionsBuilder: (context, animation, _, child) => FadeTransition(
+        opacity: CurveTween(curve: Curves.easeOut).animate(animation),
+        child: child,
+      ),
+    );
 
 /// Supervisors think in requests; designers and production think in tasks.
 /// Landing them on different screens saves everyone a click, every time.
