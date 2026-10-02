@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
 import '../features/request/request_screen.dart';
-import 'common.dart';
 
 /// One request in a list. Read-only: tapping opens the detail, nothing else.
+///
+/// The coloured edge is the stage, so a list can be scanned for "how much is
+/// in production" without reading a word.
 class RequestTile extends StatelessWidget {
   const RequestTile(this.request, {super.key});
 
@@ -12,96 +15,92 @@ class RequestTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final l = context.l10n;
+    final t = context.tokens;
+    final c = context.colors;
+    final r = request;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => RequestScreen(requestId: request.id),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: Space.sm),
+      child: Card(
+        child: InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => RequestScreen(requestId: r.id),
+            ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Text(request.reference, style: theme.textTheme.labelMedium),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      request.customerName,
-                      style: theme.textTheme.titleSmall,
-                      overflow: TextOverflow.ellipsis,
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 4, color: t.stage(r.status)),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(r.reference,
+                                style: context.text.labelLarge
+                                    ?.copyWith(color: c.onSurfaceVariant)),
+                            const SizedBox(width: Space.sm),
+                            Expanded(
+                              child: UserText(
+                                r.customerName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.text.titleSmall,
+                              ),
+                            ),
+                            if (r.neededBy != null)
+                              Text(
+                                Fmt.dayMonth(r.neededBy),
+                                style: context.text.labelMedium?.copyWith(
+                                  color: r.isOverdue
+                                      ? t.danger
+                                      : c.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
+                        if (r.title != null) ...[
+                          const SizedBox(height: 2),
+                          UserText(
+                            r.title!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: context.text.bodySmall,
+                          ),
+                        ],
+                        const SizedBox(height: Space.sm),
+                        Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            StatusBadge(r.status.tr(l),
+                                color: t.stage(r.status), dot: true),
+                            if (r.waitingOn != null)
+                              StatusBadge(r.waitingOn!.tr(l),
+                                  color: t.danger,
+                                  icon: Icons.pause_circle_outline_rounded),
+                            if (r.isOverdue)
+                              StatusBadge(l.flagOverdue,
+                                  color: t.danger,
+                                  icon: Icons.schedule_rounded),
+                            if (r.needsSupervisor)
+                              StatusBadge(l.nobodyAssigned,
+                                  color: t.warning,
+                                  icon: Icons.person_off_outlined),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-              if (request.title != null)
-                Text(
-                  request.title!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  overflow: TextOverflow.ellipsis,
                 ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: [
-                  Pill(
-                    request.status.label,
-                    colour: stageColour(request.status, scheme),
-                  ),
-                  if (request.waitingOn != null)
-                    Pill(
-                      request.waitingOn!.label,
-                      colour: Colors.red,
-                      icon: Icons.pause_circle_outline,
-                    ),
-                  if (request.isOverdue)
-                    Pill(
-                      'Overdue',
-                      colour: scheme.error,
-                      icon: Icons.schedule,
-                    ),
-                  if (request.needsSupervisor)
-                    const Pill(
-                      'Nobody assigned',
-                      colour: Colors.deepOrange,
-                      icon: Icons.person_off_outlined,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text(
-                    request.supervisorName ?? 'No supervisor',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    request.neededBy != null
-                        ? 'Due ${Fmt.date(request.neededBy)}'
-                        : Fmt.date(request.createdAt),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: request.isOverdue
-                          ? scheme.error
-                          : scheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
