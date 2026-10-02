@@ -787,7 +787,8 @@ Role-aware UI in Flutter is a convenience; RLS is the enforcement.
 ### Environments and migrations
 
 - Supabase CLI, plain `.sql` files in `supabase/migrations/`, numbered and forward-only.
-- `supabase/seed.sql`: the six employees, the starting product catalog, a few partners.
+- `supabase/seed.sql`: the six employees and a few partners — local only. The product catalog is
+  a migration, so hosted projects get it from `db push`.
 - Two projects: `inmore-dev` and `inmore-prod`. Local `supabase start` for day-to-day work.
 - No ORM, no schema-generation tool. The SQL file is the source of truth.
 

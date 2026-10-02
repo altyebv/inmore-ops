@@ -1,5 +1,5 @@
 -- =============================================================================
--- Demo data — LOCAL ONLY, and optional.
+-- Demo data — optional, never part of a real project's history.
 --
 -- `supabase db reset` does not run this; it is not in seed.sql on purpose,
 -- because an empty database is the honest starting point and tests should not
@@ -10,27 +10,79 @@
 --   docker exec -i supabase_db_inmore-ops psql -U postgres -d postgres -q \
 --     < supabase/demo_data.sql
 --
+-- On the hosted project, only with the test accounts from test_accounts.sql,
+-- and wipe it with go_live_wipe.sql before real use:
+--
+--   npx supabase db query --linked -f supabase/demo_data.sql
+--
+-- People are found by the part of their email before the @, so the same file
+-- works on the local seed (sara@inmore.local) and on hosted test accounts
+-- (sara@inmore.test).  Anyone missing is covered by someone who exists —
+-- Layla by Sara, everyone else by Ahmed, Ahmed by owner@ or any active owner —
+-- so a single account is enough.
+--
 -- Runs as Ahmed so the history reads like a person did the work, rather than
 -- every entry being attributed to the system.
 -- =============================================================================
 
 begin;
-set local role authenticated;
-set local request.jwt.claims =
-  '{"sub":"22222222-2222-2222-2222-222222222222","role":"authenticated"}';
 
 do $$
 declare
-  v_sara     uuid := '44444444-4444-4444-4444-444444444444';
-  v_layla    uuid := '55555555-5555-5555-5555-555555555555';
-  v_mohammed uuid := '66666666-6666-6666-6666-666666666666';
-  v_fatima   uuid := '33333333-3333-3333-3333-333333333333';
+  v_owner    uuid := coalesce((select id from employees
+                       where is_active and email like 'owner@%' limit 1),
+                     (select id from employees
+                       where is_active and role = 'OWNER' order by created_at limit 1));
+  v_ahmed    uuid := coalesce((select id from employees
+                       where is_active and email like 'ahmed@%' limit 1), v_owner);
+  v_sara     uuid := coalesce((select id from employees
+                       where is_active and email like 'sara@%' limit 1), v_ahmed);
+  v_layla    uuid := coalesce((select id from employees
+                       where is_active and email like 'layla@%' limit 1), v_sara);
+  v_mohammed uuid := coalesce((select id from employees
+                       where is_active and email like 'mohammed@%' limit 1), v_ahmed);
+  v_fatima   uuid := coalesce((select id from employees
+                       where is_active and email like 'fatima@%' limit 1), v_ahmed);
+begin
+  if v_ahmed is null then
+    raise exception 'No active owner@ or ahmed@ employee. Create the accounts first (test_accounts.sql).';
+  end if;
+  if exists (select 1 from customers where name = 'Khalid Al-Mansour') then
+    raise exception 'Demo data is already loaded.';
+  end if;
+
+  perform set_config('demo.sara',     v_sara::text,     true);
+  perform set_config('demo.layla',    v_layla::text,    true);
+  perform set_config('demo.mohammed', v_mohammed::text, true);
+  perform set_config('demo.fatima',   v_fatima::text,   true);
+  perform set_config('request.jwt.claims',
+    json_build_object('sub', v_ahmed, 'role', 'authenticated')::text, true);
+end;
+$$;
+
+set local role authenticated;
+
+do $$
+declare
+  v_sara     uuid := current_setting('demo.sara')::uuid;
+  v_layla    uuid := current_setting('demo.layla')::uuid;
+  v_mohammed uuid := current_setting('demo.mohammed')::uuid;
+  v_fatima   uuid := current_setting('demo.fatima')::uuid;
+  v_partner  uuid;
   v_cust     uuid;
   v_req      requests;
   v_item     uuid;
   v_item2    uuid;
   v_quote    quotations;
 begin
+  -- The local seed has this partner; a hosted project starts with none.
+  select id into v_partner from partners where name = 'Al Waab Signage';
+  if v_partner is null then
+    insert into partners (name, contact_name, phone, services)
+    values ('Al Waab Signage', 'Yousef', '+974 4400 0003', 'Signage, vehicle wraps')
+    returning id into v_partner;
+  end if;
+
   ---------------------------------------------------------------- 1. in production, paid in part
   insert into customers (name, phone, company)
   values ('Khalid Al-Mansour', '+974 5544 1122', 'Mansour Cafe')
@@ -107,7 +159,7 @@ begin
 
   insert into tasks (request_id, type, title, partner_id, status, started_at)
   values (v_req.id, 'EXTERNAL', 'Fabrication',
-          (select id from partners where name = 'Al Waab Signage'),
+          v_partner,
           'IN_PROGRESS', now() - interval '9 days');
   update requests set status = 'PRODUCTION', waiting_on = 'PARTNER'
    where id = v_req.id;
@@ -177,4 +229,4 @@ $$;
 
 commit;
 
-\echo 'Demo data loaded: 6 requests across the pipeline.'
+select 'Demo data loaded: 6 requests across the pipeline.' as result;

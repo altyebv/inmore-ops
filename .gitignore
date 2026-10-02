@@ -43,3 +43,14 @@ Desktop.ini
 
 # --- documents for people, not for the repo ---------------------------------
 docs/handoff/
+
+# --- release signing ---------------------------------------------------------
+# The keystore itself belongs outside the repo; these catch a stray copy.
+apps/*/android/key.properties
+*.jks
+*.keystore
+
+/graphify-out
+
+# --- generated knowledge graph (graphify) -------------------------------------
+graphify-out/
