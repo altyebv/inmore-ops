@@ -1,4 +1,5 @@
 import '../enums/enums.dart';
+import '../util/formatting.dart';
 import 'converters.dart';
 
 /// A row of `v_request_summary` — the shared read model.
@@ -48,6 +49,31 @@ class RequestSummary {
         itemCount: parseInt(j['item_count'] ?? 0),
         openTaskCount: parseInt(j['open_task_count'] ?? 0),
       );
+
+  /// The inverse of [RequestSummary.fromJson], with the view's column names.
+  ///
+  /// Only the owner's phone uses it, to keep the last overview on disk. Any
+  /// field added to fromJson must be added here too — the round-trip test in
+  /// `test/model_json_test.dart` fails if the two drift apart.
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'number': number,
+        'status': status.wire,
+        'waiting_on': waitingOn?.wire,
+        'source': source.wire,
+        'title': title,
+        'needed_by': dateToWire(neededBy),
+        'created_at': createdAt.toUtc().toIso8601String(),
+        'completed_at': completedAt?.toUtc().toIso8601String(),
+        'customer_id': customerId,
+        'customer_name': customerName,
+        'customer_phone': customerPhone,
+        'customer_company': customerCompany,
+        'supervisor_id': supervisorId,
+        'supervisor_name': supervisorName,
+        'item_count': itemCount,
+        'open_task_count': openTaskCount,
+      };
 
   final String id;
   final int number;
@@ -176,11 +202,9 @@ class RequestItem {
   final ItemStatus status;
   final int position;
 
-  /// "5,000 pcs" — no pointless `.0`.
+  /// "5,000 pcs" — grouped, and no pointless `.0`.
   String get quantityLabel {
-    final q = quantity == quantity.roundToDouble()
-        ? quantity.toInt().toString()
-        : quantity.toString();
+    final q = Fmt.qty(quantity);
     return (unit == null || unit!.isEmpty) ? q : '$q $unit';
   }
 }
