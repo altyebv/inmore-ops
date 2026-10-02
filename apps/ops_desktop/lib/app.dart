@@ -26,7 +26,7 @@ class InmoreOpsApp extends ConsumerWidget {
           resolveLocale(settings.locale, device),
       builder: (context, child) {
         syncFormatting(Localizations.localeOf(context));
-        return child!;
+        return LaunchIntro(fadeInMark: true, markHeight: 96, child: child!);
       },
     );
   }

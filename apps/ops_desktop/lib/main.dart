@@ -22,10 +22,6 @@ Future<void> main() async {
       title: 'Inmore Operations',
       titleBarStyle: TitleBarStyle.normal,
     ),
-    () async {
-      await windowManager.show();
-      await windowManager.focus();
-    },
   );
 
   // Loaded before the first frame so the window opens in the chosen theme
@@ -41,4 +37,12 @@ Future<void> main() async {
     overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
     child: const InmoreOpsApp(),
   ));
+
+  // Shown once the first frame is drawn, not before: an earlier show() put
+  // an empty window on screen for the whole Supabase start-up, and the launch
+  // intro would then fade in over that instead of being the first thing seen.
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    await windowManager.show();
+    await windowManager.focus();
+  });
 }

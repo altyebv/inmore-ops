@@ -38,7 +38,9 @@ class OwnerApp extends ConsumerWidget {
           resolveLocale(settings.locale, device),
       builder: (context, child) {
         syncFormatting(Localizations.localeOf(context));
-        return child!;
+        // Picks up from the native splash: same mark, same place, and the
+        // stripe prints in beneath it.
+        return LaunchIntro(child: child!);
       },
       // No router: the owner's app is four tabs and a detail page. go_router
       // would be ceremony around a Navigator.push.
