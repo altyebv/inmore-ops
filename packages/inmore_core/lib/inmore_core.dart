@@ -1,6 +1,7 @@
 /// Shared domain layer for the Inmore operations system.
 ///
-/// Used by `ops_desktop` and, later, `owner_mobile`.
+/// Used by `ops_desktop` and `owner_mobile`. Nothing here draws or translates
+/// anything — that is `inmore_ui`.
 library inmore_core;
 
 export 'src/data/customer_repository.dart';
@@ -25,6 +26,6 @@ export 'src/models/task.dart';
 export 'src/providers/auth_providers.dart';
 export 'src/providers/data_providers.dart';
 export 'src/providers/owner_providers.dart';
+export 'src/providers/realtime_sync.dart';
 export 'src/providers/repository_providers.dart';
-export 'src/util/activity_text.dart';
 export 'src/util/formatting.dart';
