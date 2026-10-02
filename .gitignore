@@ -40,3 +40,6 @@ Desktop.ini
 # --- exports produced at runtime ---------------------------------------------
 *.xlsx
 !docs/**/*.xlsx
+
+# --- documents for people, not for the repo ---------------------------------
+docs/handoff/
