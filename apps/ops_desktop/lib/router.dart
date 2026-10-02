@@ -8,6 +8,7 @@ import 'features/auth/login_screen.dart';
 import 'features/board/board_screen.dart';
 import 'features/customers/customers_screen.dart';
 import 'features/export/export_screen.dart';
+import 'features/help/help_screen.dart';
 import 'features/requests/new_request_screen.dart';
 import 'features/requests/request_detail_screen.dart';
 import 'features/work/my_work_screen.dart';
@@ -54,6 +55,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/reports',
             pageBuilder: (context, state) => _fade(state, const ExportScreen()),
+          ),
+          GoRoute(
+            path: '/help',
+            pageBuilder: (context, state) => _fade(state, const HelpScreen()),
           ),
           GoRoute(
             path: '/requests/new',

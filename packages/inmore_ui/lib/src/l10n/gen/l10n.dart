@@ -1081,6 +1081,12 @@ abstract class L10n {
   /// **'Refresh'**
   String get shortcutRefresh;
 
+  /// No description provided for @shortcutHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get shortcutHelp;
+
   /// No description provided for @boardTitle.
   ///
   /// In en, this message translates to:
@@ -1309,12 +1315,6 @@ abstract class L10n {
   /// **'Name, company, or phone in any format'**
   String get customerSearchHint;
 
-  /// No description provided for @phoneMatchHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone matching ignores spaces, dashes and the +974 prefix.'**
-  String get phoneMatchHint;
-
   /// No description provided for @noCustomersFound.
   ///
   /// In en, this message translates to:
@@ -1438,7 +1438,7 @@ abstract class L10n {
   /// No description provided for @noProductsYet.
   ///
   /// In en, this message translates to:
-  /// **'No products yet. You can save without them — the detail can come later.'**
+  /// **'No products yet. Add them here, or later from the request page.'**
   String get noProductsYet;
 
   /// No description provided for @createRequest.
@@ -1582,7 +1582,7 @@ abstract class L10n {
   /// No description provided for @cancelReasonHelp.
   ///
   /// In en, this message translates to:
-  /// **'Required. Months from now this is the only record of why.'**
+  /// **'Required. It\'s kept in the request\'s history.'**
   String get cancelReasonHelp;
 
   /// No description provided for @keepIt.
@@ -1825,12 +1825,6 @@ abstract class L10n {
   /// **'Quotations'**
   String get quotationsTitle;
 
-  /// No description provided for @quotationsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Spoken, not sent — this records what was said'**
-  String get quotationsSubtitle;
-
   /// No description provided for @priceTheWork.
   ///
   /// In en, this message translates to:
@@ -1927,12 +1921,6 @@ abstract class L10n {
   /// **'Total'**
   String get total;
 
-  /// No description provided for @previewNote.
-  ///
-  /// In en, this message translates to:
-  /// **'The database recalculates this when it saves — what you see is a preview.'**
-  String get previewNote;
-
   /// No description provided for @createVersion.
   ///
   /// In en, this message translates to:
@@ -1993,12 +1981,6 @@ abstract class L10n {
   /// **'Nothing received yet.'**
   String get nothingReceived;
 
-  /// No description provided for @paymentsImmutable.
-  ///
-  /// In en, this message translates to:
-  /// **'Payments can\'t be edited or deleted. A mistake is corrected by recording the opposite.'**
-  String get paymentsImmutable;
-
   /// No description provided for @recordPaymentTitle.
   ///
   /// In en, this message translates to:
@@ -2022,12 +2004,6 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'What it is'**
   String get whatItIs;
-
-  /// No description provided for @paymentKindHelp.
-  ///
-  /// In en, this message translates to:
-  /// **'A label only — whether the job is settled is worked out from the total.'**
-  String get paymentKindHelp;
 
   /// No description provided for @reference.
   ///
@@ -2122,20 +2098,14 @@ abstract class L10n {
   /// No description provided for @reportItemsSheet.
   ///
   /// In en, this message translates to:
-  /// **'Items — one row per product, the way the current sheet already reads. Line totals sum correctly here.'**
+  /// **'Items — one row for each product.'**
   String get reportItemsSheet;
 
   /// No description provided for @reportRequestsSheet.
   ///
   /// In en, this message translates to:
-  /// **'Requests — one row per request. The totals live here and only here, so summing a column gives the real figure.'**
+  /// **'Requests — one row for each request, with its total, what has been paid and the balance.'**
   String get reportRequestsSheet;
-
-  /// No description provided for @reportFormatNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Dates are real Excel dates, money is a number with two decimals, and phone numbers stay text so the leading zero survives. The workbook is always in English, so it reads the same for everyone.'**
-  String get reportFormatNote;
 
   /// No description provided for @createWorkbook.
   ///
@@ -2418,6 +2388,420 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'{amount} paid in advance. Nothing has been approved yet, so there\'s no balance.'**
   String paidInAdvanceAmount(Object amount);
+
+  /// No description provided for @navHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get navHelp;
+
+  /// No description provided for @helpCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Help center'**
+  String get helpCenter;
+
+  /// No description provided for @helpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to get things done in Inmore Operations.'**
+  String get helpSubtitle;
+
+  /// No description provided for @helpSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search the help'**
+  String get helpSearchHint;
+
+  /// No description provided for @helpNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing in the help matches that'**
+  String get helpNoResults;
+
+  /// No description provided for @helpNoResultsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different word, or pick a topic from the list.'**
+  String get helpNoResultsBody;
+
+  /// No description provided for @helpAllTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'All topics'**
+  String get helpAllTopics;
+
+  /// No description provided for @takeTheTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the tour'**
+  String get takeTheTour;
+
+  /// No description provided for @tourNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get tourNext;
+
+  /// No description provided for @tourBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get tourBack;
+
+  /// No description provided for @tourSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip tour'**
+  String get tourSkip;
+
+  /// No description provided for @tourDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get tourDone;
+
+  /// No description provided for @tourStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} of {total}'**
+  String tourStepOf(int current, int total);
+
+  /// No description provided for @tourWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Inmore, {name}'**
+  String tourWelcomeTitle(String name);
+
+  /// No description provided for @tourWelcomeManager.
+  ///
+  /// In en, this message translates to:
+  /// **'A one-minute look around. Every request the shop is working on lives here, from the first call to the last payment.'**
+  String get tourWelcomeManager;
+
+  /// No description provided for @tourWelcomeWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'A one-minute look around. The work given to you lives here, along with the request each piece of work belongs to.'**
+  String get tourWelcomeWorker;
+
+  /// No description provided for @tourBoardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The work board'**
+  String get tourBoardTitle;
+
+  /// No description provided for @tourBoardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every open request. Anything blocked, overdue or without a supervisor is pulled to the top, under Needs attention.'**
+  String get tourBoardBody;
+
+  /// No description provided for @tourHomeWorkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your work'**
+  String get tourHomeWorkTitle;
+
+  /// No description provided for @tourHomeWorkBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything given to you, grouped into doing, to do and blocked. Change a task\'s status right on its card.'**
+  String get tourHomeWorkBody;
+
+  /// No description provided for @tourNewRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a new request'**
+  String get tourNewRequestTitle;
+
+  /// No description provided for @tourNewRequestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When a customer asks for something, record it here. Everything they asked for goes into one request. Shortcut: Ctrl+N.'**
+  String get tourNewRequestBody;
+
+  /// No description provided for @tourMyWorkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own tasks'**
+  String get tourMyWorkTitle;
+
+  /// No description provided for @tourMyWorkBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Work given to you personally. The number is how many are still open.'**
+  String get tourMyWorkBody;
+
+  /// No description provided for @tourSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find any request'**
+  String get tourSearchTitle;
+
+  /// No description provided for @tourSearchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a request number, a customer\'s name or part of the title. Works from any screen with Ctrl+K.'**
+  String get tourSearchBody;
+
+  /// No description provided for @tourCustomersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers'**
+  String get tourCustomersTitle;
+
+  /// No description provided for @tourCustomersBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Look anyone up by name, company or phone number, typed any way you like.'**
+  String get tourCustomersBody;
+
+  /// No description provided for @tourReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get tourReportsTitle;
+
+  /// No description provided for @tourReportsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Export requests, products and payments to an Excel workbook.'**
+  String get tourReportsBody;
+
+  /// No description provided for @tourHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help is always here'**
+  String get tourHelpTitle;
+
+  /// No description provided for @tourHelpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Step-by-step guides for everything in the app, and this tour again whenever you want it. Shortcut: F1.'**
+  String get tourHelpBody;
+
+  /// No description provided for @tourAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account'**
+  String get tourAccountTitle;
+
+  /// No description provided for @tourAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch the language or theme, see the keyboard shortcuts, or sign out.'**
+  String get tourAccountBody;
+
+  /// No description provided for @editProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit product'**
+  String get editProduct;
+
+  /// No description provided for @productAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Product added'**
+  String get productAdded;
+
+  /// No description provided for @productSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Product saved'**
+  String get productSaved;
+
+  /// No description provided for @itemCancelledPriced.
+  ///
+  /// In en, this message translates to:
+  /// **'It was already priced, so it\'s kept and marked cancelled'**
+  String get itemCancelledPriced;
+
+  /// No description provided for @markCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark completed'**
+  String get markCompleted;
+
+  /// No description provided for @completeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark {reference} completed?'**
+  String completeTitle(Object reference);
+
+  /// No description provided for @completeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It leaves the work board. You can reopen it later if you need to.'**
+  String get completeBody;
+
+  /// No description provided for @completeOpenTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 unfinished task will be closed.} other{{count} unfinished tasks will be closed.}}'**
+  String completeOpenTasks(int count);
+
+  /// No description provided for @completeStillOwed.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} is still owed on it.'**
+  String completeStillOwed(Object amount);
+
+  /// No description provided for @requestCompletedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Request completed'**
+  String get requestCompletedToast;
+
+  /// No description provided for @completedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed {date}'**
+  String completedOn(Object date);
+
+  /// No description provided for @cancelledBecause.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled — {reason}'**
+  String cancelledBecause(Object reason);
+
+  /// No description provided for @reopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get reopen;
+
+  /// No description provided for @reopenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen {reference}?'**
+  String reopenTitle(Object reference);
+
+  /// No description provided for @reopenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the stage it goes back to. It returns to the work board.'**
+  String get reopenBody;
+
+  /// No description provided for @requestReopened.
+  ///
+  /// In en, this message translates to:
+  /// **'Request reopened'**
+  String get requestReopened;
+
+  /// No description provided for @editDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit details'**
+  String get editDetails;
+
+  /// No description provided for @detailsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Details saved'**
+  String get detailsSaved;
+
+  /// No description provided for @moreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get moreActions;
+
+  /// No description provided for @reassign.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassign'**
+  String get reassign;
+
+  /// No description provided for @reassignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassign “{task}”'**
+  String reassignTitle(Object task);
+
+  /// No description provided for @cancelTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this work'**
+  String get cancelTask;
+
+  /// No description provided for @cancelTaskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel “{task}”?'**
+  String cancelTaskTitle(Object task);
+
+  /// No description provided for @cancelTaskBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It stays in the history as cancelled.'**
+  String get cancelTaskBody;
+
+  /// No description provided for @taskUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Work updated'**
+  String get taskUpdated;
+
+  /// No description provided for @recordCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Record cost'**
+  String get recordCost;
+
+  /// No description provided for @costTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What did {partner} charge?'**
+  String costTitle(Object partner);
+
+  /// No description provided for @costRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Cost recorded'**
+  String get costRecorded;
+
+  /// No description provided for @newPartner.
+  ///
+  /// In en, this message translates to:
+  /// **'New partner'**
+  String get newPartner;
+
+  /// No description provided for @fieldContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact person'**
+  String get fieldContact;
+
+  /// No description provided for @fieldServices.
+  ///
+  /// In en, this message translates to:
+  /// **'What they do'**
+  String get fieldServices;
+
+  /// No description provided for @partnerAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner added'**
+  String get partnerAdded;
+
+  /// No description provided for @editDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editDraft;
+
+  /// No description provided for @editDraftTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit v{version}'**
+  String editDraftTitle(Object version);
+
+  /// No description provided for @quotationUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Quotation updated'**
+  String get quotationUpdated;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

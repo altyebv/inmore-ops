@@ -26,6 +26,8 @@ class RequestSummary {
     this.supervisorName,
     this.itemCount = 0,
     this.openTaskCount = 0,
+    this.notes,
+    this.cancelReason,
   });
 
   factory RequestSummary.fromJson(Map<String, dynamic> j) => RequestSummary(
@@ -48,6 +50,8 @@ class RequestSummary {
         supervisorName: str(j['supervisor_name']),
         itemCount: parseInt(j['item_count'] ?? 0),
         openTaskCount: parseInt(j['open_task_count'] ?? 0),
+        notes: str(j['notes']),
+        cancelReason: str(j['cancel_reason']),
       );
 
   /// The inverse of [RequestSummary.fromJson], with the view's column names.
@@ -73,6 +77,8 @@ class RequestSummary {
         'supervisor_name': supervisorName,
         'item_count': itemCount,
         'open_task_count': openTaskCount,
+        'notes': notes,
+        'cancel_reason': cancelReason,
       };
 
   final String id;
@@ -95,6 +101,12 @@ class RequestSummary {
   final String? supervisorName;
   final int itemCount;
   final int openTaskCount;
+
+  /// What the customer actually said, as written when the request was taken.
+  final String? notes;
+
+  /// Set while the request is cancelled.
+  final String? cancelReason;
 
   String get reference => '#$number';
 

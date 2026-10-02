@@ -552,6 +552,9 @@ class L10nEn extends L10n {
   String get shortcutRefresh => 'Refresh';
 
   @override
+  String get shortcutHelp => 'Help';
+
+  @override
   String get boardTitle => 'Work board';
 
   @override
@@ -697,10 +700,6 @@ class L10nEn extends L10n {
   String get customerSearchHint => 'Name, company, or phone in any format';
 
   @override
-  String get phoneMatchHint =>
-      'Phone matching ignores spaces, dashes and the +974 prefix.';
-
-  @override
   String get noCustomersFound => 'No customers found';
 
   @override
@@ -772,7 +771,7 @@ class L10nEn extends L10n {
 
   @override
   String get noProductsYet =>
-      'No products yet. You can save without them — the detail can come later.';
+      'No products yet. Add them here, or later from the request page.';
 
   @override
   String get createRequest => 'Create request';
@@ -851,7 +850,7 @@ class L10nEn extends L10n {
 
   @override
   String get cancelReasonHelp =>
-      'Required. Months from now this is the only record of why.';
+      'Required. It\'s kept in the request\'s history.';
 
   @override
   String get keepIt => 'Keep it';
@@ -983,10 +982,6 @@ class L10nEn extends L10n {
   String get quotationsTitle => 'Quotations';
 
   @override
-  String get quotationsSubtitle =>
-      'Spoken, not sent — this records what was said';
-
-  @override
   String get priceTheWork => 'Price the work';
 
   @override
@@ -1047,10 +1042,6 @@ class L10nEn extends L10n {
   String get total => 'Total';
 
   @override
-  String get previewNote =>
-      'The database recalculates this when it saves — what you see is a preview.';
-
-  @override
   String createVersion(int version) {
     return 'Create v$version';
   }
@@ -1089,10 +1080,6 @@ class L10nEn extends L10n {
   String get nothingReceived => 'Nothing received yet.';
 
   @override
-  String get paymentsImmutable =>
-      'Payments can\'t be edited or deleted. A mistake is corrected by recording the opposite.';
-
-  @override
   String get recordPaymentTitle => 'Record a payment';
 
   @override
@@ -1103,10 +1090,6 @@ class L10nEn extends L10n {
 
   @override
   String get whatItIs => 'What it is';
-
-  @override
-  String get paymentKindHelp =>
-      'A label only — whether the job is settled is worked out from the total.';
 
   @override
   String get reference => 'Reference';
@@ -1158,16 +1141,11 @@ class L10nEn extends L10n {
   String get whatYouGet => 'What you get';
 
   @override
-  String get reportItemsSheet =>
-      'Items — one row per product, the way the current sheet already reads. Line totals sum correctly here.';
+  String get reportItemsSheet => 'Items — one row for each product.';
 
   @override
   String get reportRequestsSheet =>
-      'Requests — one row per request. The totals live here and only here, so summing a column gives the real figure.';
-
-  @override
-  String get reportFormatNote =>
-      'Dates are real Excel dates, money is a number with two decimals, and phone numbers stay text so the leading zero survives. The workbook is always in English, so it reads the same for everyone.';
+      'Requests — one row for each request, with its total, what has been paid and the balance.';
 
   @override
   String get createWorkbook => 'Create the workbook';
@@ -1337,4 +1315,256 @@ class L10nEn extends L10n {
   String paidInAdvanceAmount(Object amount) {
     return '$amount paid in advance. Nothing has been approved yet, so there\'s no balance.';
   }
+
+  @override
+  String get navHelp => 'Help';
+
+  @override
+  String get helpCenter => 'Help center';
+
+  @override
+  String get helpSubtitle => 'How to get things done in Inmore Operations.';
+
+  @override
+  String get helpSearchHint => 'Search the help';
+
+  @override
+  String get helpNoResults => 'Nothing in the help matches that';
+
+  @override
+  String get helpNoResultsBody =>
+      'Try a different word, or pick a topic from the list.';
+
+  @override
+  String get helpAllTopics => 'All topics';
+
+  @override
+  String get takeTheTour => 'Take the tour';
+
+  @override
+  String get tourNext => 'Next';
+
+  @override
+  String get tourBack => 'Back';
+
+  @override
+  String get tourSkip => 'Skip tour';
+
+  @override
+  String get tourDone => 'Got it';
+
+  @override
+  String tourStepOf(int current, int total) {
+    return '$current of $total';
+  }
+
+  @override
+  String tourWelcomeTitle(String name) {
+    return 'Welcome to Inmore, $name';
+  }
+
+  @override
+  String get tourWelcomeManager =>
+      'A one-minute look around. Every request the shop is working on lives here, from the first call to the last payment.';
+
+  @override
+  String get tourWelcomeWorker =>
+      'A one-minute look around. The work given to you lives here, along with the request each piece of work belongs to.';
+
+  @override
+  String get tourBoardTitle => 'The work board';
+
+  @override
+  String get tourBoardBody =>
+      'Every open request. Anything blocked, overdue or without a supervisor is pulled to the top, under Needs attention.';
+
+  @override
+  String get tourHomeWorkTitle => 'Your work';
+
+  @override
+  String get tourHomeWorkBody =>
+      'Everything given to you, grouped into doing, to do and blocked. Change a task\'s status right on its card.';
+
+  @override
+  String get tourNewRequestTitle => 'Start a new request';
+
+  @override
+  String get tourNewRequestBody =>
+      'When a customer asks for something, record it here. Everything they asked for goes into one request. Shortcut: Ctrl+N.';
+
+  @override
+  String get tourMyWorkTitle => 'Your own tasks';
+
+  @override
+  String get tourMyWorkBody =>
+      'Work given to you personally. The number is how many are still open.';
+
+  @override
+  String get tourSearchTitle => 'Find any request';
+
+  @override
+  String get tourSearchBody =>
+      'Type a request number, a customer\'s name or part of the title. Works from any screen with Ctrl+K.';
+
+  @override
+  String get tourCustomersTitle => 'Customers';
+
+  @override
+  String get tourCustomersBody =>
+      'Look anyone up by name, company or phone number, typed any way you like.';
+
+  @override
+  String get tourReportsTitle => 'Reports';
+
+  @override
+  String get tourReportsBody =>
+      'Export requests, products and payments to an Excel workbook.';
+
+  @override
+  String get tourHelpTitle => 'Help is always here';
+
+  @override
+  String get tourHelpBody =>
+      'Step-by-step guides for everything in the app, and this tour again whenever you want it. Shortcut: F1.';
+
+  @override
+  String get tourAccountTitle => 'Your account';
+
+  @override
+  String get tourAccountBody =>
+      'Switch the language or theme, see the keyboard shortcuts, or sign out.';
+
+  @override
+  String get editProduct => 'Edit product';
+
+  @override
+  String get productAdded => 'Product added';
+
+  @override
+  String get productSaved => 'Product saved';
+
+  @override
+  String get itemCancelledPriced =>
+      'It was already priced, so it\'s kept and marked cancelled';
+
+  @override
+  String get markCompleted => 'Mark completed';
+
+  @override
+  String completeTitle(Object reference) {
+    return 'Mark $reference completed?';
+  }
+
+  @override
+  String get completeBody =>
+      'It leaves the work board. You can reopen it later if you need to.';
+
+  @override
+  String completeOpenTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count unfinished tasks will be closed.',
+      one: '1 unfinished task will be closed.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String completeStillOwed(Object amount) {
+    return '$amount is still owed on it.';
+  }
+
+  @override
+  String get requestCompletedToast => 'Request completed';
+
+  @override
+  String completedOn(Object date) {
+    return 'Completed $date';
+  }
+
+  @override
+  String cancelledBecause(Object reason) {
+    return 'Cancelled — $reason';
+  }
+
+  @override
+  String get reopen => 'Reopen';
+
+  @override
+  String reopenTitle(Object reference) {
+    return 'Reopen $reference?';
+  }
+
+  @override
+  String get reopenBody =>
+      'Choose the stage it goes back to. It returns to the work board.';
+
+  @override
+  String get requestReopened => 'Request reopened';
+
+  @override
+  String get editDetails => 'Edit details';
+
+  @override
+  String get detailsSaved => 'Details saved';
+
+  @override
+  String get moreActions => 'More';
+
+  @override
+  String get reassign => 'Reassign';
+
+  @override
+  String reassignTitle(Object task) {
+    return 'Reassign “$task”';
+  }
+
+  @override
+  String get cancelTask => 'Cancel this work';
+
+  @override
+  String cancelTaskTitle(Object task) {
+    return 'Cancel “$task”?';
+  }
+
+  @override
+  String get cancelTaskBody => 'It stays in the history as cancelled.';
+
+  @override
+  String get taskUpdated => 'Work updated';
+
+  @override
+  String get recordCost => 'Record cost';
+
+  @override
+  String costTitle(Object partner) {
+    return 'What did $partner charge?';
+  }
+
+  @override
+  String get costRecorded => 'Cost recorded';
+
+  @override
+  String get newPartner => 'New partner';
+
+  @override
+  String get fieldContact => 'Contact person';
+
+  @override
+  String get fieldServices => 'What they do';
+
+  @override
+  String get partnerAdded => 'Partner added';
+
+  @override
+  String get editDraft => 'Edit';
+
+  @override
+  String editDraftTitle(Object version) {
+    return 'Edit v$version';
+  }
+
+  @override
+  String get quotationUpdated => 'Quotation updated';
 }

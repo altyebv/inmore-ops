@@ -106,20 +106,46 @@ class RequestRepository {
     return rows.map(RequestItem.fromJson).toList();
   }
 
+  /// Adds a product to an existing request, after the last one. Numbered from
+  /// the highest position rather than the count: a removed product leaves a
+  /// gap, and the count would reuse a number still in use.
   Future<RequestItem> addItem(String requestId, NewRequestItem item) async {
     final existing = await items(requestId);
+    final last = existing.fold<int>(0, (m, i) => i.position > m ? i.position : m);
     final rows = await _db.from('request_items').insert({
       'request_id': requestId,
       ...item.toJson(),
-      'position': existing.length + 1,
+      'position': last + 1,
     }).select();
     return RequestItem.fromJson(requireRow(rows, 'add an item'));
   }
 
-  Future<void> removeItem(String itemId) async {
-    final rows =
-        await _db.from('request_items').delete().eq('id', itemId).select();
-    requireRow(rows, 'remove this item');
+  /// What was asked for, corrected — quantity, unit, spec. The decision and
+  /// fulfilment columns are not touched here.
+  Future<void> updateItem(String itemId, NewRequestItem item) async {
+    final rows = await _db
+        .from('request_items')
+        .update({
+          'product_id': item.productId,
+          'name': item.name.trim(),
+          'quantity': item.quantity,
+          'unit': (item.unit ?? '').isEmpty ? null : item.unit,
+          'specs': (item.specs ?? '').isEmpty ? null : item.specs,
+        })
+        .eq('id', itemId)
+        .select();
+    requireRow(rows, 'change this item');
+  }
+
+  /// Deletes a product that was never priced; cancels one that was, because
+  /// a quotation must keep saying what it priced. Returns true when it was
+  /// cancelled rather than deleted. See `remove_request_item` (migration 012).
+  Future<bool> removeItem(String itemId) async {
+    final result = await _db.rpc<String>(
+      'remove_request_item',
+      params: {'p_item_id': itemId},
+    );
+    return result == 'CANCELLED';
   }
 
   /// Stage only. `waitingOn` is a separate column on purpose: a job blocked on

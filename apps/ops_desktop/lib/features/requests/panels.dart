@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
 import 'package:inmore_ui/inmore_ui.dart';
 
+import 'new_request_screen.dart' show ProductDialog;
+
+part 'task_actions.dart';
+
 // =============================================================================
 // Stage and blocking
 // =============================================================================
@@ -42,6 +46,12 @@ class StageCard extends ConsumerWidget {
                       })
                   : null,
             ),
+            if (!r.status.isOpen) ...[
+              const SizedBox(height: Space.md),
+              const Divider(),
+              const SizedBox(height: Space.md),
+              _Closed(request: r, canManage: canManage),
+            ],
             if (r.status.isOpen && (canManage || r.waitingOn != null)) ...[
               const SizedBox(height: Space.md),
               const Divider(),
@@ -91,6 +101,14 @@ class StageCard extends ConsumerWidget {
                                 icon: Icons.pause_circle_outline_rounded),
                           ),
                   ),
+                  if (canManage) ...[
+                    const SizedBox(width: Space.md),
+                    FilledButton.tonalIcon(
+                      onPressed: () => completeRequestFlow(context, ref, r),
+                      icon: const Icon(Icons.task_alt_rounded, size: 18),
+                      label: Text(l.markCompleted),
+                    ),
+                  ],
                 ],
               ),
             ],
@@ -110,6 +128,281 @@ class StageCard extends ConsumerWidget {
       () => ref.read(requestRepositoryProvider).setWaiting(request.id, reason),
     );
     if (ok) refreshRequest(ref, request.id);
+  }
+}
+
+/// What a closed request says instead of the blocking controls: when it was
+/// completed, or why it was cancelled — and, for those who run requests, the
+/// way back.
+class _Closed extends StatelessWidget {
+  const _Closed({required this.request, required this.canManage});
+
+  final RequestSummary request;
+  final bool canManage;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final t = context.tokens;
+    final r = request;
+    final completed = r.status == RequestStatus.completed;
+    final colour = completed ? t.success : context.colors.onSurfaceVariant;
+    final text = completed
+        ? (r.completedAt == null
+            ? r.status.tr(l)
+            : l.completedOn(Fmt.date(r.completedAt)))
+        : (r.cancelReason == null
+            ? r.status.tr(l)
+            : l.cancelledBecause(r.cancelReason!));
+
+    return Row(
+      children: [
+        Icon(completed ? Icons.task_alt_rounded : Icons.block_rounded,
+            size: 18, color: colour),
+        const SizedBox(width: Space.sm),
+        Expanded(
+          child: UserText(text,
+              style: context.text.bodyMedium
+                  ?.copyWith(color: colour, fontWeight: FontWeight.w500)),
+        ),
+        if (canManage)
+          Consumer(
+            builder: (context, ref, _) => OutlinedButton.icon(
+              onPressed: () => reopenRequestFlow(context, ref, r),
+              icon: const Icon(Icons.restart_alt_rounded, size: 18),
+              label: Text(l.reopen),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Confirm, then complete. Says what completing will also do — close the
+/// unfinished work — and, to those who see money, what is still owed, because
+/// "completed" with a balance outstanding is usually a mistake.
+Future<void> completeRequestFlow(
+  BuildContext context,
+  WidgetRef ref,
+  RequestSummary request,
+) async {
+  final l = context.l10n;
+  final openTasks = (ref.read(requestTasksProvider(request.id)).valueOrNull ??
+          const <TaskSummary>[])
+      .where((t) => t.status.isOpen)
+      .length;
+  final owed = ref.read(requestFinancialsProvider(request.id)).valueOrNull;
+  final body = [
+    l.completeBody,
+    if (openTasks > 0) l.completeOpenTasks(openTasks),
+    if (owed != null && owed.hasApprovedQuotation && owed.balance > 0)
+      l.completeStillOwed(Fmt.money(owed.balance)),
+  ].join('\n\n');
+
+  final sure = await confirm(
+    context,
+    title: l.completeTitle(request.reference),
+    body: body,
+    confirmLabel: l.markCompleted,
+    icon: Icons.task_alt_rounded,
+  );
+  if (!sure || !context.mounted) return;
+  final ok = await runAction(
+    context,
+    () => ref
+        .read(requestRepositoryProvider)
+        .setStatus(request.id, RequestStatus.completed),
+    success: l.requestCompletedToast,
+  );
+  if (ok) {
+    refreshRequest(ref, request.id);
+    ref.invalidate(myWorkProvider);
+  }
+}
+
+/// Back onto the board at a chosen stage: Delivery for a completed request
+/// (the usual reason is "it wasn't actually finished"), New for a cancelled
+/// one. The history records it as reopened.
+Future<void> reopenRequestFlow(
+  BuildContext context,
+  WidgetRef ref,
+  RequestSummary request,
+) async {
+  final l = context.l10n;
+  var stage = request.status == RequestStatus.completed
+      ? RequestStatus.delivery
+      : RequestStatus.isNew;
+  final chosen = await showDialog<RequestStatus>(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        icon: const Icon(Icons.restart_alt_rounded),
+        title: Text(l.reopenTitle(request.reference)),
+        content: SizedBox(
+          width: 420,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l.reopenBody),
+              const SizedBox(height: Space.lg),
+              DropdownButtonFormField<RequestStatus>(
+                initialValue: stage,
+                decoration: InputDecoration(labelText: l.stage),
+                items: [
+                  for (final s in RequestStatus.pipeline)
+                    DropdownMenuItem(value: s, child: Text(s.tr(l))),
+                ],
+                onChanged: (s) => setState(() => stage = s ?? stage),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, stage),
+            child: Text(l.reopen),
+          ),
+        ],
+      ),
+    ),
+  );
+  if (chosen == null || !context.mounted) return;
+  final ok = await runAction(
+    context,
+    () => ref.read(requestRepositoryProvider).setStatus(request.id, chosen),
+    success: l.requestReopened,
+  );
+  if (ok) refreshRequest(ref, request.id);
+}
+
+/// Title, due date and notes — what was agreed can change after the call.
+Future<void> editDetailsFlow(
+  BuildContext context,
+  WidgetRef ref,
+  RequestSummary request,
+) async {
+  final saved = await showDialog<bool>(
+    context: context,
+    builder: (_) => _DetailsDialog(request: request),
+  );
+  if ((saved ?? false) && context.mounted) {
+    showDone(context, context.l10n.detailsSaved);
+    refreshRequest(ref, request.id);
+  }
+}
+
+class _DetailsDialog extends ConsumerStatefulWidget {
+  const _DetailsDialog({required this.request});
+
+  final RequestSummary request;
+
+  @override
+  ConsumerState<_DetailsDialog> createState() => _DetailsDialogState();
+}
+
+class _DetailsDialogState extends ConsumerState<_DetailsDialog> {
+  late final _title = TextEditingController(text: widget.request.title);
+  late final _notes = TextEditingController(text: widget.request.notes);
+  late DateTime? _neededBy = widget.request.neededBy;
+  var _busy = false;
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _notes.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    return AlertDialog(
+      title: Text(l.editDetails),
+      content: SizedBox(
+        width: 480,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            AppField(
+              controller: _title,
+              autofocus: true,
+              label: l.fieldTitle,
+              hint: l.titleHint,
+            ),
+            const SizedBox(height: Space.md),
+            InputDecorator(
+              decoration: InputDecoration(
+                labelText: l.fieldNeededBy,
+                prefixIcon: const Icon(Icons.event_outlined, size: 18),
+                suffixIcon: _neededBy == null
+                    ? null
+                    : IconButton(
+                        tooltip: l.clear,
+                        icon: const Icon(Icons.close_rounded, size: 18),
+                        onPressed: () => setState(() => _neededBy = null),
+                      ),
+              ),
+              child: InkWell(
+                onTap: _pickDate,
+                child: Text(_neededBy == null ? l.notSet : Fmt.date(_neededBy)),
+              ),
+            ),
+            const SizedBox(height: Space.md),
+            AppField(
+              controller: _notes,
+              maxLines: 4,
+              label: l.fieldNotes,
+              hint: l.notesHint,
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _busy ? null : () => Navigator.pop(context),
+          child: Text(l.cancel),
+        ),
+        FilledButton(
+          onPressed: _busy ? null : _save,
+          child: Text(l.save),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _neededBy ?? now,
+      firstDate: now.subtract(const Duration(days: 365)),
+      lastDate: now.add(const Duration(days: 365 * 2)),
+    );
+    if (picked != null) setState(() => _neededBy = picked);
+  }
+
+  Future<void> _save() async {
+    setState(() => _busy = true);
+    try {
+      // All three every time: updateDetails writes what it is given.
+      await ref.read(requestRepositoryProvider).updateDetails(
+            widget.request.id,
+            title: _title.text.trim().isEmpty ? null : _title.text.trim(),
+            notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
+            neededBy: _neededBy,
+          );
+      if (mounted) Navigator.pop(context, true);
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 }
 
@@ -238,6 +531,13 @@ class DetailsPanel extends ConsumerWidget {
           ),
           const SizedBox(height: Space.lg),
           Fact(label: l.source, child: Text(r.source.tr(l))),
+          if (r.notes != null) ...[
+            const SizedBox(height: Space.lg),
+            Fact(
+              label: l.fieldNotes,
+              child: UserText(r.notes!, style: context.text.bodyMedium),
+            ),
+          ],
         ],
       ),
     );
@@ -455,10 +755,19 @@ class ItemsPanel extends ConsumerWidget {
     final l = context.l10n;
     final items = ref.watch(requestItemsProvider(request.id));
     final t = context.tokens;
+    final editable = canManage && request.status.isOpen;
 
     return SectionCard(
       icon: Icons.inventory_2_outlined,
       title: l.productsTitle,
+      actions: [
+        if (editable)
+          TextButton.icon(
+            onPressed: () => _add(context, ref),
+            icon: const Icon(Icons.add_rounded, size: 16),
+            label: Text(l.addProduct),
+          ),
+      ],
       child: AsyncView(
         value: items,
         compact: true,
@@ -483,8 +792,13 @@ class ItemsPanel extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             UserText(list[i].name,
-                                style: context.text.bodyMedium
-                                    ?.copyWith(fontWeight: FontWeight.w500)),
+                                style: context.text.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                  decoration:
+                                      list[i].status == ItemStatus.cancelled
+                                          ? TextDecoration.lineThrough
+                                          : null,
+                                )),
                             if (list[i].specs != null)
                               UserText(list[i].specs!,
                                   style: context.text.bodySmall),
@@ -507,12 +821,35 @@ class ItemsPanel extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      if (canManage)
-                        IconButton(
-                          tooltip: l.remove,
-                          icon: const Icon(Icons.delete_outline_rounded,
-                              size: 18),
-                          onPressed: () => _remove(context, ref, list[i]),
+                      if (editable)
+                        SizedBox(
+                          width: 96,
+                          child: list[i].status == ItemStatus.cancelled
+                              ? null
+                              : Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    // Once approved, the price was agreed for
+                                    // what is written here; changing it means
+                                    // revising the quotation, not this line.
+                                    if (list[i].status == ItemStatus.pending)
+                                      IconButton(
+                                        tooltip: l.editProduct,
+                                        icon: const Icon(Icons.edit_outlined,
+                                            size: 18),
+                                        onPressed: () =>
+                                            _edit(context, ref, list[i]),
+                                      ),
+                                    IconButton(
+                                      tooltip: l.remove,
+                                      icon: const Icon(
+                                          Icons.delete_outline_rounded,
+                                          size: 18),
+                                      onPressed: () =>
+                                          _remove(context, ref, list[i]),
+                                    ),
+                                  ],
+                                ),
                         ),
                     ],
                   ),
@@ -540,10 +877,44 @@ class ItemsPanel extends ConsumerWidget {
       icon: Icons.delete_outline_rounded,
     );
     if (!sure || !context.mounted) return;
+    var cancelled = false;
     final ok = await runAction(
       context,
-      () => ref.read(requestRepositoryProvider).removeItem(item.id),
-      success: l.itemRemoved,
+      () async => cancelled =
+          await ref.read(requestRepositoryProvider).removeItem(item.id),
+    );
+    if (!ok || !context.mounted) return;
+    // A priced product can't be deleted — the quotation still names it — so
+    // it is kept and marked cancelled. Say which happened.
+    showDone(context, cancelled ? l.itemCancelledPriced : l.itemRemoved);
+    refreshRequest(ref, request.id);
+  }
+
+  Future<void> _add(BuildContext context, WidgetRef ref) async {
+    final item = await showDialog<NewRequestItem>(
+      context: context,
+      builder: (_) => const ProductDialog(),
+    );
+    if (item == null || !context.mounted) return;
+    final ok = await runAction(
+      context,
+      () => ref.read(requestRepositoryProvider).addItem(request.id, item),
+      success: context.l10n.productAdded,
+    );
+    if (ok) refreshRequest(ref, request.id);
+  }
+
+  Future<void> _edit(
+      BuildContext context, WidgetRef ref, RequestItem existing) async {
+    final item = await showDialog<NewRequestItem>(
+      context: context,
+      builder: (_) => ProductDialog(initial: existing),
+    );
+    if (item == null || !context.mounted) return;
+    final ok = await runAction(
+      context,
+      () => ref.read(requestRepositoryProvider).updateItem(existing.id, item),
+      success: context.l10n.productSaved,
     );
     if (ok) refreshRequest(ref, request.id);
   }
@@ -663,6 +1034,13 @@ class TasksPanel extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      if (canManage && request.status.isOpen)
+                        SizedBox(
+                          width: 48,
+                          child: list[i].status == TaskStatus.cancelled
+                              ? null
+                              : _TaskMenu(task: list[i]),
+                        ),
                     ],
                   ),
                 ),
@@ -707,6 +1085,7 @@ class _TaskDialogState extends ConsumerState<_TaskDialog> {
   String? _partnerId;
   String? _itemId;
   bool _external = false;
+  DateTime? _dueAt;
   bool _busy = false;
 
   @override
@@ -761,11 +1140,33 @@ class _TaskDialogState extends ConsumerState<_TaskDialog> {
                       DropdownMenuItem(
                           value: null, child: Text(l.wholeRequest)),
                       for (final i in widget.items)
-                        DropdownMenuItem(value: i.id, child: UserText(i.name)),
+                        if (i.status != ItemStatus.cancelled)
+                          DropdownMenuItem(
+                              value: i.id, child: UserText(i.name)),
                     ],
                     onChanged: (v) => setState(() => _itemId = v),
                   ),
                 ],
+                // Without a due date a task can never show as overdue, which
+                // is what pulls late work to the owner's attention.
+                const SizedBox(height: Space.md),
+                InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: '${l.colDue} (${l.optional})',
+                    prefixIcon: const Icon(Icons.event_outlined, size: 18),
+                    suffixIcon: _dueAt == null
+                        ? null
+                        : IconButton(
+                            tooltip: l.clear,
+                            icon: const Icon(Icons.close_rounded, size: 18),
+                            onPressed: () => setState(() => _dueAt = null),
+                          ),
+                  ),
+                  child: InkWell(
+                    onTap: _pickDue,
+                    child: Text(_dueAt == null ? l.notSet : Fmt.date(_dueAt)),
+                  ),
+                ),
                 if (canManage) ...[
                   const SizedBox(height: Space.sm),
                   SwitchListTile(
@@ -780,14 +1181,9 @@ class _TaskDialogState extends ConsumerState<_TaskDialog> {
                     }),
                   ),
                   if (_external)
-                    DropdownButtonFormField<String>(
-                      initialValue: _partnerId,
-                      decoration: InputDecoration(labelText: l.partner),
-                      items: [
-                        for (final p in partners)
-                          DropdownMenuItem(
-                              value: p.id, child: UserText(p.name)),
-                      ],
+                    _PartnerPicker(
+                      partners: partners,
+                      value: _partnerId,
                       onChanged: (v) => setState(() => _partnerId = v),
                     )
                   else
@@ -826,6 +1222,22 @@ class _TaskDialogState extends ConsumerState<_TaskDialog> {
     );
   }
 
+  /// Due at the end of the chosen day, so "due today" is not already late at
+  /// nine in the morning.
+  Future<void> _pickDue() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dueAt ?? now,
+      firstDate: DateTime(now.year, now.month, now.day),
+      lastDate: now.add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() =>
+          _dueAt = DateTime(picked.year, picked.month, picked.day, 23, 59));
+    }
+  }
+
   Future<void> _save(Employee? me) async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _busy = true);
@@ -841,6 +1253,7 @@ class _TaskDialogState extends ConsumerState<_TaskDialog> {
             // also what the database allows.
             assigneeId: canManage ? (_external ? null : _assigneeId) : me?.id,
             partnerId: canManage && _external ? _partnerId : null,
+            dueAt: _dueAt,
           ),
       success: context.l10n.workAdded,
     );

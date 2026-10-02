@@ -553,6 +553,9 @@ class L10nAr extends L10n {
   String get shortcutRefresh => 'تحديث';
 
   @override
+  String get shortcutHelp => 'المساعدة';
+
+  @override
   String get boardTitle => 'لوحة العمل';
 
   @override
@@ -705,10 +708,6 @@ class L10nAr extends L10n {
   String get customerSearchHint => 'الاسم أو الشركة أو الهاتف بأي صيغة';
 
   @override
-  String get phoneMatchHint =>
-      'مطابقة الهاتف تتجاهل المسافات والشرطات وبادئة ‎+974.';
-
-  @override
   String get noCustomersFound => 'لا يوجد عملاء مطابقون';
 
   @override
@@ -782,7 +781,7 @@ class L10nAr extends L10n {
 
   @override
   String get noProductsYet =>
-      'لا منتجات بعد. يمكنك الحفظ بدونها — التفاصيل يمكن أن تأتي لاحقًا.';
+      'لا منتجات بعد. أضفها هنا، أو لاحقًا من صفحة الطلب.';
 
   @override
   String get createRequest => 'إنشاء الطلب';
@@ -860,8 +859,7 @@ class L10nAr extends L10n {
   String get cancelReasonHint => 'العميل ذهب إلى جهة أخرى';
 
   @override
-  String get cancelReasonHelp =>
-      'مطلوب. بعد أشهر سيكون هذا السجل الوحيد للسبب.';
+  String get cancelReasonHelp => 'مطلوب. يُحفظ في سجل الطلب.';
 
   @override
   String get keepIt => 'الإبقاء عليه';
@@ -993,9 +991,6 @@ class L10nAr extends L10n {
   String get quotationsTitle => 'عروض الأسعار';
 
   @override
-  String get quotationsSubtitle => 'تُقال ولا تُرسل — هذا يسجّل ما قيل';
-
-  @override
   String get priceTheWork => 'تسعير العمل';
 
   @override
@@ -1054,10 +1049,6 @@ class L10nAr extends L10n {
   String get total => 'الإجمالي';
 
   @override
-  String get previewNote =>
-      'تعيد قاعدة البيانات حساب هذا عند الحفظ — ما تراه معاينة فقط.';
-
-  @override
   String createVersion(int version) {
     return 'إنشاء v$version';
   }
@@ -1096,10 +1087,6 @@ class L10nAr extends L10n {
   String get nothingReceived => 'لم يُستلم شيء بعد.';
 
   @override
-  String get paymentsImmutable =>
-      'لا يمكن تعديل المدفوعات أو حذفها. يُصحَّح الخطأ بتسجيل عكسه.';
-
-  @override
   String get recordPaymentTitle => 'تسجيل دفعة';
 
   @override
@@ -1110,9 +1097,6 @@ class L10nAr extends L10n {
 
   @override
   String get whatItIs => 'نوع الدفعة';
-
-  @override
-  String get paymentKindHelp => 'مجرد تصنيف — تسوية الطلب تُحسب من الإجمالي.';
 
   @override
   String get reference => 'المرجع';
@@ -1164,16 +1148,11 @@ class L10nAr extends L10n {
   String get whatYouGet => 'ما ستحصل عليه';
 
   @override
-  String get reportItemsSheet =>
-      'المنتجات — صف لكل منتج، بنفس شكل الجدول الحالي. مجاميع الأسطر صحيحة هنا.';
+  String get reportItemsSheet => 'المنتجات — صف لكل منتج.';
 
   @override
   String get reportRequestsSheet =>
-      'الطلبات — صف لكل طلب. الإجماليات هنا فقط، لذلك جمع العمود يعطي الرقم الحقيقي.';
-
-  @override
-  String get reportFormatNote =>
-      'التواريخ تواريخ Excel حقيقية، والمبالغ أرقام بخانتين عشريتين، وأرقام الهواتف نصوص حتى لا يضيع الصفر الأول. الملف دائمًا بالإنجليزية ليُقرأ بنفس الشكل لدى الجميع.';
+      'الطلبات — صف لكل طلب، مع الإجمالي والمدفوع والمتبقي.';
 
   @override
   String get createWorkbook => 'إنشاء الملف';
@@ -1346,4 +1325,257 @@ class L10nAr extends L10n {
   String paidInAdvanceAmount(Object amount) {
     return 'دُفع $amount مقدمًا. لم يُعتمد شيء بعد، لذلك لا يوجد رصيد.';
   }
+
+  @override
+  String get navHelp => 'المساعدة';
+
+  @override
+  String get helpCenter => 'مركز المساعدة';
+
+  @override
+  String get helpSubtitle => 'كيف تنجز عملك في نظام Inmore للعمليات.';
+
+  @override
+  String get helpSearchHint => 'ابحث في المساعدة';
+
+  @override
+  String get helpNoResults => 'لا يوجد في المساعدة ما يطابق ذلك';
+
+  @override
+  String get helpNoResultsBody => 'جرّب كلمة أخرى، أو اختر موضوعًا من القائمة.';
+
+  @override
+  String get helpAllTopics => 'كل المواضيع';
+
+  @override
+  String get takeTheTour => 'الجولة التعريفية';
+
+  @override
+  String get tourNext => 'التالي';
+
+  @override
+  String get tourBack => 'السابق';
+
+  @override
+  String get tourSkip => 'تخطي الجولة';
+
+  @override
+  String get tourDone => 'فهمت';
+
+  @override
+  String tourStepOf(int current, int total) {
+    return '$current من $total';
+  }
+
+  @override
+  String tourWelcomeTitle(String name) {
+    return 'أهلًا بك في Inmore يا $name';
+  }
+
+  @override
+  String get tourWelcomeManager =>
+      'جولة سريعة لدقيقة واحدة. كل طلب يعمل عليه المحل موجود هنا، من أول اتصال حتى آخر دفعة.';
+
+  @override
+  String get tourWelcomeWorker =>
+      'جولة سريعة لدقيقة واحدة. العمل المسند إليك موجود هنا، ومعه الطلب الذي ينتمي إليه كل عمل.';
+
+  @override
+  String get tourBoardTitle => 'لوحة العمل';
+
+  @override
+  String get tourBoardBody =>
+      'كل الطلبات المفتوحة. أي طلب متوقف أو متأخر أو بلا مشرف يظهر في الأعلى تحت «يحتاج إلى متابعة».';
+
+  @override
+  String get tourHomeWorkTitle => 'مهامك';
+
+  @override
+  String get tourHomeWorkBody =>
+      'كل ما أُسند إليك، مقسّمًا إلى جارٍ ولم يبدأ ومتوقف. غيّر حالة المهمة من بطاقتها مباشرة.';
+
+  @override
+  String get tourNewRequestTitle => 'ابدأ طلبًا جديدًا';
+
+  @override
+  String get tourNewRequestBody =>
+      'عندما يطلب العميل شيئًا، سجّله من هنا. كل ما طلبه يدخل في طلب واحد. الاختصار: Ctrl+N.';
+
+  @override
+  String get tourMyWorkTitle => 'مهامك الشخصية';
+
+  @override
+  String get tourMyWorkBody =>
+      'العمل المسند إليك شخصيًا. الرقم هو عدد ما لم يُنجز بعد.';
+
+  @override
+  String get tourSearchTitle => 'اعثر على أي طلب';
+
+  @override
+  String get tourSearchBody =>
+      'اكتب رقم الطلب أو اسم العميل أو جزءًا من العنوان. يعمل من أي شاشة بالضغط على Ctrl+K.';
+
+  @override
+  String get tourCustomersTitle => 'العملاء';
+
+  @override
+  String get tourCustomersBody =>
+      'ابحث عن أي عميل بالاسم أو الشركة أو رقم الهاتف، بأي طريقة كتابة.';
+
+  @override
+  String get tourReportsTitle => 'التقارير';
+
+  @override
+  String get tourReportsBody =>
+      'صدّر الطلبات والمنتجات والمدفوعات إلى ملف Excel.';
+
+  @override
+  String get tourHelpTitle => 'المساعدة دائمًا هنا';
+
+  @override
+  String get tourHelpBody =>
+      'شروحات خطوة بخطوة لكل ما في التطبيق، وهذه الجولة متى أردتها. الاختصار: F1.';
+
+  @override
+  String get tourAccountTitle => 'حسابك';
+
+  @override
+  String get tourAccountBody =>
+      'غيّر اللغة أو المظهر، واطّلع على اختصارات لوحة المفاتيح، أو سجّل الخروج.';
+
+  @override
+  String get editProduct => 'تعديل المنتج';
+
+  @override
+  String get productAdded => 'أُضيف المنتج';
+
+  @override
+  String get productSaved => 'حُفظ المنتج';
+
+  @override
+  String get itemCancelledPriced =>
+      'كان مسعّرًا بالفعل، لذلك بقي مع علامة «ملغى»';
+
+  @override
+  String get markCompleted => 'تحديد كمكتمل';
+
+  @override
+  String completeTitle(Object reference) {
+    return 'هل اكتمل $reference؟';
+  }
+
+  @override
+  String get completeBody =>
+      'سيختفي من لوحة العمل، ويمكنك إعادة فتحه لاحقًا عند الحاجة.';
+
+  @override
+  String completeOpenTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ستُغلق $count مهمة لم تُنجز.',
+      few: 'ستُغلق $count مهام لم تُنجز.',
+      two: 'ستُغلق مهمتان لم تُنجزا.',
+      one: 'ستُغلق مهمة واحدة لم تُنجز.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String completeStillOwed(Object amount) {
+    return 'ما زال مستحقًا عليه $amount.';
+  }
+
+  @override
+  String get requestCompletedToast => 'اكتمل الطلب';
+
+  @override
+  String completedOn(Object date) {
+    return 'اكتمل في $date';
+  }
+
+  @override
+  String cancelledBecause(Object reason) {
+    return 'أُلغي — $reason';
+  }
+
+  @override
+  String get reopen => 'إعادة فتح';
+
+  @override
+  String reopenTitle(Object reference) {
+    return 'إعادة فتح $reference؟';
+  }
+
+  @override
+  String get reopenBody =>
+      'اختر المرحلة التي يعود إليها. سيعود إلى لوحة العمل.';
+
+  @override
+  String get requestReopened => 'أُعيد فتح الطلب';
+
+  @override
+  String get editDetails => 'تعديل التفاصيل';
+
+  @override
+  String get detailsSaved => 'حُفظت التفاصيل';
+
+  @override
+  String get moreActions => 'المزيد';
+
+  @override
+  String get reassign => 'إعادة إسناد';
+
+  @override
+  String reassignTitle(Object task) {
+    return 'إعادة إسناد «$task»';
+  }
+
+  @override
+  String get cancelTask => 'إلغاء هذا العمل';
+
+  @override
+  String cancelTaskTitle(Object task) {
+    return 'إلغاء «$task»؟';
+  }
+
+  @override
+  String get cancelTaskBody => 'سيبقى في السجل على أنه ملغى.';
+
+  @override
+  String get taskUpdated => 'حُدّث العمل';
+
+  @override
+  String get recordCost => 'تسجيل التكلفة';
+
+  @override
+  String costTitle(Object partner) {
+    return 'كم كانت تكلفة $partner؟';
+  }
+
+  @override
+  String get costRecorded => 'سُجّلت التكلفة';
+
+  @override
+  String get newPartner => 'شريك جديد';
+
+  @override
+  String get fieldContact => 'الشخص المسؤول';
+
+  @override
+  String get fieldServices => 'ما يقدمونه';
+
+  @override
+  String get partnerAdded => 'أُضيف الشريك';
+
+  @override
+  String get editDraft => 'تعديل';
+
+  @override
+  String editDraftTitle(Object version) {
+    return 'تعديل v$version';
+  }
+
+  @override
+  String get quotationUpdated => 'حُدّث عرض السعر';
 }

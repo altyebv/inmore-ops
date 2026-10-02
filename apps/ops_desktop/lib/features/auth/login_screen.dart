@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
@@ -187,7 +188,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         : Text(l.signIn),
                   ),
                 ),
-                if (Env.isLocal) ...[
+                // A developer convenience: never in a release build, whatever it
+                // points at.
+                if (kDebugMode && Env.isLocal) ...[
                   const SizedBox(height: Space.xl),
                   Text(
                     l.localDatabaseHint,

@@ -7,6 +7,7 @@ import 'package:inmore_ui/inmore_ui.dart';
 
 import 'command_palette.dart';
 import 'refresh.dart';
+import 'tour.dart';
 
 /// Whether the sidebar is folded to icons. Remembered on this PC.
 final sidebarCollapsedProvider = StateProvider<bool>(
@@ -39,24 +40,29 @@ class AppShell extends ConsumerWidget {
       error: (error, _) => _AccountProblem(error: error),
       data: (me) {
         if (me == null) return const BrandLoader();
-        return ConnectionWatcher(
-          onRefresh: refreshAll,
-          child: _Shortcuts(
-            employee: me,
-            child: Scaffold(
-              body: Row(
-                children: [
-                  _Sidebar(employee: me),
-                  const VerticalDivider(width: 1),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        const OfflineBanner(),
-                        Expanded(child: child),
-                      ],
+        // The first time this person signs in on this computer, walk them
+        // round the shell.
+        return TourAutoStart(
+          employee: me,
+          child: ConnectionWatcher(
+            onRefresh: refreshAll,
+            child: _Shortcuts(
+              employee: me,
+              child: Scaffold(
+                body: Row(
+                  children: [
+                    _Sidebar(employee: me),
+                    const VerticalDivider(width: 1),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          const OfflineBanner(),
+                          Expanded(child: child),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -66,7 +72,8 @@ class AppShell extends ConsumerWidget {
   }
 }
 
-/// Ctrl+K to find a request, Ctrl+N for a new one, F5 to refresh.
+/// Ctrl+K to find a request, Ctrl+N for a new one, F5 to refresh, F1 for
+/// help.
 class _Shortcuts extends ConsumerWidget {
   const _Shortcuts({required this.employee, required this.child});
 
@@ -82,6 +89,7 @@ class _Shortcuts extends ConsumerWidget {
         if (employee.role.canManageRequests)
           const SingleActivator(LogicalKeyboardKey.keyN, control: true): () =>
               context.go('/requests/new'),
+        const SingleActivator(LogicalKeyboardKey.f1): () => context.go('/help'),
         const SingleActivator(LogicalKeyboardKey.f5): () => refreshAll(ref),
         const SingleActivator(LogicalKeyboardKey.keyR, control: true): () =>
             refreshAll(ref),
@@ -116,6 +124,7 @@ class _Sidebar extends ConsumerWidget {
         selectedIcon: Icons.dashboard_rounded,
         label: manages ? l.navBoard : l.navMyWork,
         path: '/',
+        anchor: TourKeys.home,
         badge: manages ? null : myWorkCount,
       ),
       if (manages)
@@ -124,6 +133,7 @@ class _Sidebar extends ConsumerWidget {
           selectedIcon: Icons.task_alt_rounded,
           label: l.navMyWork,
           path: '/work',
+          anchor: TourKeys.myWork,
           badge: myWorkCount,
         ),
       _NavItem(
@@ -131,6 +141,7 @@ class _Sidebar extends ConsumerWidget {
         selectedIcon: Icons.people_rounded,
         label: l.navCustomers,
         path: '/customers',
+        anchor: TourKeys.customers,
       ),
       // Money. The nav hides it; RLS is what actually stops it.
       if (employee.role.canSeeMoney)
@@ -139,6 +150,7 @@ class _Sidebar extends ConsumerWidget {
           selectedIcon: Icons.table_chart_rounded,
           label: l.navReports,
           path: '/reports',
+          anchor: TourKeys.reports,
         ),
     ];
 
@@ -158,7 +170,10 @@ class _Sidebar extends ConsumerWidget {
               _Brand(collapsed: collapsed),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: _SearchButton(collapsed: collapsed),
+                child: KeyedSubtree(
+                  key: TourKeys.search,
+                  child: _SearchButton(collapsed: collapsed),
+                ),
               ),
               const SizedBox(height: Space.md),
               Expanded(
@@ -180,6 +195,20 @@ class _Sidebar extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: _NavTile(
                   item: _NavItem(
+                    icon: Icons.help_outline_rounded,
+                    selectedIcon: Icons.help_rounded,
+                    label: l.navHelp,
+                    path: '/help',
+                    anchor: TourKeys.help,
+                  ),
+                  selected: location == '/help',
+                  collapsed: collapsed,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: _NavTile(
+                  item: _NavItem(
                     icon: collapsed
                         ? Icons.keyboard_double_arrow_right_rounded
                         : Icons.keyboard_double_arrow_left_rounded,
@@ -194,7 +223,10 @@ class _Sidebar extends ConsumerWidget {
                 ),
               ),
               const Divider(height: 17, indent: 12, endIndent: 12),
-              _Account(employee: employee, collapsed: collapsed),
+              KeyedSubtree(
+                key: TourKeys.account,
+                child: _Account(employee: employee, collapsed: collapsed),
+              ),
               const SizedBox(height: Space.sm),
             ],
           ),
@@ -274,34 +306,13 @@ class _SearchButton extends StatelessWidget {
                     style: context.text.bodyMedium
                         ?.copyWith(color: c.onSurfaceVariant)),
               ),
-              const _Kbd('Ctrl K'),
+              const KeyCap('Ctrl K'),
             ],
           ),
         ),
       ),
     );
   }
-}
-
-class _Kbd extends StatelessWidget {
-  const _Kbd(this.keys);
-
-  final String keys;
-
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-        decoration: BoxDecoration(
-          color: context.colors.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Text(
-          keys,
-          textDirection: TextDirection.ltr,
-          style: context.text.labelSmall
-              ?.copyWith(color: context.colors.onSurfaceVariant),
-        ),
-      );
 }
 
 class _NavItem {
@@ -311,6 +322,7 @@ class _NavItem {
     required this.label,
     required this.path,
     this.badge,
+    this.anchor,
   });
 
   final IconData icon;
@@ -318,6 +330,9 @@ class _NavItem {
   final String label;
   final String path;
   final int? badge;
+
+  /// Set when the tour points at this item.
+  final GlobalKey? anchor;
 }
 
 class _NavTile extends StatelessWidget {
@@ -408,10 +423,13 @@ class _NavTile extends StatelessWidget {
       ),
     );
 
-    return Padding(
+    final padded = Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: collapsed ? Tooltip(message: item.label, child: tile) : tile,
     );
+    return item.anchor == null
+        ? padded
+        : KeyedSubtree(key: item.anchor, child: padded);
   }
 }
 
@@ -438,6 +456,16 @@ class _Account extends ConsumerWidget {
             leadingIcon: const Icon(Icons.keyboard_outlined, size: 18),
             onPressed: () => _showShortcuts(context),
             child: Text(l.shortcutsTitle),
+          ),
+          MenuItemButton(
+            leadingIcon: const Icon(Icons.help_outline_rounded, size: 18),
+            onPressed: () => context.go('/help'),
+            child: Text(l.helpCenter),
+          ),
+          MenuItemButton(
+            leadingIcon: const Icon(Icons.explore_outlined, size: 18),
+            onPressed: () => startTour(context, ref),
+            child: Text(l.takeTheTour),
           ),
           const Divider(),
           MenuItemButton(
@@ -503,13 +531,14 @@ class _Account extends ConsumerWidget {
                 ('Ctrl K', l.shortcutSearch),
                 ('Ctrl N', l.shortcutNewRequest),
                 ('F5', l.shortcutRefresh),
+                ('F1', l.shortcutHelp),
               ])
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6),
                   child: Row(
                     children: [
                       Expanded(child: Text(label)),
-                      _Kbd(keys),
+                      KeyCap(keys),
                     ],
                   ),
                 ),

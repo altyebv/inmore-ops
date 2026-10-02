@@ -38,7 +38,11 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
     final query = ref.watch(_queryProvider);
     final results = ref.watch(customerSearchProvider(query));
     final me = ref.watch(currentEmployeeProvider).valueOrNull;
+    // Mirrors customers_insert / customers_update: designers may add a
+    // customer (they create requests too), only supervisors and the owner
+    // may change one.
     final canAdd = me != null && me.role != EmployeeRole.production;
+    final canEdit = me != null && me.role.canManageRequests;
 
     return Column(
       children: [
@@ -64,7 +68,6 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.search_rounded, size: 18),
                   hintText: l.customerSearchHint,
-                  helperText: l.phoneMatchHint,
                 ),
               ),
             ),
@@ -100,7 +103,7 @@ class _CustomersScreenState extends ConsumerState<CustomersScreen> {
                           if (i > 0) const Divider(),
                           _CustomerRow(
                             customer: customers[i],
-                            canEdit: canAdd,
+                            canEdit: canEdit,
                           ),
                         ],
                       ],

@@ -25,6 +25,8 @@ void main() {
     'supervisor_name': 'Ahmed',
     'item_count': 3,
     'open_task_count': 2,
+    'notes': 'Wants it before Eid',
+    'cancel_reason': null,
   });
 
   final task = TaskSummary.fromJson({

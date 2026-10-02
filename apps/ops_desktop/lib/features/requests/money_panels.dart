@@ -26,7 +26,6 @@ class QuotationsPanel extends ConsumerWidget {
     return SectionCard(
       icon: Icons.request_quote_outlined,
       title: l.quotationsTitle,
-      subtitle: l.quotationsSubtitle,
       actions: [
         if (request.status.isOpen)
           TextButton.icon(
@@ -57,7 +56,8 @@ class QuotationsPanel extends ConsumerWidget {
   }
 
   Future<void> _price(BuildContext context, WidgetRef ref) async {
-    final items = ref.read(requestItemsProvider(request.id)).valueOrNull ?? [];
+    final items =
+        _priceable(ref.read(requestItemsProvider(request.id)).valueOrNull);
     if (items.isEmpty) {
       showError(context, context.l10n.addProductBeforePricing);
       return;
@@ -190,6 +190,12 @@ class _QuotationTile extends ConsumerWidget {
                       label: Text(l.markRejected),
                     ),
                   ],
+                  if (q.status == QuotationStatus.draft)
+                    TextButton.icon(
+                      onPressed: () => _editDraft(context, ref),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: Text(l.editDraft),
+                    ),
                   if (q.status != QuotationStatus.draft)
                     TextButton.icon(
                       onPressed: () => _revise(context, ref),
@@ -251,8 +257,22 @@ class _QuotationTile extends ConsumerWidget {
       context: context,
       builder: (_) => _PricingDialog(
         requestId: request.id,
-        items: items,
+        items: _priceable(items),
         reviseFrom: entry,
+      ),
+    );
+    if (done ?? false) refreshRequest(ref, request.id);
+  }
+
+  /// A draft nobody has heard yet is corrected in place, not versioned.
+  Future<void> _editDraft(BuildContext context, WidgetRef ref) async {
+    final done = await showDialog<bool>(
+      context: context,
+      builder: (_) => _PricingDialog(
+        requestId: request.id,
+        items: _priceable(items),
+        reviseFrom: entry,
+        editDraft: true,
       ),
     );
     if (done ?? false) refreshRequest(ref, request.id);
@@ -264,11 +284,16 @@ class _PricingDialog extends ConsumerStatefulWidget {
     required this.requestId,
     required this.items,
     this.reviseFrom,
+    this.editDraft = false,
   });
 
   final String requestId;
   final List<RequestItem> items;
   final QuotationWithLines? reviseFrom;
+
+  /// With [reviseFrom] a draft: change it in place rather than issue the next
+  /// version.
+  final bool editDraft;
 
   @override
   ConsumerState<_PricingDialog> createState() => _PricingDialogState();
@@ -320,7 +345,9 @@ class _PricingDialogState extends ConsumerState<_PricingDialog> {
     return AlertDialog(
       title: Text(revising == null
           ? l.priceTheWork
-          : l.reviseTitle(revising.quotation.version)),
+          : widget.editDraft
+              ? l.editDraftTitle(revising.quotation.version)
+              : l.reviseTitle(revising.quotation.version)),
       content: SizedBox(
         width: 600,
         child: SingleChildScrollView(
@@ -417,8 +444,6 @@ class _PricingDialogState extends ConsumerState<_PricingDialog> {
                   ],
                 ),
               ),
-              const SizedBox(height: Space.sm),
-              Text(l.previewNote, style: context.text.bodySmall),
             ],
           ),
         ),
@@ -432,7 +457,9 @@ class _PricingDialogState extends ConsumerState<_PricingDialog> {
           onPressed: _busy ? null : _save,
           child: Text(revising == null
               ? l.create
-              : l.createVersion(revising.quotation.version + 1)),
+              : widget.editDraft
+                  ? l.save
+                  : l.createVersion(revising.quotation.version + 1)),
         ),
       ],
     );
@@ -459,7 +486,13 @@ class _PricingDialogState extends ConsumerState<_PricingDialog> {
     final ok = await runAction(
       context,
       () async {
-        if (widget.reviseFrom == null) {
+        if (widget.editDraft) {
+          await repo.editDraft(
+            quotationId: widget.reviseFrom!.quotation.id,
+            lines: lines,
+            discount: discount,
+          );
+        } else if (widget.reviseFrom == null) {
           await repo.create(
             requestId: widget.requestId,
             lines: lines,
@@ -557,18 +590,6 @@ class PaymentsPanel extends ConsumerWidget {
                   ),
                 ),
               ],
-              const SizedBox(height: Space.sm),
-              Row(
-                children: [
-                  Icon(Icons.lock_outline_rounded,
-                      size: 14, color: context.colors.onSurfaceVariant),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(l.paymentsImmutable,
-                        style: context.text.bodySmall),
-                  ),
-                ],
-              ),
             ],
           );
         },
@@ -664,8 +685,6 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
                 initialValue: _kind,
                 decoration: InputDecoration(
                   labelText: l.whatItIs,
-                  helperText: l.paymentKindHelp,
-                  helperMaxLines: 2,
                 ),
                 items: [
                   for (final k in PaymentKind.values)
@@ -730,3 +749,9 @@ class _PaymentDialogState extends ConsumerState<_PaymentDialog> {
     }
   }
 }
+
+/// A cancelled product is not quoted again; everything else can be.
+List<RequestItem> _priceable(List<RequestItem>? items) => [
+      for (final i in items ?? const <RequestItem>[])
+        if (i.status != ItemStatus.cancelled) i,
+    ];

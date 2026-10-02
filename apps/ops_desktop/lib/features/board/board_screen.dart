@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 import 'package:inmore_core/inmore_core.dart';
 import 'package:inmore_ui/inmore_ui.dart';
 
+import '../../shell/tour.dart';
+
 /// Which stage tab is open. Filtered here rather than in the query, so every
 /// tab can show its count from one fetch.
 final _stageProvider = StateProvider<RequestStatus?>((ref) => null);
@@ -41,10 +43,13 @@ class BoardScreen extends ConsumerWidget {
               icon: const Icon(Icons.refresh_rounded),
             ),
             if (me?.role.canManageRequests ?? false)
-              FilledButton.icon(
-                onPressed: () => context.go('/requests/new'),
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text(l.newRequest),
+              KeyedSubtree(
+                key: TourKeys.newRequest,
+                child: FilledButton.icon(
+                  onPressed: () => context.go('/requests/new'),
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: Text(l.newRequest),
+                ),
               ),
           ],
           bottom: _Filters(requests: all ?? const []),

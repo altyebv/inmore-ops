@@ -484,3 +484,26 @@ class UserText extends StatelessWidget {
     );
   }
 }
+
+/// A keyboard key or chord, such as "Ctrl K". Always left-to-right: key names
+/// read the same in Arabic.
+class KeyCap extends StatelessWidget {
+  const KeyCap(this.keys, {super.key});
+
+  final String keys;
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+        decoration: BoxDecoration(
+          color: context.colors.surfaceContainerHigh,
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          keys,
+          textDirection: TextDirection.ltr,
+          style: context.text.labelSmall
+              ?.copyWith(color: context.colors.onSurfaceVariant),
+        ),
+      );
+}

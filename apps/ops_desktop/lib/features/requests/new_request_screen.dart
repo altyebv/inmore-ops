@@ -275,7 +275,7 @@ class _NewRequestScreenState extends ConsumerState<NewRequestScreen> {
   Future<void> _addItem() async {
     final item = await showDialog<NewRequestItem>(
       context: context,
-      builder: (_) => const _ItemDialog(),
+      builder: (_) => const ProductDialog(),
     );
     if (item != null) _update(() => _items.add(item));
   }
@@ -496,20 +496,30 @@ class _CustomerPickerState extends ConsumerState<_CustomerPicker> {
 
 /// Catalog product or free text — the catalog exists to make the common cases
 /// countable later, not to stop anyone entering "500 custom printed boxes".
-class _ItemDialog extends ConsumerStatefulWidget {
-  const _ItemDialog();
+///
+/// Used on the new-request form and on a request's Products panel; given
+/// [initial], it edits that product instead of adding one.
+class ProductDialog extends ConsumerStatefulWidget {
+  const ProductDialog({this.initial, super.key});
+
+  final RequestItem? initial;
 
   @override
-  ConsumerState<_ItemDialog> createState() => _ItemDialogState();
+  ConsumerState<ProductDialog> createState() => _ProductDialogState();
 }
 
-class _ItemDialogState extends ConsumerState<_ItemDialog> {
+class _ProductDialogState extends ConsumerState<ProductDialog> {
+  static String _plain(double q) =>
+      q == q.roundToDouble() ? q.toInt().toString() : q.toString();
+
   final _formKey = GlobalKey<FormState>();
-  final _name = TextEditingController();
-  final _quantity = TextEditingController(text: '1');
-  final _unit = TextEditingController();
-  final _specs = TextEditingController();
-  Product? _product;
+  late final _name = TextEditingController(text: widget.initial?.name);
+  // Plain digits, not Fmt.qty: "5,000" would not parse back.
+  late final _quantity =
+      TextEditingController(text: _plain(widget.initial?.quantity ?? 1));
+  late final _unit = TextEditingController(text: widget.initial?.unit);
+  late final _specs = TextEditingController(text: widget.initial?.specs);
+  late String? _productId = widget.initial?.productId;
 
   @override
   void dispose() {
@@ -526,7 +536,7 @@ class _ItemDialogState extends ConsumerState<_ItemDialog> {
     final products = ref.watch(productsProvider);
 
     return AlertDialog(
-      title: Text(l.addProduct),
+      title: Text(widget.initial == null ? l.addProduct : l.editProduct),
       content: SizedBox(
         width: 480,
         child: Form(
@@ -547,7 +557,7 @@ class _ItemDialogState extends ConsumerState<_ItemDialog> {
                           (p) => DropdownMenuEntry(value: p, label: p.name)),
                     ],
                     onSelected: (p) => setState(() {
-                      _product = p;
+                      _productId = p?.id;
                       if (p != null) {
                         _name.text = p.name;
                         if (p.defaultUnit != null) _unit.text = p.defaultUnit!;
@@ -620,13 +630,13 @@ class _ItemDialogState extends ConsumerState<_ItemDialog> {
               NewRequestItem(
                 name: _name.text,
                 quantity: double.parse(_quantity.text),
-                productId: _product?.id,
+                productId: _productId,
                 unit: _unit.text,
                 specs: _specs.text,
               ),
             );
           },
-          child: Text(l.add),
+          child: Text(widget.initial == null ? l.add : l.save),
         ),
       ],
     );

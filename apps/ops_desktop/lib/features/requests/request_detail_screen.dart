@@ -77,6 +77,17 @@ class _Detail extends ConsumerWidget {
               MenuAnchor(
                 menuChildren: [
                   MenuItemButton(
+                    leadingIcon: const Icon(Icons.edit_note_rounded, size: 18),
+                    onPressed: () => editDetailsFlow(context, ref, r),
+                    child: Text(l.editDetails),
+                  ),
+                  MenuItemButton(
+                    leadingIcon: const Icon(Icons.task_alt_rounded, size: 18),
+                    onPressed: () => completeRequestFlow(context, ref, r),
+                    child: Text(l.markCompleted),
+                  ),
+                  const Divider(),
+                  MenuItemButton(
                     leadingIcon: Icon(Icons.block_rounded,
                         size: 18, color: context.colors.error),
                     onPressed: () => cancelRequestFlow(context, ref, r),
@@ -85,6 +96,7 @@ class _Detail extends ConsumerWidget {
                   ),
                 ],
                 builder: (context, controller, _) => IconButton(
+                  tooltip: l.moreActions,
                   onPressed: () => controller.isOpen
                       ? controller.close()
                       : controller.open(),

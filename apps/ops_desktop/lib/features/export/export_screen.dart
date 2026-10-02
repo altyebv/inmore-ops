@@ -137,9 +137,6 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
                           _Sheet(
                               icon: Icons.summarize_outlined,
                               text: l.reportRequestsSheet),
-                          const SizedBox(height: Space.md),
-                          Text(l.reportFormatNote,
-                              style: context.text.bodySmall),
                         ],
                       ),
                     ),
