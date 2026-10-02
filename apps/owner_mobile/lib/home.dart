@@ -1,32 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
+import 'data/cached.dart';
 import 'features/attention/attention_screen.dart';
 import 'features/money/money_screen.dart';
 import 'features/overview/overview_screen.dart';
 import 'features/people/people_screen.dart';
 
+/// Which tab is showing. A provider so the overview's "Blocked" tile can jump
+/// straight to Attention.
+final homeTabProvider = StateProvider<int>((ref) => 0);
+
 /// Four tabs, answering the four questions the owner actually asks:
 /// what is happening, what needs me, where is the money, who is on what.
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _tab = 0;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final me = ref.watch(currentEmployeeProvider).valueOrNull;
+    // Live updates while signed in; torn down on sign-out.
+    ref.watch(realtimeSyncProvider);
 
     // Money is owner and supervisor only. The tab is hidden for anyone else,
     // and RLS is what actually enforces it — the queries behind that tab come
     // back empty regardless.
     final showMoney = me?.role.canSeeMoney ?? false;
+    final attention =
+        ref.watch(overviewProvider).valueOrNull?.value.attention.length ?? 0;
 
     final pages = <Widget>[
       const OverviewScreen(),
@@ -36,37 +40,58 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ];
 
     final destinations = <NavigationDestination>[
-      const NavigationDestination(
-        icon: Icon(Icons.insights_outlined),
-        selectedIcon: Icon(Icons.insights),
-        label: 'Overview',
+      NavigationDestination(
+        icon: const Icon(Icons.insights_outlined),
+        selectedIcon: const Icon(Icons.insights_rounded),
+        label: l.tabOverview,
       ),
-      const NavigationDestination(
-        icon: Icon(Icons.priority_high_outlined),
-        selectedIcon: Icon(Icons.priority_high),
-        label: 'Attention',
+      NavigationDestination(
+        icon: Badge(
+          isLabelVisible: attention > 0,
+          label: Text('$attention'),
+          child: const Icon(Icons.notification_important_outlined),
+        ),
+        selectedIcon: Badge(
+          isLabelVisible: attention > 0,
+          label: Text('$attention'),
+          child: const Icon(Icons.notification_important_rounded),
+        ),
+        label: l.tabAttention,
       ),
       if (showMoney)
-        const NavigationDestination(
-          icon: Icon(Icons.payments_outlined),
-          selectedIcon: Icon(Icons.payments),
-          label: 'Money',
+        NavigationDestination(
+          icon: const Icon(Icons.account_balance_wallet_outlined),
+          selectedIcon: const Icon(Icons.account_balance_wallet_rounded),
+          label: l.tabMoney,
         ),
-      const NavigationDestination(
-        icon: Icon(Icons.people_outline),
-        selectedIcon: Icon(Icons.people),
-        label: 'People',
+      NavigationDestination(
+        icon: const Icon(Icons.groups_outlined),
+        selectedIcon: const Icon(Icons.groups_rounded),
+        label: l.tabPeople,
       ),
     ];
 
-    final index = _tab.clamp(0, pages.length - 1);
+    final index = ref.watch(homeTabProvider).clamp(0, pages.length - 1);
 
-    return Scaffold(
-      body: SafeArea(child: pages[index]),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: index,
-        destinations: destinations,
-        onDestinationSelected: (i) => setState(() => _tab = i),
+    return ConnectionWatcher(
+      onRefresh: (ref) => refreshOwner(ref),
+      child: Scaffold(
+        body: SafeArea(
+          bottom: false,
+          child: Column(
+            children: [
+              const OfflineBanner(),
+              // IndexedStack keeps each tab's scroll position when switching.
+              Expanded(child: IndexedStack(index: index, children: pages)),
+            ],
+          ),
+        ),
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: index,
+          destinations: destinations,
+          onDestinationSelected: (i) =>
+              ref.read(homeTabProvider.notifier).state = i,
+        ),
       ),
     );
   }
