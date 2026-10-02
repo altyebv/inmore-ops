@@ -14,6 +14,8 @@ class SessionRepository {
 
   Session? get currentSession => _client.auth.currentSession;
 
+  String? get currentUserId => _client.auth.currentUser?.id;
+
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
   Future<void> signIn({required String email, required String password}) async {
