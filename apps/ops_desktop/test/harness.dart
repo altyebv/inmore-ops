@@ -9,7 +9,11 @@ import 'package:inmore_ui/testing.dart';
 import 'package:ops_desktop/features/auth/login_screen.dart';
 import 'package:ops_desktop/features/board/board_screen.dart';
 import 'package:ops_desktop/features/customers/customers_screen.dart';
-import 'package:ops_desktop/features/export/export_screen.dart';
+import 'package:ops_desktop/features/expenses/expenses_screen.dart';
+import 'package:ops_desktop/features/inventory/inventory_screen.dart';
+import 'package:ops_desktop/features/reports/report_definitions.dart';
+import 'package:ops_desktop/features/reports/reports_screen.dart';
+import 'package:ops_desktop/features/staff/staff_screen.dart';
 import 'package:ops_desktop/features/help/help_screen.dart';
 import 'package:ops_desktop/features/requests/new_request_screen.dart';
 import 'package:ops_desktop/features/requests/request_detail_screen.dart';
@@ -68,6 +72,21 @@ Future<SharedPreferences> pumpDesktop(
           .overrideWith((ref, id) async => Sample.quotations),
       requestPaymentsProvider.overrideWith((ref, id) async => Sample.payments),
       requestActivityProvider.overrideWith((ref, id) async => Sample.activity),
+      inventoryProvider.overrideWith((ref, archived) async => Sample.stock),
+      inventoryCostsProvider.overrideWith((ref) async =>
+          employee.role.canSeeMoney ? Sample.stockCosts : const {}),
+      stockMovementsProvider.overrideWith((ref, id) async => [
+            for (final m in Sample.movements)
+              if (id == null || m.itemId == id) m,
+          ]),
+      expensesForMonthProvider.overrideWith((ref, m) async => Sample.expenses),
+      paymentsForMonthProvider
+          .overrideWith((ref, m) async => Sample.paymentRows),
+      expenseCategoriesProvider
+          .overrideWith((ref) async => const ['Materials', 'Rent']),
+      allStaffProvider.overrideWith((ref) async => Sample.allStaff),
+      businessProfileProvider.overrideWith((ref) async => Sample.business),
+      reportDataProvider.overrideWith((ref, key) async => sampleReport(key.$1)),
     ],
     child: Consumer(
       builder: (context, ref, _) {
@@ -131,7 +150,14 @@ GoRouter _router(String location) => GoRouter(
             GoRoute(
                 path: '/customers',
                 builder: (_, __) => const CustomersScreen()),
-            GoRoute(path: '/reports', builder: (_, __) => const ExportScreen()),
+            GoRoute(
+                path: '/reports', builder: (_, __) => const ReportsScreen()),
+            GoRoute(
+                path: '/inventory',
+                builder: (_, __) => const InventoryScreen()),
+            GoRoute(
+                path: '/expenses', builder: (_, __) => const ExpensesScreen()),
+            GoRoute(path: '/staff', builder: (_, __) => const StaffScreen()),
             GoRoute(path: '/help', builder: (_, __) => const HelpScreen()),
             GoRoute(
                 path: '/requests/new',
@@ -154,3 +180,46 @@ class _Fixed extends SettingsController {
   @override
   AppSettings build() => value;
 }
+
+/// Report data for screen tests, without a database.
+ReportData sampleReport(ReportKind kind) => switch (kind) {
+      ReportKind.sales => ReportData(kind, [
+          for (final (i, it) in Sample.items.indexed)
+            ExportItemRow(
+              requestNumber: 1040 + i % 3,
+              requestDate: Sample.daysAgo(i),
+              customer: i.isEven ? 'Al Bidda Café' : 'مطعم الريان',
+              item: it.name,
+              qty: it.quantity,
+              unit: it.unit,
+              itemStatus: it.status,
+              requestStatus: RequestStatus.production,
+              unitPrice: 1.5 + i,
+              lineTotal: (1.5 + i) * it.quantity,
+              supervisor: 'Ahmed Al-Kuwari',
+            ),
+        ]),
+      ReportKind.payments || ReportKind.income => ReportData(
+          kind, Sample.paymentRows,
+          extra: Sample.expenses.where((e) => !e.isVoid).toList()),
+      ReportKind.expenses =>
+        ReportData(kind, Sample.expenses.where((e) => !e.isVoid).toList()),
+      ReportKind.stock =>
+        ReportData(kind, Sample.stock, costs: Sample.stockCosts),
+      ReportKind.requests => ReportData(kind, [
+          for (final r in Sample.requests)
+            ExportRequestRow.fromJson({
+              'request_number': r.number,
+              'request_date': r.createdAt.toUtc().toIso8601String(),
+              'customer': r.customerName,
+              'supervisor': r.supervisorName,
+              'status': r.status.wire,
+              'waiting_on': r.waitingOn?.wire,
+              'items': r.itemCount,
+              'approved_total': 12400,
+              'paid': 5000,
+              'balance': 7400,
+              'approved_quotation_count': 1,
+            }),
+        ]),
+    };

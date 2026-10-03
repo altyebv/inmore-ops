@@ -397,4 +397,233 @@ abstract final class Sample {
           tasks: tasks.where((t) => t.partnerName != null).toList(),
         ),
       ];
+  // --- Back office ----------------------------------------------------------
+
+  static const business = BusinessProfile(
+    name: 'Inmore',
+    tagline: 'Branding · Advertising · Packaging',
+    phone: '+974 4444 1234',
+    email: 'hello@inmore.qa',
+    address: 'Salwa Road, Doha, Qatar',
+    crNumber: '123456',
+  );
+
+  /// Everyone on the staff screen, including someone switched off.
+  static const allStaff = [
+    owner,
+    supervisor,
+    designer,
+    Employee(
+      id: 'e4',
+      fullName: 'Mohammed Saleh',
+      email: 'mohammed@inmore.qa',
+      role: EmployeeRole.production,
+      isActive: true,
+      phone: '+974 5512 0099',
+    ),
+    Employee(
+      id: 'e5',
+      fullName: 'Layla Nasser',
+      email: 'layla@inmore.qa',
+      role: EmployeeRole.designer,
+      isActive: false,
+    ),
+  ];
+
+  static final stock = [
+    InventoryItem(
+        id: 'i1',
+        name: 'Kraft paper roll 80gsm',
+        code: 'KR-80',
+        category: 'Paper',
+        unit: 'rolls',
+        reorderLevel: 5,
+        onHand: 3,
+        isLow: true,
+        isActive: true,
+        location: 'Shelf A2',
+        lastMovedAt: daysAgo(1)),
+    InventoryItem(
+        id: 'i2',
+        name: 'Paper cups 8oz (blank)',
+        code: 'CUP-8',
+        category: 'Packaging',
+        unit: 'pcs',
+        reorderLevel: 2000,
+        onHand: 12500,
+        isLow: false,
+        isActive: true,
+        location: 'Store room',
+        lastMovedAt: daysAgo(3)),
+    InventoryItem(
+        id: 'i3',
+        name: 'حبر أسود للطابعة',
+        category: 'Ink',
+        unit: 'L',
+        reorderLevel: 2,
+        onHand: 0,
+        isLow: true,
+        isActive: true,
+        location: 'Print room',
+        lastMovedAt: daysAgo(6)),
+    InventoryItem(
+        id: 'i4',
+        name: 'Vinyl sticker sheets A3',
+        code: 'VS-A3',
+        category: 'Paper',
+        unit: 'sheets',
+        reorderLevel: 100,
+        onHand: 340,
+        isLow: false,
+        isActive: true,
+        location: 'Shelf B1',
+        lastMovedAt: daysAgo(2)),
+    InventoryItem(
+        id: 'i5',
+        name: 'Rigid boxes 20×20',
+        category: 'Packaging',
+        unit: 'boxes',
+        reorderLevel: 0,
+        onHand: 48,
+        isLow: false,
+        isActive: true,
+        lastMovedAt: daysAgo(12)),
+  ];
+
+  static const stockCosts = {
+    'i1': 42.5,
+    'i2': 0.18,
+    'i3': 95.0,
+    'i4': 3.2,
+    'i5': 6.75
+  };
+
+  static final movements = [
+    StockMovement(
+        id: 5,
+        itemId: 'i1',
+        itemName: 'Kraft paper roll 80gsm',
+        unit: 'rolls',
+        kind: StockMovementKind.stockOut,
+        quantity: -2,
+        movedAt: daysAgo(1),
+        note: 'Cups job #1042',
+        recordedByName: 'Mohammed Saleh'),
+    StockMovement(
+        id: 4,
+        itemId: 'i4',
+        itemName: 'Vinyl sticker sheets A3',
+        unit: 'sheets',
+        kind: StockMovementKind.stockIn,
+        quantity: 200,
+        movedAt: daysAgo(2),
+        note: 'Gulf Print Co.',
+        recordedByName: 'Ahmed Al-Kuwari'),
+    StockMovement(
+        id: 3,
+        itemId: 'i2',
+        itemName: 'Paper cups 8oz (blank)',
+        unit: 'pcs',
+        kind: StockMovementKind.adjust,
+        quantity: -500,
+        movedAt: daysAgo(3),
+        note: 'Damaged carton',
+        recordedByName: 'Ahmed Al-Kuwari'),
+  ];
+
+  static DateTime _day(int d) => DateTime(now.year, now.month, d);
+
+  static final expenses = [
+    Expense(
+        id: 'x1',
+        spentOn: _day(1),
+        category: 'Rent',
+        amount: 12000,
+        method: PaymentMethod.bankTransfer,
+        isMonthly: true,
+        paidTo: 'Al Mana Properties',
+        createdAt: _day(1)),
+    Expense(
+        id: 'x2',
+        spentOn: _day(1),
+        category: 'Salaries',
+        amount: 28500,
+        method: PaymentMethod.bankTransfer,
+        isMonthly: true,
+        createdAt: _day(1)),
+    Expense(
+        id: 'x3',
+        spentOn: _day(2),
+        category: 'Materials',
+        amount: 1840,
+        method: PaymentMethod.cash,
+        isMonthly: false,
+        description: 'Kraft paper, 10 rolls',
+        paidTo: 'Doha Paper Trading',
+        createdAt: _day(2)),
+    Expense(
+        id: 'x4',
+        spentOn: _day(2),
+        category: 'Transport',
+        amount: 150,
+        method: PaymentMethod.cash,
+        isMonthly: false,
+        description: 'Delivery to Lusail',
+        createdAt: _day(2)),
+    Expense(
+        id: 'x5',
+        spentOn: _day(3),
+        category: 'Utilities',
+        amount: 1320,
+        method: PaymentMethod.online,
+        isMonthly: true,
+        paidTo: 'Kahramaa',
+        createdAt: _day(3)),
+    Expense(
+        id: 'x6',
+        spentOn: _day(3),
+        category: 'Materials',
+        amount: 90,
+        method: PaymentMethod.cash,
+        isMonthly: false,
+        description: 'Entered twice',
+        createdAt: _day(3),
+        voidedAt: _day(3),
+        voidReason: 'Duplicate'),
+  ];
+
+  static final paymentRows = [
+    PaymentReportRow(
+        id: 'p1',
+        paidAt: _day(1),
+        amount: 5000,
+        method: PaymentMethod.bankTransfer,
+        kind: PaymentKind.downPayment,
+        requestNumber: 1042,
+        customer: 'Al Bidda Café',
+        company: 'Al Bidda Hospitality W.L.L.',
+        supervisor: 'Ahmed Al-Kuwari',
+        recordedBy: 'Ahmed Al-Kuwari'),
+    PaymentReportRow(
+        id: 'p2',
+        paidAt: _day(2),
+        amount: 9800,
+        method: PaymentMethod.cash,
+        kind: PaymentKind.settlement,
+        requestNumber: 1038,
+        customer: 'مطعم الريان',
+        supervisor: 'Ahmed Al-Kuwari',
+        recordedBy: 'Ahmed Al-Kuwari'),
+    PaymentReportRow(
+        id: 'p3',
+        paidAt: _day(3),
+        amount: 30750,
+        method: PaymentMethod.cheque,
+        kind: PaymentKind.partial,
+        requestNumber: 1040,
+        customer: 'Lusail Events',
+        reference: 'CHQ 004512',
+        supervisor: 'Fatima Al-Sulaiti',
+        recordedBy: 'Fatima Al-Sulaiti'),
+  ];
 }
