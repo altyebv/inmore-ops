@@ -44,7 +44,7 @@ npx supabase db reset      # wipe, re-run migrations + seed
 for f in supabase/tests/*.sql; do docker exec -i supabase_db_inmore-ops psql -U postgres -d postgres -v ON_ERROR_STOP=1 -q < "$f"; done
 ```
 
-About 195 assertions in seven files:
+About 240 assertions in eight files:
 
 - `rls_test.sql` — the money boundary, the quotation invariants, the write guards, the public
   website RPC.
@@ -57,6 +57,9 @@ About 195 assertions in seven files:
 - `export_test.sql` — the two Excel sheets, and that they sum to the same number.
 - `workflow_test.sql` — closing a request closes its open work, a priced product is cancelled
   rather than deleted, a draft quotation can be corrected and only a draft.
+- `back_office_test.sql` — staff management (supervisors manage everyone but the owner, nobody
+  changes their own access), stock that is the sum of its ledger and can't go below zero,
+  expenses that are money-only and corrected by editing or voiding, never deleted.
 
 They all create their own fixture data and roll back, so they are safe to run against a database
 with real records in it. Run them after any change to a policy, a trigger, a view or an RPC.
@@ -117,13 +120,13 @@ Blueprint §G slice:
 | 5 | Status + timeline — waiting states, history | done |
 | 6 | Payments — balance per request | done |
 | 7 | Excel reports — two sheets, saved to Documents\Inmore | done |
+| 8 | Back office — inventory, expenses, staff management, printable reports | done |
 
 The V1 slice is complete and runs: sign in, find a customer, create a request with several
 products, assign work, price it, approve, record a payment, read the history, export the month.
 
-Not yet built: the owner's mobile app, the website RPC wired into the React site, partner
-management screens, and a user-management screen (staff accounts are created from the Supabase
-dashboard).
+Not yet built: the website RPC wired into the React site, and a partner management screen
+(partners are added from the task dialog).
 
 ## Testing the Dart layer
 
@@ -226,6 +229,7 @@ Settings → Database).
 npx supabase login
 npx supabase link --project-ref <ref>      # <ref> is the xxxx in https://xxxx.supabase.co
 npx supabase db push
+npx supabase functions deploy staff-admin
 ```
 
 `db push` applies every migration — schema, RLS, triggers, realtime, the product catalog. It does
@@ -236,11 +240,14 @@ Then, in the dashboard:
 
 - **Authentication → Sign In / Providers**: turn **off** "Allow new users to sign up". (Locally
   `config.toml` does this; `db push` doesn't carry auth settings.) Leave the Email provider on.
-- **Staff accounts**: add each person under Authentication → Users, then set their role and
-  activate them with [`supabase/staff.sql`](supabase/staff.sql) in the SQL Editor. Do the owner
-  first.
+- **The first owner account**: add it under Authentication → Users, then set its role and
+  activate it with [`supabase/staff.sql`](supabase/staff.sql) in the SQL Editor. Everyone else is
+  added from the desktop app's **Staff** screen. That needs the `staff-admin` Edge Function
+  deployed above: it holds the admin key no app may have, and checks that the caller is an active
+  owner or supervisor.
 
-Later schema changes: add a migration, test locally, `npx supabase db push`.
+Later schema changes: add a migration, test locally, `npx supabase db push`. After changing
+[`supabase/functions/staff-admin`](supabase/functions/staff-admin/index.ts), deploy it again.
 
 **Trying it out before go-live.** Make `@inmore.test` accounts and activate them with
 [`supabase/test_accounts.sql`](supabase/test_accounts.sql), then optionally load the demo
