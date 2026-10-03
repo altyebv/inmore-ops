@@ -1,6 +1,11 @@
 -- =============================================================================
 -- Giving a staff member access — run in the hosted project's SQL Editor.
 --
+-- Needed only for the FIRST owner account. After that, owners and supervisors
+-- add, change and remove staff from the desktop app's Staff screen (which
+-- uses the staff-admin Edge Function). This file stays as the way in if
+-- nobody can sign in at all.
+--
 -- 1. Dashboard → Authentication → Users → Add user → Create new user.
 --    Email + a temporary password, tick "Auto Confirm User".
 --    handle_new_auth_user() creates their employees row: inactive, SUPERVISOR,
