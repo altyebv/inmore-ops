@@ -24,7 +24,10 @@ abstract final class TourKeys {
   static final myWork = GlobalKey(debugLabel: 'tour.myWork');
   static final search = GlobalKey(debugLabel: 'tour.search');
   static final customers = GlobalKey(debugLabel: 'tour.customers');
+  static final inventory = GlobalKey(debugLabel: 'tour.inventory');
+  static final expenses = GlobalKey(debugLabel: 'tour.expenses');
   static final reports = GlobalKey(debugLabel: 'tour.reports');
+  static final staff = GlobalKey(debugLabel: 'tour.staff');
   static final help = GlobalKey(debugLabel: 'tour.help');
   static final account = GlobalKey(debugLabel: 'tour.account');
 }
@@ -76,11 +79,28 @@ List<TourStep> tourSteps(L10n l, Employee me) {
       title: l.tourCustomersTitle,
       body: l.tourCustomersBody,
     ),
-    if (me.role.canSeeMoney)
+    TourStep(
+      target: TourKeys.inventory,
+      title: l.tourInventoryTitle,
+      body: l.tourInventoryBody,
+    ),
+    if (me.role.canSeeMoney) ...[
+      TourStep(
+        target: TourKeys.expenses,
+        title: l.tourExpensesTitle,
+        body: l.tourExpensesBody,
+      ),
       TourStep(
         target: TourKeys.reports,
         title: l.tourReportsTitle,
         body: l.tourReportsBody,
+      ),
+    ],
+    if (manages)
+      TourStep(
+        target: TourKeys.staff,
+        title: l.tourStaffTitle,
+        body: l.tourStaffBody,
       ),
     TourStep(
       target: TourKeys.help,

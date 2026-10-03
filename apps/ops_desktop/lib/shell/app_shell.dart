@@ -143,14 +143,37 @@ class _Sidebar extends ConsumerWidget {
         path: '/customers',
         anchor: TourKeys.customers,
       ),
+      _NavItem(
+        icon: Icons.inventory_2_outlined,
+        selectedIcon: Icons.inventory_2_rounded,
+        label: l.navInventory,
+        path: '/inventory',
+        anchor: TourKeys.inventory,
+      ),
       // Money. The nav hides it; RLS is what actually stops it.
-      if (employee.role.canSeeMoney)
+      if (employee.role.canSeeMoney) ...[
+        _NavItem(
+          icon: Icons.receipt_long_outlined,
+          selectedIcon: Icons.receipt_long_rounded,
+          label: l.navExpenses,
+          path: '/expenses',
+          anchor: TourKeys.expenses,
+        ),
         _NavItem(
           icon: Icons.table_chart_outlined,
           selectedIcon: Icons.table_chart_rounded,
           label: l.navReports,
           path: '/reports',
           anchor: TourKeys.reports,
+        ),
+      ],
+      if (manages)
+        _NavItem(
+          icon: Icons.badge_outlined,
+          selectedIcon: Icons.badge_rounded,
+          label: l.navStaff,
+          path: '/staff',
+          anchor: TourKeys.staff,
         ),
     ];
 

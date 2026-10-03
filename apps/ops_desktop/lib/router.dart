@@ -7,10 +7,13 @@ import 'package:inmore_ui/inmore_ui.dart';
 import 'features/auth/login_screen.dart';
 import 'features/board/board_screen.dart';
 import 'features/customers/customers_screen.dart';
-import 'features/export/export_screen.dart';
+import 'features/expenses/expenses_screen.dart';
 import 'features/help/help_screen.dart';
+import 'features/inventory/inventory_screen.dart';
+import 'features/reports/reports_screen.dart';
 import 'features/requests/new_request_screen.dart';
 import 'features/requests/request_detail_screen.dart';
+import 'features/staff/staff_screen.dart';
 import 'features/work/my_work_screen.dart';
 import 'shell/app_shell.dart';
 
@@ -54,7 +57,22 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: '/reports',
-            pageBuilder: (context, state) => _fade(state, const ExportScreen()),
+            pageBuilder: (context, state) =>
+                _fade(state, const ReportsScreen()),
+          ),
+          GoRoute(
+            path: '/inventory',
+            pageBuilder: (context, state) =>
+                _fade(state, const InventoryScreen()),
+          ),
+          GoRoute(
+            path: '/expenses',
+            pageBuilder: (context, state) =>
+                _fade(state, const ExpensesScreen()),
+          ),
+          GoRoute(
+            path: '/staff',
+            pageBuilder: (context, state) => _fade(state, const StaffScreen()),
           ),
           GoRoute(
             path: '/help',
