@@ -311,6 +311,78 @@ begin
 end;
 $$;
 
+-- A second order from the same phone, under another name, with a website SKU.
+set local role anon;
+select create_public_request(
+  'Someone Else', '55551234', null, null, 'Cups this time',
+  '[{"sku":"paper-cup-8oz","quantity":"2500","specs":"Stock #f7f5f1"},
+    {"sku":"not-a-real-sku","name":"Mystery item"}]'::jsonb
+) as second_number \gset
+
+do $$
+declare
+  v_what    text;
+  v_message text;
+begin
+  -- The request tables are out of anon's reach, so each refusal is checked by
+  -- its message; a refused call rolls back to here and leaves nothing behind.
+  foreach v_what in array array[
+    'a quantity that is not a number',
+    'a quantity of zero',
+    'a phone number too short to be one',
+    'items that are not a list',
+    'more than 20 items']
+  loop
+    v_message := null;
+    begin
+      perform case v_what
+        when 'a quantity that is not a number' then
+          create_public_request('Bad', '55550001', p_items => '[{"name":"X","quantity":"lots"}]')
+        when 'a quantity of zero' then
+          create_public_request('Bad', '55550001', p_items => '[{"name":"X","quantity":0}]')
+        when 'a phone number too short to be one' then
+          create_public_request('Bad', '123')
+        when 'items that are not a list' then
+          create_public_request('Bad', '55550001', p_items => '{"name":"X"}')
+        else
+          create_public_request('Bad', '55550001', p_items =>
+            (select jsonb_agg(jsonb_build_object('name', 'X')) from generate_series(1, 21)))
+      end;
+    exception when others then v_message := sqlerrm;
+    end;
+    perform _assert(v_message is not null and v_message !~* 'invalid input syntax',
+                    'refuses ' || v_what || ', in words a visitor can read');
+  end loop;
+end;
+$$;
+
+reset role;
+do $$
+declare
+  v_request uuid := (select id from requests where source = 'WEBSITE'
+                      order by number desc limit 1);
+  v_cups    uuid := (select id from products where name = 'Paper Cups');
+begin
+  perform _assert((select count(*) from customers where phone_normalized = '55551234') = 1,
+                  'the same phone, typed differently, reuses the customer');
+  perform _assert((select name from customers where phone_normalized = '55551234') = 'Web Visitor',
+                  'and an anonymous caller does not rename them');
+  perform _assert((select notes from requests where id = v_request) like '%Someone Else%',
+                  'the name they typed is kept in the request notes');
+  perform _assert((select product_id from request_items
+                    where request_id = v_request and position = 1) = v_cups,
+                  'a website SKU lands on its catalog product');
+  perform _assert((select (name, quantity, unit) = ('Paper Cups', 2500, 'pcs')
+                     from request_items where request_id = v_request and position = 1),
+                  'taking its name and unit from the catalog');
+  perform _assert((select product_id is null and name = 'Mystery item'
+                     from request_items where request_id = v_request and position = 2),
+                  'an unknown SKU arrives as a free-form item');
+  perform _assert((select count(*) from customers where phone_normalized = '55550001') = 0,
+                  'a refused order leaves no customer behind');
+end;
+$$;
+
 -- anon must not be able to reach the tables directly
 set local role anon;
 do $$

@@ -746,6 +746,11 @@ create_public_request(customer_name, phone, email, company, message, items jsonb
   → returns the request number only
 ```
 
+Each item is `{sku?, name?, quantity?, unit?, specs?}`. `sku` is the website's own product id,
+mapped onto the catalog by `product_web_skus` (many SKUs, one product); an unmapped SKU arrives as
+a free-form item. The RPC validates and caps everything it is sent, and never changes an existing
+customer — what a visitor typed about themselves goes into the request's notes.
+
 One narrow, auditable surface instead of anon-writable tables. Abuse protection (a honeypot field
 plus a per-IP rate limit in an edge function, or Turnstile) is a small follow-up — noted, not built
 on day one, and the RPC boundary is what makes adding it a one-file change.
