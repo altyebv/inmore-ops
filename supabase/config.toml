@@ -52,3 +52,8 @@ enable_confirmations = false
 
 [analytics]
 enabled = false
+
+# The function checks the caller's session itself (auth.getUser), which works
+# with both the legacy and the new publishable/secret API keys.
+[functions.staff-admin]
+verify_jwt = false

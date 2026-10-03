@@ -1,96 +1,198 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
-
-import '../../widgets/common.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
 final _queryProvider = StateProvider<String>((ref) => '');
 
-class CustomersScreen extends ConsumerWidget {
+class CustomersScreen extends ConsumerStatefulWidget {
   const CustomersScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomersScreen> createState() => _CustomersScreenState();
+}
+
+class _CustomersScreenState extends ConsumerState<CustomersScreen> {
+  late final _search = TextEditingController(text: ref.read(_queryProvider));
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _onChanged(String v) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 250), () {
+      ref.read(_queryProvider.notifier).state = v;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
     final query = ref.watch(_queryProvider);
     final results = ref.watch(customerSearchProvider(query));
     final me = ref.watch(currentEmployeeProvider).valueOrNull;
+    // Mirrors customers_insert / customers_update: designers may add a
+    // customer (they create requests too), only supervisors and the owner
+    // may change one.
     final canAdd = me != null && me.role != EmployeeRole.production;
+    final canEdit = me != null && me.role.canManageRequests;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Customers'),
-        actions: [
-          if (canAdd)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: FilledButton.icon(
-                onPressed: () => showCustomerDialog(context, ref),
-                icon: const Icon(Icons.person_add_alt, size: 18),
-                label: const Text('New customer'),
+    return Column(
+      children: [
+        PageHeader(
+          title: l.customersTitle,
+          subtitle: l.customersSubtitle,
+          actions: [
+            if (canAdd)
+              FilledButton.icon(
+                onPressed: () => showCustomerDialog(context),
+                icon: const Icon(Icons.person_add_alt_rounded, size: 18),
+                label: Text(l.newCustomer),
               ),
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              autofocus: true,
-              decoration: const InputDecoration(
-                isDense: true,
-                prefixIcon: Icon(Icons.search, size: 18),
-                hintText: 'Name, company, or phone in any format',
-                helperText:
-                    'Phone matching ignores spaces, dashes and the +974 prefix.',
+          ],
+          bottom: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: SizedBox(
+              width: 520,
+              child: TextField(
+                controller: _search,
+                autofocus: true,
+                onChanged: _onChanged,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search_rounded, size: 18),
+                  hintText: l.customerSearchHint,
+                ),
               ),
-              onChanged: (v) => ref.read(_queryProvider.notifier).state = v,
             ),
           ),
-          const Divider(height: 1),
-          Expanded(
-            child: AsyncView(
-              value: results,
-              builder: (customers) {
-                if (customers.isEmpty) {
-                  return const Center(child: EmptyNote('No customers found.'));
-                }
-                return ListView.separated(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: customers.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
-                  itemBuilder: (context, i) {
-                    final c = customers[i];
-                    return ListTile(
-                      title: Text(c.name),
-                      subtitle: Text([
-                        if (c.company != null && c.company!.isNotEmpty)
-                          c.company!,
-                        if (c.phone != null && c.phone!.isNotEmpty) c.phone!,
-                        if (c.email != null && c.email!.isNotEmpty) c.email!,
-                      ].join('  ·  ')),
-                      trailing: canAdd
-                          ? IconButton(
-                              icon: const Icon(Icons.edit_outlined, size: 18),
-                              onPressed: () =>
-                                  showCustomerDialog(context, ref, existing: c),
-                            )
-                          : null,
-                    );
-                  },
+        ),
+        Expanded(
+          child: AsyncView(
+            value: results,
+            onRetry: () => ref.invalidate(customerSearchProvider(query)),
+            builder: (customers) {
+              if (customers.isEmpty) {
+                return EmptyState(
+                  icon: Icons.person_search_outlined,
+                  title: l.noCustomersFound,
+                  body: l.noCustomersFoundBody,
+                  action: canAdd
+                      ? OutlinedButton.icon(
+                          onPressed: () => showCustomerDialog(context),
+                          icon: const Icon(Icons.person_add_alt_rounded,
+                              size: 18),
+                          label: Text(l.newCustomer),
+                        )
+                      : null,
                 );
-              },
-            ),
+              }
+              return ListView(
+                padding: const EdgeInsetsDirectional.fromSTEB(24, 0, 24, 32),
+                children: [
+                  Card(
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < customers.length; i++) ...[
+                          if (i > 0) const Divider(),
+                          _CustomerRow(
+                            customer: customers[i],
+                            canEdit: canEdit,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-        ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CustomerRow extends StatelessWidget {
+  const _CustomerRow({required this.customer, required this.canEdit});
+
+  final Customer customer;
+  final bool canEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final c = customer;
+    final muted = context.text.bodySmall;
+
+    return InkWell(
+      onTap: canEdit
+          ? () => showCustomerDialog(context, existing: customer)
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: Space.lg, vertical: 12),
+        child: Row(
+          children: [
+            InitialsAvatar(c.name, size: 36),
+            const SizedBox(width: Space.md),
+            Expanded(
+              flex: 3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  UserText(c.name,
+                      style: context.text.bodyMedium
+                          ?.copyWith(fontWeight: FontWeight.w500)),
+                  if (c.company != null && c.company!.isNotEmpty)
+                    UserText(c.company!, style: muted),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: c.phone == null || c.phone!.isEmpty
+                  ? Text('—', style: muted)
+                  : Row(
+                      children: [
+                        Icon(Icons.phone_outlined,
+                            size: 14, color: context.colors.onSurfaceVariant),
+                        const SizedBox(width: 6),
+                        Text(c.phone!,
+                            textDirection: TextDirection.ltr,
+                            style: context.text.bodyMedium),
+                      ],
+                    ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                c.email ?? '',
+                overflow: TextOverflow.ellipsis,
+                textDirection: TextDirection.ltr,
+                style: muted,
+              ),
+            ),
+            if (canEdit)
+              IconButton(
+                tooltip: l.editCustomer,
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                onPressed: () => showCustomerDialog(context, existing: c),
+              ),
+          ],
+        ),
       ),
     );
   }
 }
 
 Future<Customer?> showCustomerDialog(
-  BuildContext context,
-  WidgetRef ref, {
+  BuildContext context, {
   Customer? existing,
 }) =>
     showDialog<Customer>(
@@ -109,25 +211,14 @@ class _CustomerDialog extends ConsumerStatefulWidget {
 
 class _CustomerDialogState extends ConsumerState<_CustomerDialog> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _name =
-      TextEditingController(text: widget.existing?.name);
-  late final TextEditingController _phone =
-      TextEditingController(text: widget.existing?.phone);
-  late final TextEditingController _company =
-      TextEditingController(text: widget.existing?.company);
-  late final TextEditingController _email =
-      TextEditingController(text: widget.existing?.email);
-  late final TextEditingController _notes =
-      TextEditingController(text: widget.existing?.notes);
+  late final _name = TextEditingController(text: widget.existing?.name);
+  late final _phone = TextEditingController(text: widget.existing?.phone);
+  late final _company = TextEditingController(text: widget.existing?.company);
+  late final _email = TextEditingController(text: widget.existing?.email);
+  late final _notes = TextEditingController(text: widget.existing?.notes);
 
-  String _phoneValue = '';
+  late String _phoneValue = widget.existing?.phone ?? '';
   bool _busy = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _phoneValue = widget.existing?.phone ?? '';
-  }
 
   @override
   void dispose() {
@@ -141,51 +232,49 @@ class _CustomerDialogState extends ConsumerState<_CustomerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l = context.l10n;
     final isEdit = widget.existing != null;
 
     return AlertDialog(
-      title: Text(isEdit ? 'Edit customer' : 'New customer'),
+      title: Text(isEdit ? l.editCustomer : l.newCustomer),
       content: SizedBox(
-        width: 460,
+        width: 480,
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormField(
+                AppField(
                   controller: _name,
                   autofocus: true,
-                  decoration: const InputDecoration(labelText: 'Name'),
+                  label: l.fieldName,
                   validator: (v) =>
-                      (v == null || v.trim().isEmpty) ? 'Required' : null,
+                      (v == null || v.trim().isEmpty) ? l.required : null,
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
+                const SizedBox(height: Space.md),
+                AppField(
                   controller: _phone,
-                  decoration: const InputDecoration(labelText: 'Phone'),
+                  label: l.fieldPhone,
+                  keyboardType: TextInputType.phone,
+                  fixedDirection: TextDirection.ltr,
                   onChanged: (v) => setState(() => _phoneValue = v),
                 ),
                 _DuplicateWarning(
                   phone: _phoneValue,
                   excludeId: widget.existing?.id,
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _company,
-                  decoration: const InputDecoration(labelText: 'Company'),
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
+                const SizedBox(height: Space.md),
+                AppField(controller: _company, label: l.fieldCompany),
+                const SizedBox(height: Space.md),
+                AppField(
                   controller: _email,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  label: l.fieldEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  fixedDirection: TextDirection.ltr,
                 ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: _notes,
-                  maxLines: 3,
-                  decoration: const InputDecoration(labelText: 'Notes'),
-                ),
+                const SizedBox(height: Space.md),
+                AppField(controller: _notes, label: l.fieldNotes, maxLines: 3),
               ],
             ),
           ),
@@ -194,11 +283,11 @@ class _CustomerDialogState extends ConsumerState<_CustomerDialog> {
       actions: [
         TextButton(
           onPressed: _busy ? null : () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(l.cancel),
         ),
         FilledButton(
           onPressed: _busy ? null : _save,
-          child: Text(isEdit ? 'Save' : 'Create'),
+          child: Text(isEdit ? l.save : l.create),
         ),
       ],
     );
@@ -226,7 +315,10 @@ class _CustomerDialogState extends ConsumerState<_CustomerDialog> {
               notes: _notes.text,
             );
       ref.invalidate(customerSearchProvider);
-      if (mounted) Navigator.pop(context, saved);
+      if (mounted) {
+        showDone(context, context.l10n.customerSaved);
+        Navigator.pop(context, saved);
+      }
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -253,19 +345,31 @@ class _DuplicateWarning extends ConsumerWidget {
         final others =
             list.where((c) => c.id != excludeId).toList(growable: false);
         if (others.isEmpty) return const SizedBox.shrink();
-        return Padding(
-          padding: const EdgeInsets.only(top: 8),
+        final warning = context.tokens.warning;
+        return Container(
+          margin: const EdgeInsets.only(top: Space.sm),
+          padding: const EdgeInsets.all(Space.md),
+          decoration: BoxDecoration(
+            color: warning.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(Radii.md),
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.info_outline, size: 16, color: Colors.orange),
-              const SizedBox(width: 6),
+              Icon(Icons.info_outline_rounded, size: 16, color: warning),
+              const SizedBox(width: Space.sm),
               Expanded(
                 child: Text(
-                  '${others.length} customer'
-                  '${others.length == 1 ? '' : 's'} already on this number: '
-                  '${others.map((c) => c.displayLine).join('; ')}',
-                  style: Theme.of(context).textTheme.bodySmall,
+                  context.l10n.duplicatePhone(
+                    others.length,
+                    others.map((c) => c.displayLine).join(
+                          Localizations.localeOf(context).languageCode == 'ar'
+                              ? '، '
+                              : '; ',
+                        ),
+                  ),
+                  style: context.text.bodySmall
+                      ?.copyWith(color: context.colors.onSurface),
                 ),
               ),
             ],

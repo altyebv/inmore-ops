@@ -92,7 +92,7 @@ void main() {
 
     final items = await requests.items(created.id);
     expect(items, hasLength(2));
-    expect(items.first.quantityLabel, '5000 pcs');
+    expect(items.first.quantityLabel, '5,000 pcs');
 
     // --- stage and blocking are independent ---------------------------------
     await requests.setStatus(created.id, RequestStatus.production);

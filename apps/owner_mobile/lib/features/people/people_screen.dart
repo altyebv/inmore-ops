@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
-import '../../widgets/common.dart';
+import '../../data/cached.dart';
+import '../../widgets/owner_page.dart';
+import '../request/request_screen.dart';
 
 /// Who is handling what.
 ///
@@ -15,30 +18,30 @@ class PeopleScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final workload = ref.watch(workloadProvider);
-    final theme = Theme.of(context);
+    final l = context.l10n;
+    final people = ref.watch(peopleProvider);
 
-    return RefreshIndicator(
-      onRefresh: () async => ref.invalidate(workloadProvider),
-      child: AsyncView(
-        value: workload,
-        builder: (people) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-          children: [
-            Text('People', style: theme.textTheme.headlineSmall),
-            Text(
-              'Open work, most loaded first',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+    return AsyncView(
+      value: people,
+      onRetry: () => refreshOwner(ref),
+      loading: const OwnerPageSkeleton(figures: false),
+      builder: (cached) => OwnerPage(
+        title: l.peopleTitle,
+        subtitle: l.peopleSubtitle,
+        cached: cached,
+        children: [
+          if (cached.value.isEmpty)
+            EmptyState(
+              icon: Icons.free_breakfast_outlined,
+              title: l.noOpenWork,
+            )
+          else
+            for (final w in cached.value)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Space.sm),
+                child: _PersonCard(workload: w),
               ),
-            ),
-            const SizedBox(height: 16),
-            if (people.isEmpty)
-              const Nothing('No open work assigned to anyone.')
-            else
-              ...people.map((w) => _PersonCard(workload: w)),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -51,49 +54,74 @@ class _PersonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final l = context.l10n;
+    final t = context.tokens;
+    final name = workload.isUnassigned ? l.unassigned : workload.name;
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ExpansionTile(
-        shape: const Border(),
-        leading: CircleAvatar(
-          radius: 16,
-          child: Text(
-            workload.name.characters.first,
-            style: theme.textTheme.labelLarge,
+      child: Theme(
+        // ExpansionTile draws its own dividers; the card already has edges.
+        data: context.theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          shape: const Border(),
+          tilePadding: const EdgeInsets.symmetric(horizontal: Space.lg),
+          leading: workload.isUnassigned
+              ? CircleAvatar(
+                  radius: 18,
+                  backgroundColor: t.warning.withValues(alpha: 0.14),
+                  child: Icon(Icons.person_off_outlined,
+                      size: 18, color: t.warning),
+                )
+              : InitialsAvatar(name, size: 36),
+          title: UserText(name, style: context.text.titleSmall),
+          // The late count sits under the name rather than in `trailing`,
+          // which would replace the expand arrow.
+          subtitle: Wrap(
+            spacing: Space.sm,
+            runSpacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                [
+                  l.openCount(workload.tasks.length),
+                  if (workload.inProgressCount > 0)
+                    l.inProgressCount(workload.inProgressCount),
+                ].join(' · '),
+                style: context.text.bodySmall,
+              ),
+              if (workload.overdueCount > 0)
+                StatusBadge(
+                  l.lateCount(workload.overdueCount),
+                  color: t.danger,
+                  icon: Icons.schedule_rounded,
+                ),
+            ],
           ),
-        ),
-        title: Text(workload.name, style: theme.textTheme.titleSmall),
-        subtitle: Text(
-          '${workload.tasks.length} open'
-          '${workload.inProgressCount > 0 ? ' · ${workload.inProgressCount} in progress' : ''}',
-          style: theme.textTheme.bodySmall,
-        ),
-        trailing: workload.overdueCount > 0
-            ? Pill(
-                '${workload.overdueCount} late',
-                colour: scheme.error,
-                icon: Icons.schedule,
-              )
-            : null,
-        children: [
-          for (final t in workload.tasks)
-            ListTile(
-              dense: true,
-              contentPadding: const EdgeInsets.only(left: 64, right: 16),
-              title: Text(t.title, style: theme.textTheme.bodyMedium),
-              subtitle: Text(
-                '#${t.requestNumber} · ${t.customerName}',
-                style: theme.textTheme.bodySmall,
+          children: [
+            for (final task in workload.tasks)
+              ListTile(
+                dense: true,
+                contentPadding:
+                    const EdgeInsetsDirectional.only(start: 68, end: Space.lg),
+                title: UserText(task.title, style: context.text.bodyMedium),
+                subtitle: Text(
+                  '#${task.requestNumber} · ${task.customerName}',
+                  style: context.text.bodySmall,
+                ),
+                trailing: StatusBadge(
+                  task.status.tr(l),
+                  color: task.isOverdue ? t.danger : t.task(task.status),
+                  dot: true,
+                ),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => RequestScreen(requestId: task.requestId),
+                  ),
+                ),
               ),
-              trailing: Pill(
-                t.status.label,
-                colour: t.isOverdue ? scheme.error : null,
-              ),
-            ),
-        ],
+            const SizedBox(height: Space.sm),
+          ],
+        ),
       ),
     );
   }

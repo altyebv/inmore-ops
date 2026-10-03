@@ -1,0 +1,55 @@
+name: inmore_ui
+description: The look and language of the Inmore apps — theme, brand, translations and the shared widgets both apps draw with.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  inmore_core:
+    path: ../inmore_core
+  intl: any # pinned by flutter_localizations
+  flutter_riverpod: ^2.5.1
+  supabase_flutter: ^2.5.6
+  http: ^1.2.0
+  shared_preferences: ^2.3.0
+  connectivity_plus: ^7.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+# Translations: lib/l10n/*.arb -> lib/src/l10n/gen/ via `flutter gen-l10n`
+# (configured in l10n.yaml). That is Flutter's own generator, not
+# build_runner, and the output is committed — the apps never run it. After
+# editing an .arb file, run `flutter gen-l10n` in this folder.
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/brand/
+
+  # Rubik carries Latin and Arabic in one family, so a screen mixing an
+  # English label with an Arabic customer name is set in one typeface. Its
+  # rounded terminals echo the logo's pill strokes. SIL OFL — see
+  # assets/fonts/OFL.txt.
+  fonts:
+    - family: Rubik
+      fonts:
+        - asset: assets/fonts/Rubik-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Rubik-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Rubik-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Rubik-Bold.ttf
+          weight: 700

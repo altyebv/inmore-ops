@@ -53,6 +53,30 @@ class TaskSummary {
         isUnassigned: parseBool(j['is_unassigned']),
       );
 
+  /// The inverse of [TaskSummary.fromJson]. See [RequestSummary.toJson].
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'request_id': requestId,
+        'request_number': requestNumber,
+        'request_status': requestStatus.wire,
+        'customer_name': customerName,
+        'request_item_id': requestItemId,
+        'item_name': itemName,
+        'type': type.wire,
+        'title': title,
+        'description': description,
+        'status': status.wire,
+        'assignee_id': assigneeId,
+        'assignee_name': assigneeName,
+        'partner_id': partnerId,
+        'partner_name': partnerName,
+        'due_at': dueAt?.toUtc().toIso8601String(),
+        'started_at': startedAt?.toUtc().toIso8601String(),
+        'completed_at': completedAt?.toUtc().toIso8601String(),
+        'is_overdue': isOverdue,
+        'is_unassigned': isUnassigned,
+      };
+
   final String id;
   final String requestId;
   final int requestNumber;

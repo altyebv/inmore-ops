@@ -59,6 +59,7 @@ final boardFilterProvider =
     StateProvider<BoardFilter>((ref) => const BoardFilter());
 
 final boardProvider = FutureProvider<List<RequestSummary>>((ref) async {
+  ref.watch(currentUserIdProvider);
   final f = ref.watch(boardFilterProvider);
   return ref.watch(requestRepositoryProvider).board(
         openOnly: f.openOnly,
@@ -70,27 +71,32 @@ final boardProvider = FutureProvider<List<RequestSummary>>((ref) async {
 
 final customerSearchProvider =
     FutureProvider.family<List<Customer>, String>((ref, query) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(customerRepositoryProvider).search(query);
 });
 
 /// Customers already on this number. Empty for a blank number.
 final duplicatePhoneProvider =
     FutureProvider.family<List<Customer>, String>((ref, phone) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(customerRepositoryProvider).sharingPhone(phone);
 });
 
 final customerProvider =
     FutureProvider.family<Customer, String>((ref, id) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(customerRepositoryProvider).byId(id);
 });
 
 final requestProvider =
     FutureProvider.family<RequestSummary, String>((ref, id) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(requestRepositoryProvider).summary(id);
 });
 
 final requestItemsProvider =
     FutureProvider.family<List<RequestItem>, String>((ref, requestId) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(requestRepositoryProvider).items(requestId);
 });
 
@@ -98,46 +104,55 @@ final requestItemsProvider =
 /// them, which is the answer, not an error.
 final requestFinancialsProvider =
     FutureProvider.family<RequestFinancials?, String>((ref, requestId) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(requestRepositoryProvider).financials(requestId);
 });
 
 final requestTasksProvider =
     FutureProvider.family<List<TaskSummary>, String>((ref, requestId) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(taskRepositoryProvider).forRequest(requestId);
 });
 
 final requestQuotationsProvider =
     FutureProvider.family<List<QuotationWithLines>, String>(
         (ref, requestId) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(quotationRepositoryProvider).forRequest(requestId);
 });
 
 final requestPaymentsProvider =
     FutureProvider.family<List<Payment>, String>((ref, requestId) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(paymentRepositoryProvider).forRequest(requestId);
 });
 
 final requestActivityProvider =
     FutureProvider.family<List<ActivityEntry>, String>((ref, requestId) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(activityRepositoryProvider).forRequest(requestId);
 });
 
 /// Open tasks assigned to the signed-in person.
 final myWorkProvider = FutureProvider<List<TaskSummary>>((ref) async {
+  ref.watch(currentUserIdProvider);
   final me = await ref.watch(currentEmployeeProvider.future);
   if (me == null) return const [];
   return ref.watch(taskRepositoryProvider).myWork(me.id);
 });
 
 final productsProvider = FutureProvider<List<Product>>((ref) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(catalogRepositoryProvider).products();
 });
 
 final partnersProvider = FutureProvider<List<Partner>>((ref) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(catalogRepositoryProvider).partners();
 });
 
 final activeEmployeesProvider = FutureProvider<List<Employee>>((ref) async {
+  ref.watch(currentUserIdProvider);
   return ref.watch(employeeRepositoryProvider).active();
 });
 

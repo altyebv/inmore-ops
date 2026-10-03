@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'data/snapshot_store.dart';
 import 'features/auth/login_screen.dart';
 import 'home.dart';
 
@@ -13,31 +16,39 @@ class OwnerApp extends ConsumerWidget {
     final auth = ref.watch(authStateProvider);
     final signedIn =
         ref.watch(sessionRepositoryProvider).currentSession != null;
+    final settings = ref.watch(settingsProvider);
+
+    // Whatever was saved on the phone leaves with the person who saw it.
+    ref.listen(authStateProvider, (_, next) {
+      if (next.valueOrNull?.event == AuthChangeEvent.signedOut) {
+        ref.read(snapshotStoreProvider).clear();
+      }
+    });
 
     return MaterialApp(
       title: 'Inmore',
       debugShowCheckedModeBanner: false,
-      theme: _theme(Brightness.light),
-      darkTheme: _theme(Brightness.dark),
+      theme: InmoreTheme.light(),
+      darkTheme: InmoreTheme.dark(),
+      themeMode: settings.themeMode,
+      locale: settings.locale,
+      supportedLocales: supportedLocales,
+      localizationsDelegates: L10n.localizationsDelegates,
+      localeResolutionCallback: (device, _) =>
+          resolveLocale(settings.locale, device),
+      builder: (context, child) {
+        syncFormatting(Localizations.localeOf(context));
+        // Picks up from the native splash: same mark, same place, and the
+        // stripe prints in beneath it.
+        return LaunchIntro(child: child!);
+      },
       // No router: the owner's app is four tabs and a detail page. go_router
       // would be ceremony around a Navigator.push.
-      home: auth.isLoading && !signedIn
-          ? const Scaffold(body: Center(child: CircularProgressIndicator()))
-          : (signedIn ? const HomeScreen() : const LoginScreen()),
-    );
-  }
-
-  ThemeData _theme(Brightness brightness) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF1F5F4B),
-      brightness: brightness,
-    );
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: scheme,
-      cardTheme: const CardThemeData(margin: EdgeInsets.zero),
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
+      home: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 250),
+        child: auth.isLoading && !signedIn
+            ? const BrandLoader()
+            : (signedIn ? const HomeScreen() : const LoginScreen()),
       ),
     );
   }

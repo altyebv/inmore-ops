@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../data/back_office_repositories.dart';
 import '../data/customer_repository.dart';
 import '../data/misc_repositories.dart';
 import '../data/quotation_repository.dart';
@@ -41,4 +42,20 @@ final activityRepositoryProvider = Provider<ActivityRepository>(
 
 final exportRepositoryProvider = Provider<ExportRepository>(
   (ref) => ExportRepository(ref.watch(supabaseClientProvider)),
+);
+
+final inventoryRepositoryProvider = Provider<InventoryRepository>(
+  (ref) => InventoryRepository(ref.watch(supabaseClientProvider)),
+);
+
+final expenseRepositoryProvider = Provider<ExpenseRepository>(
+  (ref) => ExpenseRepository(ref.watch(supabaseClientProvider)),
+);
+
+final staffRepositoryProvider = Provider<StaffRepository>(
+  (ref) => StaffRepository(ref.watch(supabaseClientProvider)),
+);
+
+final businessProfileRepositoryProvider = Provider<BusinessProfileRepository>(
+  (ref) => BusinessProfileRepository(ref.watch(supabaseClientProvider)),
 );

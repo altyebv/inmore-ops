@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
-import '../../widgets/common.dart';
+import '../../data/cached.dart';
+import '../../widgets/owner_page.dart';
 import '../../widgets/request_tile.dart';
 
 /// Where the money is.
@@ -14,78 +16,126 @@ class MoneyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final money = ref.watch(moneySnapshotProvider);
-    final snapshot = ref.watch(ownerSnapshotProvider);
-    final theme = Theme.of(context);
+    final l = context.l10n;
+    final money = ref.watch(moneyProvider);
+    final overview = ref.watch(overviewProvider).valueOrNull?.value;
+    final t = context.tokens;
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref
-          ..invalidate(moneySnapshotProvider)
-          ..invalidate(ownerSnapshotProvider);
-      },
-      child: AsyncView(
-        value: money,
-        builder: (m) => ListView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+    return AsyncView(
+      value: money,
+      onRetry: () => refreshOwner(ref),
+      loading: const OwnerPageSkeleton(),
+      builder: (cached) {
+        final m = cached.value;
+        final collected =
+            m.approved == 0 ? 0.0 : (m.received / m.approved).clamp(0.0, 1.0);
+        final waiting = overview?.open
+                .where((r) => r.waitingOn == WaitingReason.payment)
+                .toList() ??
+            const <RequestSummary>[];
+
+        return OwnerPage(
+          title: l.moneyTitle,
+          subtitle: l.acrossEveryRequest,
+          cached: cached,
           children: [
-            Text('Money', style: theme.textTheme.headlineSmall),
-            Text(
-              'Across every request',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l.stillOwed,
+                        style: context.text.labelLarge?.copyWith(
+                          color: context.colors.onSurfaceVariant,
+                        )),
+                    const SizedBox(height: 4),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(
+                        Fmt.money(m.outstanding),
+                        style: context.text.displaySmall?.copyWith(
+                          color: m.outstanding > 0 ? t.danger : t.success,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    Text(l.stillOwing(m.requestsOwing),
+                        style: context.text.bodyMedium),
+                    const SizedBox(height: Space.lg),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: collected,
+                        minHeight: 8,
+                        color: t.success,
+                      ),
+                    ),
+                    const SizedBox(height: Space.sm),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${l.received} ${(collected * 100).round()}%',
+                            style: context.text.labelMedium,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            Figure(
-              value: Fmt.money(m.outstanding),
-              label: '${m.requestsOwing} request'
-                  '${m.requestsOwing == 1 ? '' : 's'} still owing',
-              colour: m.outstanding > 0 ? theme.colorScheme.error : null,
-            ),
-            const SizedBox(height: 10),
+            const SizedBox(height: Space.md),
             Row(
               children: [
                 Expanded(
-                  child: Figure(
-                    value: Fmt.money(m.approved),
-                    label: 'Approved in total',
+                  child: FigureTile(
+                    icon: Icons.verified_outlined,
+                    value: Fmt.moneyShort(m.approved),
+                    label: l.approvedInTotal,
                   ),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: Space.md),
                 Expanded(
-                  child: Figure(
-                    value: Fmt.money(m.received),
-                    label: 'Received',
+                  child: FigureTile(
+                    icon: Icons.savings_outlined,
+                    value: Fmt.moneyShort(m.received),
+                    label: l.received,
+                    color: t.success,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              'Only jobs with an approved quotation count towards what is '
-              'owed. A down payment taken before pricing shows under Received '
-              'and nowhere else — counting it as a debt would invent a number.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+            const SizedBox(height: Space.md),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    size: 16, color: context.colors.onSurfaceVariant),
+                const SizedBox(width: Space.sm),
+                Expanded(
+                  child: Text(l.moneyNote, style: context.text.bodySmall),
+                ),
+              ],
             ),
-            const SectionHeading('Waiting on payment'),
-            snapshot.maybeWhen(
-              data: (s) {
-                final waiting = s.open
-                    .where((r) => r.waitingOn == WaitingReason.payment)
-                    .toList();
-                if (waiting.isEmpty) {
-                  return const Nothing('No job is held up on payment.');
-                }
-                return Column(children: waiting.map(RequestTile.new).toList());
-              },
-              orElse: () => const SizedBox.shrink(),
+            SectionHeading(
+              l.waitingOnPayment,
+              trailing: waiting.isEmpty ? null : '${waiting.length}',
             ),
+            if (waiting.isEmpty)
+              EmptyState(
+                compact: true,
+                icon: Icons.check_rounded,
+                tone: t.success,
+                title: l.noneOnPayment,
+              )
+            else
+              ...waiting.map(RequestTile.new),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

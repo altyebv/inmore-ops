@@ -84,6 +84,25 @@ class QuotationRepository {
     return Quotation.fromJson(row);
   }
 
+  /// Replaces a draft's lines and discount in one go — for a mistake caught
+  /// before the customer was told. Refused once it has been presented; that
+  /// is what [revise] is for.
+  Future<Quotation> editDraft({
+    required String quotationId,
+    required List<NewQuotationLine> lines,
+    double discount = 0,
+  }) async {
+    final row = await _db.rpc<Map<String, dynamic>>(
+      'edit_draft_quotation',
+      params: {
+        'p_quotation_id': quotationId,
+        'p_lines': lines.map((l) => l.toJson()).toList(),
+        'p_discount': discount,
+      },
+    );
+    return Quotation.fromJson(row);
+  }
+
   /// Supersedes the current version and issues the next one. Passing null
   /// lines copies the existing ones, for when only the discount changes.
   Future<Quotation> revise({

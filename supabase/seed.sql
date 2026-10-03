@@ -4,7 +4,8 @@
 -- LOCAL ONLY.  These accounts and passwords exist so `supabase start` gives you
 -- a working login for each role.  They are never applied to the hosted projects
 -- (`supabase db push` does not run this file).  Real staff accounts are created
--- from the Supabase dashboard; see docs/blueprint.md §E.
+-- from the Supabase dashboard; see supabase/staff.sql.  The product catalog is
+-- a migration (..._product_catalog.sql), so hosted projects get it too.
 --
 -- Dev accounts, all with password:  inmore-dev
 --   owner@inmore.local        OWNER
@@ -71,29 +72,6 @@ update employees set role = 'DESIGNER',   is_active = true
   where email in ('sara@inmore.local', 'layla@inmore.local');
 update employees set role = 'PRODUCTION', is_active = true
   where email = 'mohammed@inmore.local';
-
--- -----------------------------------------------------------------------------
--- Product catalog — a vocabulary, not a constraint.  Anything not listed can
--- still be typed as a free-form request item.
--- -----------------------------------------------------------------------------
-insert into products (name, category, default_unit, sort_order) values
-  ('Paper Cups',            'Printed Packaging', 'pcs',   10),
-  ('Paper Bags',            'Printed Packaging', 'pcs',   20),
-  ('Plastic Bags',          'Printed Packaging', 'pcs',   30),
-  ('Food Boxes',            'Printed Packaging', 'pcs',   40),
-  ('Custom Packaging',      'Printed Packaging', 'pcs',   50),
-  ('Stickers',              'Print',             'pcs',   60),
-  ('Business Cards',        'Print',             'pcs',   70),
-  ('Flyers',                'Print',             'pcs',   80),
-  ('Brochures',             'Print',             'pcs',   90),
-  ('Roll-up Banner',        'Large Format',      'pcs',  100),
-  ('Vinyl Banner',          'Large Format',      'sqm',  110),
-  ('Signage',               'Large Format',      'pcs',  120),
-  ('Vehicle Branding',      'Large Format',      'job',  130),
-  ('Logo Design',           'Design',            'job',  140),
-  ('Brand Identity',        'Design',            'job',  150),
-  ('Social Media Design',   'Design',            'job',  160)
-on conflict (name) do nothing;
 
 -- -----------------------------------------------------------------------------
 -- Partners — placeholders so the external-work path is exercisable.

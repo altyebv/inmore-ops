@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:inmore_core/inmore_core.dart';
-
-import '../../widgets/common.dart';
+import 'package:inmore_ui/inmore_ui.dart';
 
 /// One request, read-only.
 ///
@@ -15,6 +14,15 @@ class RequestScreen extends ConsumerWidget {
 
   final String requestId;
 
+  void _refresh(WidgetRef ref) {
+    ref
+      ..invalidate(requestProvider(requestId))
+      ..invalidate(requestItemsProvider(requestId))
+      ..invalidate(requestFinancialsProvider(requestId))
+      ..invalidate(requestTasksProvider(requestId))
+      ..invalidate(requestActivityProvider(requestId));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final request = ref.watch(requestProvider(requestId));
@@ -23,32 +31,47 @@ class RequestScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: AsyncView(
-          value: request,
-          builder: (r) => Text(r.reference),
-        ),
+        title: Text(request.valueOrNull?.reference ?? ''),
       ),
-      body: AsyncView(
-        value: request,
-        builder: (r) => RefreshIndicator(
-          onRefresh: () async {
-            ref
-              ..invalidate(requestProvider(requestId))
-              ..invalidate(requestItemsProvider(requestId))
-              ..invalidate(requestFinancialsProvider(requestId))
-              ..invalidate(requestTasksProvider(requestId))
-              ..invalidate(requestActivityProvider(requestId));
-          },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            children: [
-              _Header(request: r),
-              if (canSeeMoney) _Money(requestId: requestId),
-              _Items(requestId: requestId),
-              _Work(requestId: requestId),
-              _History(requestId: requestId),
-            ],
-          ),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            const OfflineBanner(),
+            Expanded(
+              child: AsyncView(
+                value: request,
+                onRetry: () => _refresh(ref),
+                builder: (r) => RefreshIndicator(
+                  onRefresh: () async {
+                    _refresh(ref);
+                    await ref
+                        .read(requestProvider(requestId).future)
+                        .catchError((_) => r);
+                  },
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                    children: [
+                      _Header(request: r),
+                      const SizedBox(height: Space.md),
+                      _Facts(request: r),
+                      if (canSeeMoney) ...[
+                        const SizedBox(height: Space.md),
+                        _Money(requestId: requestId),
+                      ],
+                      const SizedBox(height: Space.md),
+                      _Items(requestId: requestId),
+                      const SizedBox(height: Space.md),
+                      _Work(requestId: requestId),
+                      const SizedBox(height: Space.md),
+                      _History(requestId: requestId),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -62,79 +85,111 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final l = context.l10n;
+    final t = context.tokens;
+    final r = request;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(request.customerName, style: theme.textTheme.headlineSmall),
-        if (request.customerCompany != null)
-          Text(
-            request.customerCompany!,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-        if (request.title != null) ...[
-          const SizedBox(height: 6),
-          Text(request.title!, style: theme.textTheme.bodyLarge),
-        ],
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(Space.lg),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Pill(
-              request.status.label,
-              colour: stageColour(request.status, scheme),
-            ),
-            if (request.waitingOn != null)
-              Pill(
-                request.waitingOn!.label,
-                colour: Colors.red,
-                icon: Icons.pause_circle_outline,
+            UserText(r.customerName, style: context.text.titleLarge),
+            if (r.customerCompany != null)
+              UserText(r.customerCompany!,
+                  style: context.text.bodyMedium
+                      ?.copyWith(color: context.colors.onSurfaceVariant)),
+            if (r.title != null) ...[
+              const SizedBox(height: Space.sm),
+              UserText(r.title!, style: context.text.bodyLarge),
+            ],
+            const SizedBox(height: Space.lg),
+            StageStepper(status: r.status, compact: true),
+            if (r.waitingOn != null || r.isOverdue || r.needsSupervisor) ...[
+              const SizedBox(height: Space.md),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: [
+                  if (r.waitingOn != null)
+                    StatusBadge(r.waitingOn!.tr(l),
+                        color: t.danger,
+                        icon: Icons.pause_circle_outline_rounded),
+                  if (r.isOverdue)
+                    StatusBadge(l.flagOverdue,
+                        color: t.danger, icon: Icons.schedule_rounded),
+                  if (r.needsSupervisor)
+                    StatusBadge(l.nobodyAssigned,
+                        color: t.warning, icon: Icons.person_off_outlined),
+                ],
               ),
-            if (request.isOverdue)
-              Pill('Overdue', colour: scheme.error, icon: Icons.schedule),
+            ],
           ],
         ),
-        const SizedBox(height: 12),
-        _Line('Supervisor', request.supervisorName ?? 'Nobody yet'),
-        _Line('Opened', Fmt.date(request.createdAt)),
-        if (request.neededBy != null)
-          _Line('Needed by', Fmt.date(request.neededBy)),
-        if (request.customerPhone != null)
-          _Line('Phone', request.customerPhone!),
-      ],
+      ),
     );
   }
 }
 
-class _Line extends StatelessWidget {
-  const _Line(this.label, this.value);
+class _Facts extends StatelessWidget {
+  const _Facts({required this.request});
 
-  final String label;
-  final String value;
+  final RequestSummary request;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+    final l = context.l10n;
+    final r = request;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(Space.lg),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Fact(
+                    label: l.supervisor,
+                    child: r.supervisorName == null
+                        ? Text(l.nobodyYet,
+                            style: TextStyle(color: context.tokens.warning))
+                        : UserText(r.supervisorName!),
+                  ),
+                ),
+                Expanded(
+                  child:
+                      Fact(label: l.opened, child: Text(Fmt.date(r.createdAt))),
+                ),
+              ],
             ),
-          ),
-          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
-        ],
+            if (r.neededBy != null || r.customerPhone != null) ...[
+              const SizedBox(height: Space.lg),
+              Row(
+                children: [
+                  Expanded(
+                    child: Fact(
+                      label: l.neededBy,
+                      child: Text(
+                        r.neededBy == null ? l.notSet : Fmt.date(r.neededBy),
+                        style: TextStyle(
+                          color: r.isOverdue ? context.tokens.danger : null,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Fact(
+                      label: l.phone,
+                      child: Text(r.customerPhone ?? '—',
+                          textDirection: TextDirection.ltr),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -147,56 +202,74 @@ class _Money extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final fin = ref.watch(requestFinancialsProvider(requestId));
-    final theme = Theme.of(context);
+    final t = context.tokens;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SectionHeading('Money'),
-        AsyncView(
-          value: fin,
-          builder: (f) {
-            if (f == null) return const Nothing('Not available.');
-            if (!f.hasApprovedQuotation) {
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(14),
-                  child: Text(
-                    // "Nothing approved", not "not priced": a quotation may
-                    // well have been given to the customer and be sitting
-                    // with them. Telling the owner it has no price would send
-                    // him chasing a supervisor who has already done the work.
-                    f.paidTotal > 0
-                        ? '${Fmt.money(f.paidTotal)} paid in advance. Nothing '
-                            'has been approved yet, so there is no balance.'
-                        : 'No approved quotation yet.',
-                    style: theme.textTheme.bodyMedium,
-                  ),
-                ),
-              );
-            }
-            return Row(
-              children: [
-                Expanded(
-                  child: Figure(
-                    value: Fmt.money(f.approvedTotal),
-                    label: 'Approved',
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Figure(
-                    value: Fmt.money(f.balance),
-                    label: 'Still owed',
-                    colour: f.balance > 0 ? theme.colorScheme.error : null,
-                  ),
-                ),
-              ],
+    return SectionCard(
+      icon: Icons.account_balance_wallet_outlined,
+      title: l.moneyTitle,
+      child: AsyncView(
+        value: fin,
+        compact: true,
+        onRetry: () => ref.invalidate(requestFinancialsProvider(requestId)),
+        builder: (f) {
+          if (f == null) {
+            return Text(l.notAvailable, style: context.text.bodySmall);
+          }
+          if (!f.hasApprovedQuotation) {
+            // "Nothing approved", not "not priced": a quotation may well have
+            // been given to the customer and be sitting with them. Telling
+            // the owner it has no price would send him chasing a supervisor
+            // who has already done the work.
+            return Text(
+              f.paidTotal > 0
+                  ? l.paidInAdvanceAmount(Fmt.money(f.paidTotal))
+                  : l.noApprovedQuotation,
+              style: context.text.bodyMedium,
             );
-          },
-        ),
-      ],
+          }
+          final ratio = f.approvedTotal == 0
+              ? 0.0
+              : (f.paidTotal / f.approvedTotal).clamp(0.0, 1.0);
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Fact(
+                      label: l.approved,
+                      child: Text(Fmt.money(f.approvedTotal),
+                          style: context.text.titleSmall),
+                    ),
+                  ),
+                  Expanded(
+                    child: Fact(
+                      label: l.stillOwed,
+                      child: Text(
+                        Fmt.money(f.balance),
+                        style: context.text.titleSmall?.copyWith(
+                          color: f.balance > 0 ? t.danger : t.success,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Space.md),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: ratio,
+                  minHeight: 6,
+                  color: f.balance > 0 ? t.info : t.success,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -208,37 +281,52 @@ class _Items extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final items = ref.watch(requestItemsProvider(requestId));
-    final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SectionHeading('What they asked for'),
-        AsyncView(
-          value: items,
-          builder: (list) => list.isEmpty
-              ? const Nothing('Nothing listed.')
-              : Card(
-                  child: Column(
-                    children: [
-                      for (final i in list)
-                        ListTile(
-                          dense: true,
-                          title: Text(i.name),
-                          subtitle: Text(
-                            i.specs == null
-                                ? i.quantityLabel
-                                : '${i.quantityLabel} · ${i.specs}',
-                            style: theme.textTheme.bodySmall,
+    return SectionCard(
+      icon: Icons.inventory_2_outlined,
+      title: l.whatTheyAskedFor,
+      child: AsyncView(
+        value: items,
+        compact: true,
+        onRetry: () => ref.invalidate(requestItemsProvider(requestId)),
+        builder: (list) => list.isEmpty
+            ? Text(l.nothingListed, style: context.text.bodySmall)
+            : Column(
+                children: [
+                  for (var i = 0; i < list.length; i++) ...[
+                    if (i > 0) const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                UserText(list[i].name,
+                                    style: context.text.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w500)),
+                                UserText(list[i].quantityLabel,
+                                    style: context.text.bodySmall),
+                                if (list[i].specs != null)
+                                  UserText(list[i].specs!,
+                                      style: context.text.bodySmall),
+                              ],
+                            ),
                           ),
-                          trailing: Pill(i.status.label),
-                        ),
-                    ],
-                  ),
-                ),
-        ),
-      ],
+                          const SizedBox(width: Space.sm),
+                          StatusBadge(list[i].status.tr(l),
+                              color: context.tokens.item(list[i].status)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+      ),
     );
   }
 }
@@ -250,44 +338,68 @@ class _Work extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final tasks = ref.watch(requestTasksProvider(requestId));
-    final theme = Theme.of(context);
-    final scheme = theme.colorScheme;
+    final t = context.tokens;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SectionHeading('Who is on it'),
-        AsyncView(
-          value: tasks,
-          builder: (list) => list.isEmpty
-              ? const Nothing('Nobody assigned yet.')
-              : Card(
-                  child: Column(
-                    children: [
-                      for (final t in list)
-                        ListTile(
-                          dense: true,
-                          title: Text(t.title),
-                          subtitle: Text(
-                            t.isExternal
-                                ? '${t.executorName} (external)'
-                                : t.executorName,
-                            style: theme.textTheme.bodySmall,
+    return SectionCard(
+      icon: Icons.handyman_outlined,
+      title: l.whoIsOnIt,
+      child: AsyncView(
+        value: tasks,
+        compact: true,
+        onRetry: () => ref.invalidate(requestTasksProvider(requestId)),
+        builder: (list) => list.isEmpty
+            ? Text(l.nobodyAssigned, style: context.text.bodySmall)
+            : Column(
+                children: [
+                  for (var i = 0; i < list.length; i++) ...[
+                    if (i > 0) const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          InitialsAvatar(
+                            list[i].assigneeName ?? list[i].partnerName ?? '?',
+                            size: 32,
                           ),
-                          trailing: Pill(
-                            t.duration != null
-                                ? Fmt.duration(t.duration)
-                                : t.status.label,
-                            colour: t.isOverdue ? scheme.error : null,
+                          const SizedBox(width: Space.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                UserText(list[i].title,
+                                    style: context.text.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w500)),
+                                Text(
+                                  _executor(list[i], l),
+                                  style: context.text.bodySmall,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                    ],
-                  ),
-                ),
-        ),
-      ],
+                          StatusBadge(
+                            list[i].duration != null
+                                ? l.duration(list[i].duration)
+                                : list[i].status.tr(l),
+                            color: list[i].isOverdue
+                                ? t.danger
+                                : t.task(list[i].status),
+                            dot: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+      ),
     );
+  }
+
+  String _executor(TaskSummary t, L10n l) {
+    final name = t.assigneeName ?? t.partnerName ?? l.unassigned;
+    return t.isExternal ? l.externalName(name) : name;
   }
 }
 
@@ -298,61 +410,28 @@ class _History extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
     final feed = ref.watch(requestActivityProvider(requestId));
-    final theme = Theme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SectionHeading('What happened'),
-        AsyncView(
-          value: feed,
-          builder: (entries) => entries.isEmpty
-              ? const Nothing('Nothing recorded.')
-              : Card(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
+    return SectionCard(
+      icon: Icons.history_rounded,
+      title: l.whatHappened,
+      child: AsyncView(
+        value: feed,
+        compact: true,
+        onRetry: () => ref.invalidate(requestActivityProvider(requestId)),
+        builder: (entries) => entries.isEmpty
+            ? Text(l.nothingRecorded, style: context.text.bodySmall)
+            : Column(
+                children: [
+                  for (var i = 0; i < entries.length; i++)
+                    TimelineEntry(
+                      entry: entries[i],
+                      last: i == entries.length - 1,
                     ),
-                    child: Column(
-                      children: [
-                        for (final e in entries)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        activityDescription(e),
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
-                                      Text(
-                                        '${e.actorName} · '
-                                        '${Fmt.timelineStamp(e.occurredAt)}',
-                                        style:
-                                            theme.textTheme.bodySmall?.copyWith(
-                                          color: theme
-                                              .colorScheme.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-        ),
-      ],
+                ],
+              ),
+      ),
     );
   }
 }

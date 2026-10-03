@@ -787,7 +787,8 @@ Role-aware UI in Flutter is a convenience; RLS is the enforcement.
 ### Environments and migrations
 
 - Supabase CLI, plain `.sql` files in `supabase/migrations/`, numbered and forward-only.
-- `supabase/seed.sql`: the six employees, the starting product catalog, a few partners.
+- `supabase/seed.sql`: the six employees and a few partners — local only. The product catalog is
+  a migration, so hosted projects get it from `db push`.
 - Two projects: `inmore-dev` and `inmore-prod`. Local `supabase start` for day-to-day work.
 - No ORM, no schema-generation tool. The SQL file is the source of truth.
 
@@ -855,9 +856,11 @@ melos config costs more than the `flutter pub get` it saves. Add it if a fourth 
 - **No offline sync, no SQLite, no local cache.** Everyone is in one office on one network. An
   offline sync engine is the single most expensive thing that could be added here, and nothing in
   the brief requires it. If a supervisor later needs to write requests from a customer's site,
-  revisit — and then scope it to *that one flow*, not the whole app.
+  revisit — and then scope it to *that one flow*, not the whole app. *(Still true for
+  writes. The owner's read-only phone now keeps an encrypted read cache — decision 16a.)*
 - **No custom design system.** Material 3, one seeded colour scheme, a handful of shared widgets
-  (`StatusChip`, `MoneyText`, `RequestCard`, `ActivityTile`) in `inmore_core`.
+  (`StatusChip`, `MoneyText`, `RequestCard`, `ActivityTile`) in `inmore_core`. *(Superseded by
+  decision 22: a small shared theme and widget set in `packages/inmore_ui`.)*
 - **No code generation beyond freezed/json_serializable.**
 
 ### Excel reports (promoted into V1)
@@ -1033,6 +1036,17 @@ Each step is one migration (if needed) plus one feature folder, and is usable on
     equality; nothing currently needs either. The cost landed elsewhere and was caught: see
     decision 21.
 16. No offline support, no SQLite, no local cache.
+16a. **Revised: a read cache on the owner's phone, live updates everywhere.** Two changes, one
+    principle kept. (1) Both apps now subscribe to realtime on `requests`, `tasks` and
+    `activities` (`realtimeSyncProvider`) and invalidate exactly the providers a change touches —
+    the subscription §E always described but no client had wired up. (2) The owner's phone keeps
+    its last overview, money and people snapshots on disk, encrypted (flutter_secure_storage),
+    keyed by user, wiped on sign-out, shown instantly on launch and replaced when the network
+    answers. That is cheap only because the owner's app never writes: there is nothing to sync
+    back and no conflict to resolve. The desktop stays online-only for writes; an offline write
+    queue would let the activity log disagree with what happened, and the log is the point.
+    Every data provider also now watches `currentUserIdProvider`, so a different person signing
+    in on the same PC never sees the previous person's cached rows — money included.
 17. Files/storage are out of V1; the bucket and path convention are agreed so adding them is
     additive.
 17a. **Excel export is in V1** (slice step 7): `.xlsx`, generated client-side, gated to
@@ -1050,6 +1064,20 @@ Each step is one migration (if needed) plus one feature folder, and is usable on
     real repositories against the local database. It immediately caught that postgrest-dart's
     `.order()` defaults to **descending**, which had silently reversed the product catalog, the
     staff list, request items and both Excel sheets.
+22. **A small shared UI package, `packages/inmore_ui`.** Reverses "no custom design system" (§F)
+    in part: not a design system, but one theme, one set of colour tokens and about a dozen
+    shared widgets, so the owner's phone and the supervisor's desktop read as one product.
+    Neutral ink and paper carry the interface; the logo's CMYK inks are spent only on meaning
+    (stages, warnings) and brand moments (the stripe, the loading bar). Font is Rubik, bundled —
+    one family for Latin and Arabic. Light, dark and follow-system, chosen per device.
+23. **Arabic and English, per person** (replaces proposed default 7). Flutter's own `gen-l10n`
+    — not build_runner, see 15a — from `packages/inmore_ui/lib/l10n/*.arb`, output committed.
+    Full right-to-left layout. Digits stay Western in both languages; the currency mark is
+    `QAR` / `ر.ق`. Enum `label`s stay English because the **Excel export is always English**,
+    so a workbook reads the same on every desk; screens use the translated `tr(l10n)`.
+    Activity sentences moved from `inmore_core` to `inmore_ui` so they can be translated, and
+    are still shared by both apps. Text people type (names, specs) is laid out in its own
+    direction, so an Arabic customer name in the English UI is not broken.
 
 ### PROPOSED (sensible defaults; say the word and they change)
 
@@ -1064,7 +1092,7 @@ Each step is one migration (if needed) plus one feature folder, and is usable on
 5. Staff accounts created from the Supabase dashboard in V1; a user-management screen is later.
 6. Desktop targets Windows only for V1.
 7. UI in English only; all data fields are UTF-8 and store Arabic fine (customer names, specs,
-   product names).
+   product names). *Superseded by decision 23 — Arabic and English.*
 8. `needed_by` as a plain date on the request, with per-item deadlines deferred.
 
 ### DEFERRED (explicitly not V1)
