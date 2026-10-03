@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../enums/enums.dart';
 import '../models/activity.dart';
+import '../models/back_office.dart';
 import '../models/catalog.dart';
 import '../models/employee.dart';
 import '../models/export_row.dart';
@@ -54,7 +55,9 @@ class CatalogRepository {
   Future<List<Product>> products({bool activeOnly = true}) async {
     var q = _db.from('products').select();
     if (activeOnly) q = q.eq('is_active', true);
-    final rows = await q.order('sort_order', ascending: true).order('name', ascending: true);
+    final rows = await q
+        .order('sort_order', ascending: true)
+        .order('name', ascending: true);
     return rows.map(Product.fromJson).toList();
   }
 
@@ -139,7 +142,9 @@ class ExportRepository {
       if (ids.isEmpty) return const [];
       q = q.inFilter('request_id', ids);
     }
-    final rows = await q.order('request_number', ascending: true).order('item_position', ascending: true);
+    final rows = await q
+        .order('request_number', ascending: true)
+        .order('item_position', ascending: true);
     return rows.map(ExportItemRow.fromJson).toList();
   }
 
@@ -164,6 +169,20 @@ class ExportRepository {
     }
     final rows = await q.order('request_number', ascending: true);
     return rows.map(ExportRequestRow.fromJson).toList();
+  }
+
+  /// Money received, by the date it was received (not the request's date).
+  Future<List<PaymentReportRow>> payments({
+    DateTime? from,
+    DateTime? to,
+    String? supervisorId,
+  }) async {
+    var q = _db.from('v_report_payments').select();
+    if (from != null) q = q.gte('paid_at', from.toUtc().toIso8601String());
+    if (to != null) q = q.lte('paid_at', to.toUtc().toIso8601String());
+    if (supervisorId != null) q = q.eq('supervisor_id', supervisorId);
+    final rows = await q.order('paid_at', ascending: true);
+    return rows.map(PaymentReportRow.fromJson).toList();
   }
 
   PostgrestFilterBuilder<T> _applyFilters<T>(

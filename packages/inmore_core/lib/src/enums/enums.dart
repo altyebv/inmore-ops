@@ -202,3 +202,18 @@ enum ActorKind {
   static ActorKind fromWire(String v) =>
       _parse(values, (e) => e.wire, v, 'actor_kind');
 }
+
+/// One line in the stock ledger. The quantity is signed: IN adds, OUT takes
+/// away, ADJUST (a stock count) moves it either way.
+enum StockMovementKind {
+  stockIn('IN', 'Received'),
+  stockOut('OUT', 'Taken out'),
+  adjust('ADJUST', 'Stock count');
+
+  const StockMovementKind(this.wire, this.label);
+  final String wire;
+  final String label;
+
+  static StockMovementKind fromWire(String v) =>
+      _parse(values, (e) => e.wire, v, 'stock_movement_kind');
+}

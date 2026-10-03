@@ -19,7 +19,7 @@ class Fmt {
   static set locale(String value) {
     if (value == _locale) return;
     _locale = value;
-    _date = _dateTime = _time = _dayMonth = null;
+    _date = _dateTime = _time = _dayMonth = _month = null;
   }
 
   static bool get _arabic => _locale == 'ar';
@@ -28,7 +28,7 @@ class Fmt {
   static final NumberFormat _money = NumberFormat('#,##0.00', 'en');
   static final NumberFormat _qty = NumberFormat('#,##0.##', 'en');
 
-  static DateFormat? _date, _dateTime, _time, _dayMonth;
+  static DateFormat? _date, _dateTime, _time, _dayMonth, _month;
 
   static DateFormat _fmt(String pattern) =>
       DateFormat(pattern, _locale)..useNativeDigits = false;
@@ -37,6 +37,7 @@ class Fmt {
   static DateFormat get _dateTimeF => _dateTime ??= _fmt('d MMM yyyy, HH:mm');
   static DateFormat get _timeF => _time ??= _fmt('HH:mm');
   static DateFormat get _dayMonthF => _dayMonth ??= _fmt('d MMM');
+  static DateFormat get _monthF => _month ??= _fmt('MMMM yyyy');
 
   /// The currency mark for the current language.
   static String get currency => _arabic ? 'ر.ق' : 'QAR';
@@ -66,6 +67,9 @@ class Fmt {
   static String dayMonth(DateTime? d) => d == null ? '—' : _dayMonthF.format(d);
 
   static String dateTime(DateTime? d) => d == null ? '—' : _dateTimeF.format(d);
+
+  /// "October 2026".
+  static String month(DateTime? d) => d == null ? '—' : _monthF.format(d);
 
   static String time(DateTime? d) => d == null ? '—' : _timeF.format(d);
 }

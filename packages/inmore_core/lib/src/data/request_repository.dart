@@ -111,7 +111,8 @@ class RequestRepository {
   /// gap, and the count would reuse a number still in use.
   Future<RequestItem> addItem(String requestId, NewRequestItem item) async {
     final existing = await items(requestId);
-    final last = existing.fold<int>(0, (m, i) => i.position > m ? i.position : m);
+    final last =
+        existing.fold<int>(0, (m, i) => i.position > m ? i.position : m);
     final rows = await _db.from('request_items').insert({
       'request_id': requestId,
       ...item.toJson(),

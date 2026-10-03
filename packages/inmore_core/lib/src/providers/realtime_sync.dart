@@ -4,13 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_providers.dart';
+import 'back_office_providers.dart';
 import 'data_providers.dart';
 import 'owner_providers.dart';
 
 /// Keeps every open screen current without anyone pressing refresh.
 ///
-/// Listens on the three tables migration 006 publishes — `requests`, `tasks`,
-/// `activities` — and invalidates exactly the providers a change touches.
+/// Listens on the tables migrations 006 and 013 publish — `requests`, `tasks`,
+/// `activities`, and the stock, expense and staff tables — and invalidates
+/// exactly the providers a change touches.
 /// Nothing is patched in place: the provider refetches through the same
 /// repository and the same RLS as a manual refresh, so a live update can never
 /// show a row the reader could not have selected.
@@ -53,6 +55,17 @@ final realtimeSyncProvider = Provider<void>((ref) {
     }
     if (p.money) ref.invalidate(moneySnapshotProvider);
     if (p.customers) ref.invalidate(customerSearchProvider);
+    if (p.stock) {
+      ref
+        ..invalidate(inventoryProvider)
+        ..invalidate(stockMovementsProvider);
+    }
+    if (p.expenses) ref.invalidate(expensesForMonthProvider);
+    if (p.staff) {
+      ref
+        ..invalidate(allStaffProvider)
+        ..invalidate(activeEmployeesProvider);
+    }
 
     for (final id in p.requests) {
       ref
@@ -140,6 +153,43 @@ final realtimeSyncProvider = Provider<void>((ref) {
         schedule();
       },
     )
+    ..onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'inventory_items',
+      callback: (_) {
+        pending.stock = true;
+        schedule();
+      },
+    )
+    ..onPostgresChanges(
+      event: PostgresChangeEvent.insert,
+      schema: 'public',
+      table: 'stock_movements',
+      callback: (_) {
+        pending.stock = true;
+        schedule();
+      },
+    )
+    // RLS applies: only owner and supervisors receive these.
+    ..onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'expenses',
+      callback: (_) {
+        pending.expenses = true;
+        schedule();
+      },
+    )
+    ..onPostgresChanges(
+      event: PostgresChangeEvent.all,
+      schema: 'public',
+      table: 'employees',
+      callback: (_) {
+        pending.staff = true;
+        schedule();
+      },
+    )
     ..subscribe();
 
   ref.onDispose(() {
@@ -154,6 +204,9 @@ class _Pending {
   bool tasks = false;
   bool money = false;
   bool customers = false;
+  bool stock = false;
+  bool expenses = false;
+  bool staff = false;
   Set<String> requests = {};
   Set<String> items = {};
   Set<String> requestTasks = {};
@@ -170,12 +223,15 @@ class _Pending {
       ..tasks = tasks
       ..money = money
       ..customers = customers
+      ..stock = stock
+      ..expenses = expenses
+      ..staff = staff
       ..requests = requests
       ..items = items
       ..requestTasks = requestTasks
       ..quotations = quotations
       ..payments = payments;
-    board = tasks = money = customers = false;
+    board = tasks = money = customers = stock = expenses = staff = false;
     requests = {};
     items = {};
     requestTasks = {};
