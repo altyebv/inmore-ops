@@ -39,13 +39,17 @@ enum HelpAudience {
   money,
 
   /// Designers and production: they work on tasks.
-  doers;
+  doers,
+
+  /// Everyone but designers: they record stock coming in and going out.
+  stock;
 
   bool allows(Employee e) => switch (this) {
         everyone => true,
         managers => e.role.canManageRequests,
         money => e.role.canSeeMoney,
         doers => !e.role.canManageRequests,
+        stock => e.role != EmployeeRole.designer,
       };
 }
 
@@ -716,6 +720,124 @@ const helpSections = <HelpSection>[
     ],
   ),
 
+  // -------------------------------------------------------------- inventory
+  HelpSection(
+    id: 'inventory',
+    title: Bi('Inventory', 'المخزون'),
+    icon: Icons.inventory_2_outlined,
+    articles: [
+      HelpArticle(
+        id: 'stocklist',
+        title: Bi('What’s in stock', 'ما هو متوفر في المخزون'),
+        blocks: [
+          HelpText(Bi(
+            'Inventory lists the materials the shop keeps, how many are on hand and where they are kept. Items at or below their reorder level show Low; items with none left show Out.',
+            'يعرض «المخزون» المواد التي يحتفظ بها المحل، والكمية المتوفرة منها ومكان تخزينها. الأصناف التي تصل إلى حد إعادة الطلب أو تقل عنه تظهر عليها «منخفض»، والتي نفدت تظهر عليها «نفد».',
+          )),
+          HelpText(Bi(
+            'Click an item to see its history: every time stock came in, went out or was counted, with who did it.',
+            'اضغط على أي صنف لترى سجله: كل مرة دخل فيها مخزون أو خرج أو جُرد، ومن قام بذلك.',
+          )),
+          HelpTip(Bi(
+            'Stock isn’t linked to requests yet. Record what you use by hand when you take it out.',
+            'المخزون غير مرتبط بالطلبات بعد. سجّل ما تستخدمه يدويًا عند صرفه.',
+          )),
+        ],
+      ),
+      HelpArticle(
+        id: 'stockmove',
+        audience: HelpAudience.stock,
+        title: Bi('Recording stock in and out', 'تسجيل الاستلام والصرف'),
+        blocks: [
+          HelpSteps([
+            Bi('Find the item in Inventory.', 'ابحث عن الصنف في «المخزون».'),
+            Bi('Click the green + to receive stock, or the − to take some out.',
+                'اضغط + الأخضر للاستلام، أو − للصرف.'),
+            Bi('Enter the quantity and, if you like, a note: who it came from, or what it was for.',
+                'أدخل الكمية، ويمكنك إضافة ملاحظة: من أين جاء، أو لأي غرض صُرف.'),
+            Bi('Click Record.', 'اضغط «تسجيل».'),
+          ]),
+          HelpText(Bi(
+            'A recorded movement can’t be edited. If you made a mistake, record the opposite, or ask a supervisor to do a stock count.',
+            'لا يمكن تعديل حركة بعد تسجيلها. إذا أخطأت، سجّل العكس، أو اطلب من المشرف إجراء جرد.',
+          )),
+        ],
+      ),
+      HelpArticle(
+        id: 'stockmanage',
+        audience: HelpAudience.managers,
+        title:
+            Bi('Adding items and counting stock', 'إضافة الأصناف وجرد المخزون'),
+        blocks: [
+          HelpList([
+            Bi('Add an item: click Add item and enter its name, unit and reorder level. The unit cost is optional, and only the owner and supervisors see it.',
+                'إضافة صنف: اضغط «إضافة صنف» وأدخل الاسم والوحدة وحد إعادة الطلب. تكلفة الوحدة اختيارية، ولا يراها إلا المالك والمشرفون.'),
+            Bi('Count stock: from the item’s ⋮ menu choose Stock count, and enter what is actually on the shelf. The difference is recorded.',
+                'الجرد: من قائمة ⋮ الخاصة بالصنف اختر «جرد»، وأدخل الكمية الموجودة فعلًا. يُسجَّل الفرق.'),
+            Bi('Stop using an item: choose Archive. Its history stays; turn on Show archived to see it again.',
+                'إيقاف استخدام صنف: اختر «أرشفة». يبقى سجله، وفعّل «إظهار المؤرشفة» لتراه مجددًا.'),
+          ]),
+        ],
+      ),
+    ],
+  ),
+
+  // -------------------------------------------------------------- expenses
+  HelpSection(
+    id: 'expenses',
+    title: Bi('Expenses', 'المصروفات'),
+    icon: Icons.receipt_long_outlined,
+    articles: [
+      HelpArticle(
+        id: 'addexpense',
+        audience: HelpAudience.money,
+        title: Bi('Recording an expense', 'تسجيل مصروف'),
+        blocks: [
+          HelpSteps([
+            Bi('Open Expenses and click Add expense.',
+                'افتح «المصروفات» واضغط «إضافة مصروف».'),
+            Bi('Enter the date, the amount and a category, such as Rent or Materials. Categories you’ve used before are suggested.',
+                'أدخل التاريخ والمبلغ والفئة، مثل «إيجار» أو «مواد». تُقترح الفئات التي استخدمتها من قبل.'),
+            Bi('Add who it was paid to and how, if you like.',
+                'أضف المدفوع له وطريقة الدفع إن أردت.'),
+            Bi('For a cost that repeats every month, like rent or salaries, turn on Monthly fixed cost.',
+                'للمصروف الذي يتكرر كل شهر، مثل الإيجار أو الرواتب، فعّل «مصروف شهري ثابت».'),
+          ]),
+          HelpText(Bi(
+            'The top of the page shows the month’s spending, the payments received and the difference. Use the arrows to move between months.',
+            'يعرض أعلى الصفحة مصروفات الشهر والمدفوعات المستلمة والفرق بينهما. استخدم الأسهم للتنقل بين الأشهر.',
+          )),
+        ],
+      ),
+      HelpArticle(
+        id: 'monthly',
+        audience: HelpAudience.money,
+        title: Bi('Monthly costs', 'المصروفات الشهرية'),
+        blocks: [
+          HelpText(Bi(
+            'At the start of a month, click Copy monthly costs. Last month’s monthly costs are listed with their amounts. Change any that are different, untick any that don’t apply, then click Add.',
+            'في بداية الشهر، اضغط «نسخ المصروفات الشهرية». تظهر مصروفات الشهر الماضي الشهرية بمبالغها. غيّر ما اختلف منها، وألغِ تحديد ما لا ينطبق، ثم اضغط «إضافة».',
+          )),
+        ],
+      ),
+      HelpArticle(
+        id: 'fixexpense',
+        audience: HelpAudience.money,
+        title: Bi('Correcting an expense', 'تصحيح مصروف'),
+        blocks: [
+          HelpText(Bi(
+            'Click an expense to edit it. If it shouldn’t be there at all, choose Void from its ⋮ menu and say why. A voided expense stays on record, crossed out, and stops counting in totals. Turn on Show voided to see them.',
+            'اضغط على المصروف لتعديله. وإن لم يكن يجب تسجيله أصلًا، اختر «إلغاء» من قائمة ⋮ واذكر السبب. يبقى المصروف الملغى في السجل مشطوبًا، ولا يُحتسب في الإجماليات. فعّل «إظهار الملغاة» لرؤيتها.',
+          )),
+          HelpTip(Bi(
+            'Expenses can’t be deleted, and every change is kept in the history, so the owner can always see what happened.',
+            'لا يمكن حذف المصروفات، وكل تغيير يبقى في السجل، ليتمكن المالك دائمًا من معرفة ما حدث.',
+          )),
+        ],
+      ),
+    ],
+  ),
+
   // -------------------------------------------------------------- reports
   HelpSection(
     id: 'reports',
@@ -723,26 +845,104 @@ const helpSections = <HelpSection>[
     icon: Icons.table_chart_outlined,
     articles: [
       HelpArticle(
-        id: 'export',
+        id: 'reportsuse',
         audience: HelpAudience.money,
-        title: Bi('Exporting to Excel', 'التصدير إلى Excel'),
+        title: Bi('Looking at a report', 'الاطلاع على تقرير'),
         blocks: [
           HelpSteps([
-            Bi('Open Reports from the sidebar.',
-                'افتح «التقارير» من الشريط الجانبي.'),
-            Bi('Choose a date range — or Everything — and, if you like, one stage or one supervisor.',
-                'اختر الفترة — أو «كل شيء» — ويمكنك اختيار مرحلة واحدة أو مشرف واحد.'),
-            Bi('Click Create the workbook.', 'اضغط «إنشاء الملف».'),
-            Bi('Click Show in folder to find the file.',
-                'اضغط «إظهار في المجلد» للوصول إلى الملف.'),
+            Bi('Open Reports and choose one along the top: sales by product, requests, payments received, expenses, stock, or income vs expenses.',
+                'افتح «التقارير» واختر واحدًا من الأعلى: المبيعات حسب المنتج، أو الطلبات، أو المدفوعات المستلمة، أو المصروفات، أو المخزون، أو الإيرادات مقابل المصروفات.'),
+            Bi('Choose the date range, and a stage or supervisor where offered.',
+                'اختر الفترة، والمرحلة أو المشرف عند توفرهما.'),
+          ]),
+          HelpList([
+            Bi('Click a column heading to sort by it; click again to reverse.',
+                'اضغط عنوان العمود للترتيب حسبه، واضغط مرة أخرى لعكس الترتيب.'),
+            Bi('Group by puts rows together, with a subtotal for each group.',
+                '«تجميع حسب» يجمع الصفوف معًا، مع مجموع فرعي لكل مجموعة.'),
+            Bi('Columns lets you choose which columns show, and their order.',
+                '«الأعمدة» يتيح لك اختيار الأعمدة الظاهرة وترتيبها.'),
+            Bi('To leave a row out, point at it and click the eye. Put back brings them all back.',
+                'لاستبعاد صف، مرّر المؤشر عليه واضغط أيقونة العين. «إعادتها» تعيدها كلها.'),
+            Bi('Click the title to rename the report, and add a note under it if you like.',
+                'اضغط العنوان لتغيير اسم التقرير، ويمكنك إضافة ملاحظة تحته.'),
+          ]),
+          HelpTip(Bi(
+            'Shaping a report never changes the records. To correct a figure, fix it where it lives: on the request, or in Expenses.',
+            'تنظيم التقرير لا يغيّر السجلات أبدًا. لتصحيح رقم، صحّحه في مكانه: في الطلب، أو في «المصروفات».',
+          )),
+        ],
+      ),
+      HelpArticle(
+        id: 'export',
+        audience: HelpAudience.money,
+        title: Bi('Printing and exporting', 'الطباعة والتصدير'),
+        blocks: [
+          HelpList([
+            Bi('Print opens the printer dialog with the report on Inmore’s letterhead.',
+                '«طباعة» يفتح نافذة الطابعة والتقرير على ورق إنمور الرسمي.'),
+            Bi('PDF saves the same page as a file.',
+                '«PDF» يحفظ الصفحة نفسها كملف.'),
+            Bi('Excel → This report, as shown saves the rows you see, with the totals on a second sheet.',
+                '«Excel ← هذا التقرير كما يظهر» يحفظ الصفوف الظاهرة، مع الإجماليات في ورقة ثانية.'),
+            Bi('Excel → Accountant’s workbook saves every product and every request in the range, unshaped.',
+                '«Excel ← ملف المحاسب» يحفظ كل المنتجات وكل الطلبات في الفترة، دون تنظيم.'),
           ]),
           HelpText(Bi(
-            'Workbooks are saved in your Documents folder, inside Inmore. Each has two sheets: Items, with one row for each product, and Requests, with one row for each request and its total, what has been paid and the balance.',
-            'تُحفظ الملفات في مجلد «المستندات» داخل مجلد Inmore. في كل ملف ورقتان: المنتجات، بصف لكل منتج، والطلبات، بصف لكل طلب مع الإجمالي والمدفوع والمتبقي.',
+            'Files are saved in your Documents folder, inside Inmore. Click Show in folder to find the file. Excel files are always in English.',
+            'تُحفظ الملفات في مجلد «المستندات» داخل مجلد Inmore. اضغط «إظهار في المجلد» للوصول إلى الملف. ملفات Excel دائمًا باللغة الإنجليزية.',
           )),
           HelpTip(Bi(
-            'To add up totals or payments, use the Requests sheet — each request appears there exactly once. The workbook is always in English.',
-            'لجمع الإجماليات أو المدفوعات، استخدم ورقة الطلبات — فكل طلب يظهر فيها مرة واحدة فقط. الملف دائمًا باللغة الإنجليزية.',
+            'The letterhead comes from Business details, at the top of Reports: the name, address, phone and CR number.',
+            'تأتي بيانات الورق الرسمي من «بيانات المنشأة» أعلى صفحة «التقارير»: الاسم والعنوان والهاتف ورقم السجل التجاري.',
+          )),
+        ],
+      ),
+    ],
+  ),
+
+  // -------------------------------------------------------------- staff
+  HelpSection(
+    id: 'staff',
+    title: Bi('Staff', 'الموظفون'),
+    icon: Icons.badge_outlined,
+    articles: [
+      HelpArticle(
+        id: 'addstaff',
+        audience: HelpAudience.managers,
+        title: Bi('Adding a staff member', 'إضافة موظف'),
+        blocks: [
+          HelpSteps([
+            Bi('Open Staff and click Add staff member.',
+                'افتح «الموظفون» واضغط «إضافة موظف».'),
+            Bi('Enter their name, email and role. A temporary password is made for you.',
+                'أدخل الاسم والبريد الإلكتروني والدور. تُنشأ كلمة مرور مؤقتة تلقائيًا.'),
+            Bi('Click Create, then give them the email and password shown. They can sign in on any office computer.',
+                'اضغط «إنشاء»، ثم أعطه البريد الإلكتروني وكلمة المرور الظاهرين. يمكنه تسجيل الدخول من أي جهاز في المكتب.'),
+          ]),
+          HelpTip(Bi(
+            'Forgot their password? From their ⋮ menu choose Reset password, and give them the new one.',
+            'نسي كلمة المرور؟ من قائمة ⋮ الخاصة به اختر «إعادة تعيين كلمة المرور»، وأعطه الكلمة الجديدة.',
+          )),
+        ],
+      ),
+      HelpArticle(
+        id: 'removestaff',
+        audience: HelpAudience.managers,
+        title: Bi('Changing a role or removing access',
+            'تغيير الدور أو إيقاف الوصول'),
+        blocks: [
+          HelpList([
+            Bi('Change a name, phone or role: choose Edit from their ⋮ menu.',
+                'تغيير الاسم أو الهاتف أو الدور: اختر «تعديل» من قائمة ⋮.'),
+            Bi('Someone leaving: choose Remove access. They can no longer see anything, and their name stays on the work they did. Restore access brings them back.',
+                'موظف يغادر: اختر «إيقاف الوصول». لن يتمكن من رؤية أي شيء، ويبقى اسمه على الأعمال التي قام بها. «إعادة الوصول» يعيده.'),
+            Bi('An account made by mistake and never used can be deleted with Delete account.',
+                'الحساب الذي أُنشئ بالخطأ ولم يُستخدم قط يمكن حذفه بـ«حذف الحساب».'),
+          ]),
+          HelpTip(Bi(
+            'Supervisors can manage everyone except the owner. Nobody can change their own role or remove their own access.',
+            'يمكن للمشرفين إدارة الجميع عدا المالك. ولا يمكن لأحد تغيير دوره أو إيقاف وصوله بنفسه.',
           )),
         ],
       ),
