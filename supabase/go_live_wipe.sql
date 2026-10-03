@@ -20,7 +20,8 @@
 begin;
 
 truncate activities, payments, task_costs, tasks, quotation_lines, quotations,
-         request_items, requests, customers, partners
+         request_items, requests, customers, partners,
+         stock_movements, inventory_item_costs, inventory_items, expenses
   restart identity;
 
 delete from employees  where email like '%@inmore.test';
