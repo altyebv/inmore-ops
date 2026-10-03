@@ -21,9 +21,18 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
-    final me = ref.watch(currentEmployeeProvider).valueOrNull;
+    final employee = ref.watch(currentEmployeeProvider);
+    final me = employee.valueOrNull;
     // Live updates while signed in; torn down on sign-out.
     ref.watch(realtimeSyncProvider);
+
+    // An account that is not active reads nothing: every list comes back
+    // empty, which looks exactly like a quiet day. Say so instead. Only this
+    // error — a profile that failed to load offline must still fall through
+    // to the saved overview.
+    if (employee.error is InactiveAccountException) {
+      return const _AccountInactive();
+    }
 
     // Money is owner and supervisor only. The tab is hidden for anyone else,
     // and RLS is what actually enforces it — the queries behind that tab come
@@ -91,6 +100,39 @@ class HomeScreen extends ConsumerWidget {
           destinations: destinations,
           onDestinationSelected: (i) =>
               ref.read(homeTabProvider.notifier).state = i,
+        ),
+      ),
+    );
+  }
+}
+
+/// Signed in, but the owner has not activated the account (or has switched it
+/// off since).
+class _AccountInactive extends ConsumerWidget {
+  const _AccountInactive();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = context.l10n;
+    return Scaffold(
+      body: SafeArea(
+        child: EmptyState(
+          icon: Icons.lock_clock_outlined,
+          title: l.accountProblemTitle,
+          body: l.accountInactive,
+          action: Wrap(
+            spacing: Space.sm,
+            children: [
+              FilledButton.tonal(
+                onPressed: () => ref.invalidate(currentEmployeeProvider),
+                child: Text(l.retry),
+              ),
+              OutlinedButton(
+                onPressed: () => ref.read(sessionRepositoryProvider).signOut(),
+                child: Text(l.signOut),
+              ),
+            ],
+          ),
         ),
       ),
     );
