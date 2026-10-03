@@ -239,3 +239,11 @@ String activityDescription(ActivityEntry e, L10n l) {
     _ => e.eventType,
   };
 }
+
+extension StockMovementKindTr on StockMovementKind {
+  String tr(L10n l) => switch (this) {
+        StockMovementKind.stockIn => l.receiveStock,
+        StockMovementKind.stockOut => l.takeOutStock,
+        StockMovementKind.adjust => l.stockCount,
+      };
+}

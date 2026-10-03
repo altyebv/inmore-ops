@@ -2802,6 +2802,1380 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Quotation updated'**
   String get quotationUpdated;
+
+  /// No description provided for @navInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get navInventory;
+
+  /// No description provided for @navExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get navExpenses;
+
+  /// No description provided for @navStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get navStaff;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchHint;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @previousMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get previousMonth;
+
+  /// No description provided for @nextMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get nextMonth;
+
+  /// No description provided for @lowBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get lowBadge;
+
+  /// No description provided for @outBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Out'**
+  String get outBadge;
+
+  /// No description provided for @inventoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get inventoryTitle;
+
+  /// No description provided for @inventorySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s in stock, and what\'s running low.'**
+  String get inventorySubtitle;
+
+  /// No description provided for @addStockItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addStockItem;
+
+  /// No description provided for @editStockItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit item'**
+  String get editStockItem;
+
+  /// No description provided for @stockItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Items'**
+  String get stockItemsCount;
+
+  /// No description provided for @runningLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Running low'**
+  String get runningLow;
+
+  /// No description provided for @outOfStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of stock'**
+  String get outOfStock;
+
+  /// No description provided for @stockValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock value'**
+  String get stockValue;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All categories'**
+  String get allCategories;
+
+  /// No description provided for @lowStockOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Low stock only'**
+  String get lowStockOnly;
+
+  /// No description provided for @showArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Show archived'**
+  String get showArchived;
+
+  /// No description provided for @archived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get archived;
+
+  /// No description provided for @colItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get colItem;
+
+  /// No description provided for @colInStock.
+  ///
+  /// In en, this message translates to:
+  /// **'In stock'**
+  String get colInStock;
+
+  /// No description provided for @colReorderAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder at'**
+  String get colReorderAt;
+
+  /// No description provided for @colLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get colLocation;
+
+  /// No description provided for @colUnitCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit cost'**
+  String get colUnitCost;
+
+  /// No description provided for @colValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Value'**
+  String get colValue;
+
+  /// No description provided for @colLastMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Last movement'**
+  String get colLastMovement;
+
+  /// No description provided for @receiveStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get receiveStock;
+
+  /// No description provided for @takeOutStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Take out'**
+  String get takeOutStock;
+
+  /// No description provided for @stockCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock count'**
+  String get stockCount;
+
+  /// No description provided for @stockHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get stockHistory;
+
+  /// No description provided for @archiveItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get archiveItem;
+
+  /// No description provided for @restoreItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restoreItem;
+
+  /// No description provided for @fieldCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get fieldCode;
+
+  /// No description provided for @fieldCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get fieldCategory;
+
+  /// No description provided for @fieldReorderLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder level'**
+  String get fieldReorderLevel;
+
+  /// No description provided for @fieldReorderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Flagged as low at or below this. 0 means never.'**
+  String get fieldReorderHint;
+
+  /// No description provided for @fieldLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Where it\'s kept'**
+  String get fieldLocation;
+
+  /// No description provided for @fieldUnitCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit cost'**
+  String get fieldUnitCost;
+
+  /// No description provided for @unitCostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the owner and supervisors see this.'**
+  String get unitCostHint;
+
+  /// No description provided for @receiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive {item}'**
+  String receiveTitle(String item);
+
+  /// No description provided for @takeOutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take out {item}'**
+  String takeOutTitle(String item);
+
+  /// No description provided for @countTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Count {item}'**
+  String countTitle(String item);
+
+  /// No description provided for @countedField.
+  ///
+  /// In en, this message translates to:
+  /// **'Counted on hand'**
+  String get countedField;
+
+  /// No description provided for @inStockNow.
+  ///
+  /// In en, this message translates to:
+  /// **'In stock now: {qty}'**
+  String inStockNow(String qty);
+
+  /// No description provided for @afterThis.
+  ///
+  /// In en, this message translates to:
+  /// **'After this: {qty}'**
+  String afterThis(String qty);
+
+  /// No description provided for @movementNoteIn.
+  ///
+  /// In en, this message translates to:
+  /// **'From whom? (optional)'**
+  String get movementNoteIn;
+
+  /// No description provided for @movementNoteOut.
+  ///
+  /// In en, this message translates to:
+  /// **'What for? (optional)'**
+  String get movementNoteOut;
+
+  /// No description provided for @movementNoteCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Why the difference? (optional)'**
+  String get movementNoteCount;
+
+  /// No description provided for @stockRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock updated'**
+  String get stockRecorded;
+
+  /// No description provided for @countMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'The count matches. Nothing to record.'**
+  String get countMatches;
+
+  /// No description provided for @itemSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Item saved'**
+  String get itemSaved;
+
+  /// No description provided for @itemArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Item archived'**
+  String get itemArchived;
+
+  /// No description provided for @itemRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Item restored'**
+  String get itemRestored;
+
+  /// No description provided for @recentMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent movements'**
+  String get recentMovements;
+
+  /// No description provided for @noStockItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No stock items yet'**
+  String get noStockItems;
+
+  /// No description provided for @noStockItemsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the materials you keep, such as paper, ink and cups, then record what comes in and goes out.'**
+  String get noStockItemsHint;
+
+  /// No description provided for @noStockMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No items match'**
+  String get noStockMatch;
+
+  /// No description provided for @noMovements.
+  ///
+  /// In en, this message translates to:
+  /// **'No movements yet.'**
+  String get noMovements;
+
+  /// No description provided for @byName.
+  ///
+  /// In en, this message translates to:
+  /// **'by {name}'**
+  String byName(String name);
+
+  /// No description provided for @itemHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{item}: history'**
+  String itemHistoryTitle(String item);
+
+  /// No description provided for @expensesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get expensesTitle;
+
+  /// No description provided for @expensesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What the shop spends, day to day and every month.'**
+  String get expensesSubtitle;
+
+  /// No description provided for @addExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Add expense'**
+  String get addExpense;
+
+  /// No description provided for @editExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit expense'**
+  String get editExpense;
+
+  /// No description provided for @spentThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Spent'**
+  String get spentThisMonth;
+
+  /// No description provided for @monthlyFixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly fixed'**
+  String get monthlyFixed;
+
+  /// No description provided for @dayToDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day-to-day'**
+  String get dayToDay;
+
+  /// No description provided for @receivedThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get receivedThisMonth;
+
+  /// No description provided for @netThisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Net'**
+  String get netThisMonth;
+
+  /// No description provided for @netHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments received minus expenses'**
+  String get netHint;
+
+  /// No description provided for @byCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'By category'**
+  String get byCategory;
+
+  /// No description provided for @copyMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy monthly costs'**
+  String get copyMonthly;
+
+  /// No description provided for @copyMonthlyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly costs from {month}'**
+  String copyMonthlyTitle(String month);
+
+  /// No description provided for @copyMonthlyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the amounts, untick anything that doesn\'t apply, then add them to {month}.'**
+  String copyMonthlyBody(String month);
+
+  /// No description provided for @copyMonthlyNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No monthly costs were recorded in {month}.'**
+  String copyMonthlyNone(String month);
+
+  /// No description provided for @copyMonthlyAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {count}'**
+  String copyMonthlyAdd(int count);
+
+  /// No description provided for @expensesAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} expenses added'**
+  String expensesAdded(int count);
+
+  /// No description provided for @fieldDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get fieldDate;
+
+  /// No description provided for @fieldPaidTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid to'**
+  String get fieldPaidTo;
+
+  /// No description provided for @fieldDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get fieldDescription;
+
+  /// No description provided for @fieldMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by'**
+  String get fieldMethod;
+
+  /// No description provided for @monthlyCost.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly fixed cost'**
+  String get monthlyCost;
+
+  /// No description provided for @monthlyCostHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent, salaries, utilities: costs that repeat every month.'**
+  String get monthlyCostHint;
+
+  /// No description provided for @monthlyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthlyBadge;
+
+  /// No description provided for @expenseRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense recorded'**
+  String get expenseRecorded;
+
+  /// No description provided for @expenseUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense updated'**
+  String get expenseUpdated;
+
+  /// No description provided for @voidExpense.
+  ///
+  /// In en, this message translates to:
+  /// **'Void'**
+  String get voidExpense;
+
+  /// No description provided for @voidExpenseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Void this expense?'**
+  String get voidExpenseTitle;
+
+  /// No description provided for @voidExpenseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It stays on record, crossed out, and stops counting in totals. Say why.'**
+  String get voidExpenseBody;
+
+  /// No description provided for @voidReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get voidReason;
+
+  /// No description provided for @expenseVoided.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense voided'**
+  String get expenseVoided;
+
+  /// No description provided for @voidBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Void'**
+  String get voidBadge;
+
+  /// No description provided for @showVoided.
+  ///
+  /// In en, this message translates to:
+  /// **'Show voided'**
+  String get showVoided;
+
+  /// No description provided for @noExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'No expenses this month'**
+  String get noExpenses;
+
+  /// No description provided for @noExpensesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Record what the shop spends, such as rent, materials and fuel, to see where the money goes.'**
+  String get noExpensesHint;
+
+  /// No description provided for @expenseCategoryDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Rent|Salaries|Utilities|Materials|Transport|Maintenance|Marketing|Government fees|Other'**
+  String get expenseCategoryDefaults;
+
+  /// No description provided for @unitDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'pcs|sheets|rolls|boxes|packs|m|kg|L'**
+  String get unitDefaults;
+
+  /// No description provided for @staffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get staffTitle;
+
+  /// No description provided for @staffSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can sign in, and what they can do.'**
+  String get staffSubtitle;
+
+  /// No description provided for @addStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add staff member'**
+  String get addStaff;
+
+  /// No description provided for @editStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {name}'**
+  String editStaff(String name);
+
+  /// No description provided for @fieldRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get fieldRole;
+
+  /// No description provided for @temporaryPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary password'**
+  String get temporaryPassword;
+
+  /// No description provided for @newPasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get newPasswordButton;
+
+  /// No description provided for @accountReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account ready'**
+  String get accountReadyTitle;
+
+  /// No description provided for @accountReadyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Give {name} these details. They can sign in on any office computer, and you can reset the password here at any time.'**
+  String accountReadyBody(String name);
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get resetPassword;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset {name}\'s password?'**
+  String resetPasswordTitle(String name);
+
+  /// No description provided for @resetPasswordBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Their old password stops working. Give them the new one shown next.'**
+  String get resetPasswordBody;
+
+  /// No description provided for @passwordResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New password for {name}'**
+  String passwordResetTitle(String name);
+
+  /// No description provided for @removeAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove access'**
+  String get removeAccess;
+
+  /// No description provided for @restoreAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore access'**
+  String get restoreAccess;
+
+  /// No description provided for @removeAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}\'s access?'**
+  String removeAccessTitle(String name);
+
+  /// No description provided for @removeAccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'They won\'t be able to see or change anything. Their name stays on the history of the work they did, and you can restore access later.'**
+  String get removeAccessBody;
+
+  /// No description provided for @accessRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Access removed'**
+  String get accessRemoved;
+
+  /// No description provided for @accessRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Access restored'**
+  String get accessRestored;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name}\'s account?'**
+  String deleteAccountTitle(String name);
+
+  /// No description provided for @deleteAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Only possible for an account that has never been used. Anyone who appears in the history can only have their access removed.'**
+  String get deleteAccountBody;
+
+  /// No description provided for @accountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted'**
+  String get accountDeleted;
+
+  /// No description provided for @accountCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created'**
+  String get accountCreated;
+
+  /// No description provided for @staffSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get staffSaved;
+
+  /// No description provided for @noAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'No access'**
+  String get noAccess;
+
+  /// No description provided for @activeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStatus;
+
+  /// No description provided for @whatEachRoleCan.
+  ///
+  /// In en, this message translates to:
+  /// **'What each role can do'**
+  String get whatEachRoleCan;
+
+  /// No description provided for @roleOwnerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything, including money and owner accounts.'**
+  String get roleOwnerHint;
+
+  /// No description provided for @roleSupervisorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs requests, prices, payments, expenses and staff.'**
+  String get roleSupervisorHint;
+
+  /// No description provided for @roleDesignerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Their own work and new requests. No prices.'**
+  String get roleDesignerHint;
+
+  /// No description provided for @roleProductionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Their own work, and stock in and out. No prices.'**
+  String get roleProductionHint;
+
+  /// No description provided for @ownerAccountLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the owner can manage owner accounts.'**
+  String get ownerAccountLocked;
+
+  /// No description provided for @passwordMin.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 8 characters'**
+  String get passwordMin;
+
+  /// No description provided for @reportsSubtitleNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Look at the numbers, shape them, then print or export.'**
+  String get reportsSubtitleNew;
+
+  /// No description provided for @reportSales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales by product'**
+  String get reportSales;
+
+  /// No description provided for @reportSalesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One row per product requested'**
+  String get reportSalesHint;
+
+  /// No description provided for @reportRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get reportRequests;
+
+  /// No description provided for @reportRequestsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'One row per request, with what\'s owed'**
+  String get reportRequestsHint;
+
+  /// No description provided for @reportPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments received'**
+  String get reportPayments;
+
+  /// No description provided for @reportPaymentsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in, by the day it came in'**
+  String get reportPaymentsHint;
+
+  /// No description provided for @reportExpenses.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get reportExpenses;
+
+  /// No description provided for @reportExpensesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Money out'**
+  String get reportExpensesHint;
+
+  /// No description provided for @reportStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock'**
+  String get reportStock;
+
+  /// No description provided for @reportStockHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on hand and what it\'s worth'**
+  String get reportStockHint;
+
+  /// No description provided for @reportIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'Income vs expenses'**
+  String get reportIncome;
+
+  /// No description provided for @reportIncomeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in and out, month by month'**
+  String get reportIncomeHint;
+
+  /// No description provided for @reportTitleField.
+  ///
+  /// In en, this message translates to:
+  /// **'Report title'**
+  String get reportTitleField;
+
+  /// No description provided for @reportNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get reportNote;
+
+  /// No description provided for @reportNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Printed under the title.'**
+  String get reportNoteHint;
+
+  /// No description provided for @columnsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Columns'**
+  String get columnsButton;
+
+  /// No description provided for @columnsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Columns to show'**
+  String get columnsTitle;
+
+  /// No description provided for @columnsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tick to show. Use the arrows to change the order.'**
+  String get columnsHint;
+
+  /// No description provided for @groupBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Group by'**
+  String get groupBy;
+
+  /// No description provided for @noGrouping.
+  ///
+  /// In en, this message translates to:
+  /// **'No grouping'**
+  String get noGrouping;
+
+  /// No description provided for @hiddenRows.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} left out'**
+  String hiddenRows(int count);
+
+  /// No description provided for @showAllRows.
+  ///
+  /// In en, this message translates to:
+  /// **'Put back'**
+  String get showAllRows;
+
+  /// No description provided for @hideRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave out of the report'**
+  String get hideRow;
+
+  /// No description provided for @rowsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 row} other{{count} rows}}'**
+  String rowsCount(int count);
+
+  /// No description provided for @subtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get subtotal;
+
+  /// No description provided for @printReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get printReport;
+
+  /// No description provided for @savePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF'**
+  String get savePdf;
+
+  /// No description provided for @exportExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel'**
+  String get exportExcel;
+
+  /// No description provided for @excelThisReport.
+  ///
+  /// In en, this message translates to:
+  /// **'This report, as shown'**
+  String get excelThisReport;
+
+  /// No description provided for @excelWorkbook.
+  ///
+  /// In en, this message translates to:
+  /// **'Accountant\'s workbook (products + requests)'**
+  String get excelWorkbook;
+
+  /// No description provided for @pdfSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF saved'**
+  String get pdfSaved;
+
+  /// No description provided for @excelSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Excel file saved'**
+  String get excelSaved;
+
+  /// No description provided for @businessDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Business details'**
+  String get businessDetails;
+
+  /// No description provided for @businessDetailsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Printed at the top of every report.'**
+  String get businessDetailsHint;
+
+  /// No description provided for @fieldBusinessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Business name'**
+  String get fieldBusinessName;
+
+  /// No description provided for @fieldTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Tagline'**
+  String get fieldTagline;
+
+  /// No description provided for @fieldAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get fieldAddress;
+
+  /// No description provided for @fieldCrNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'CR number'**
+  String get fieldCrNumber;
+
+  /// No description provided for @fieldWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get fieldWebsite;
+
+  /// No description provided for @businessSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Business details saved'**
+  String get businessSaved;
+
+  /// No description provided for @preparedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepared by'**
+  String get preparedBy;
+
+  /// No description provided for @generatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated'**
+  String get generatedOn;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get allTime;
+
+  /// No description provided for @pageOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {page} of {pages}'**
+  String pageOf(int page, int pages);
+
+  /// No description provided for @noRowsReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to show'**
+  String get noRowsReport;
+
+  /// No description provided for @noRowsReportHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a wider date range or fewer filters.'**
+  String get noRowsReportHint;
+
+  /// No description provided for @includeArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Include archived'**
+  String get includeArchived;
+
+  /// No description provided for @colRequestNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Request #'**
+  String get colRequestNo;
+
+  /// No description provided for @colDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get colDate;
+
+  /// No description provided for @colCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get colCustomer;
+
+  /// No description provided for @colCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get colCompany;
+
+  /// No description provided for @colPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get colPhone;
+
+  /// No description provided for @colProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get colProduct;
+
+  /// No description provided for @colQty.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get colQty;
+
+  /// No description provided for @colUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get colUnit;
+
+  /// No description provided for @colSpec.
+  ///
+  /// In en, this message translates to:
+  /// **'Spec'**
+  String get colSpec;
+
+  /// No description provided for @colUnitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price'**
+  String get colUnitPrice;
+
+  /// No description provided for @colLineTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Line total'**
+  String get colLineTotal;
+
+  /// No description provided for @colItemStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Product status'**
+  String get colItemStatus;
+
+  /// No description provided for @colWaitingOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting on'**
+  String get colWaitingOn;
+
+  /// No description provided for @colNeededBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed by'**
+  String get colNeededBy;
+
+  /// No description provided for @colCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get colCompleted;
+
+  /// No description provided for @colApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get colApproved;
+
+  /// No description provided for @colPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get colPaid;
+
+  /// No description provided for @colBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get colBalance;
+
+  /// No description provided for @colAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get colAmount;
+
+  /// No description provided for @colMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Method'**
+  String get colMethod;
+
+  /// No description provided for @colKind.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get colKind;
+
+  /// No description provided for @colReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get colReference;
+
+  /// No description provided for @colRecordedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded by'**
+  String get colRecordedBy;
+
+  /// No description provided for @colCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get colCategory;
+
+  /// No description provided for @colDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get colDescription;
+
+  /// No description provided for @colPaidTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid to'**
+  String get colPaidTo;
+
+  /// No description provided for @colType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get colType;
+
+  /// No description provided for @colMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get colMonth;
+
+  /// No description provided for @colMoneyIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Money in'**
+  String get colMoneyIn;
+
+  /// No description provided for @colMoneyOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Money out'**
+  String get colMoneyOut;
+
+  /// No description provided for @colNet.
+  ///
+  /// In en, this message translates to:
+  /// **'Net'**
+  String get colNet;
+
+  /// No description provided for @colCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get colCode;
+
+  /// No description provided for @colOnHand.
+  ///
+  /// In en, this message translates to:
+  /// **'On hand'**
+  String get colOnHand;
+
+  /// No description provided for @colStockStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get colStockStatus;
+
+  /// No description provided for @stockOk.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get stockOk;
+
+  /// No description provided for @typeMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get typeMonthly;
+
+  /// No description provided for @typeDayToDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Day-to-day'**
+  String get typeDayToDay;
+
+  /// No description provided for @tourInventoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get tourInventoryTitle;
+
+  /// No description provided for @tourInventoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s in stock. Record what comes in and goes out, and see what\'s running low.'**
+  String get tourInventoryBody;
+
+  /// No description provided for @tourExpensesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Expenses'**
+  String get tourExpensesTitle;
+
+  /// No description provided for @tourExpensesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What the shop spends, day to day and every month, against what came in.'**
+  String get tourExpensesBody;
+
+  /// No description provided for @tourStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get tourStaffTitle;
+
+  /// No description provided for @tourStaffBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add accounts, change roles, reset passwords and remove access.'**
+  String get tourStaffBody;
+
+  /// No description provided for @resetToDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetToDefault;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {

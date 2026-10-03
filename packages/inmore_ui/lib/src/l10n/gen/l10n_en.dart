@@ -1567,4 +1567,755 @@ class L10nEn extends L10n {
 
   @override
   String get quotationUpdated => 'Quotation updated';
+
+  @override
+  String get navInventory => 'Inventory';
+
+  @override
+  String get navExpenses => 'Expenses';
+
+  @override
+  String get navStaff => 'Staff';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get searchHint => 'Search';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get previousMonth => 'Previous month';
+
+  @override
+  String get nextMonth => 'Next month';
+
+  @override
+  String get lowBadge => 'Low';
+
+  @override
+  String get outBadge => 'Out';
+
+  @override
+  String get inventoryTitle => 'Inventory';
+
+  @override
+  String get inventorySubtitle => 'What\'s in stock, and what\'s running low.';
+
+  @override
+  String get addStockItem => 'Add item';
+
+  @override
+  String get editStockItem => 'Edit item';
+
+  @override
+  String get stockItemsCount => 'Items';
+
+  @override
+  String get runningLow => 'Running low';
+
+  @override
+  String get outOfStock => 'Out of stock';
+
+  @override
+  String get stockValue => 'Stock value';
+
+  @override
+  String get allCategories => 'All categories';
+
+  @override
+  String get lowStockOnly => 'Low stock only';
+
+  @override
+  String get showArchived => 'Show archived';
+
+  @override
+  String get archived => 'Archived';
+
+  @override
+  String get colItem => 'Item';
+
+  @override
+  String get colInStock => 'In stock';
+
+  @override
+  String get colReorderAt => 'Reorder at';
+
+  @override
+  String get colLocation => 'Location';
+
+  @override
+  String get colUnitCost => 'Unit cost';
+
+  @override
+  String get colValue => 'Value';
+
+  @override
+  String get colLastMovement => 'Last movement';
+
+  @override
+  String get receiveStock => 'Receive';
+
+  @override
+  String get takeOutStock => 'Take out';
+
+  @override
+  String get stockCount => 'Stock count';
+
+  @override
+  String get stockHistory => 'History';
+
+  @override
+  String get archiveItem => 'Archive';
+
+  @override
+  String get restoreItem => 'Restore';
+
+  @override
+  String get fieldCode => 'Code';
+
+  @override
+  String get fieldCategory => 'Category';
+
+  @override
+  String get fieldReorderLevel => 'Reorder level';
+
+  @override
+  String get fieldReorderHint =>
+      'Flagged as low at or below this. 0 means never.';
+
+  @override
+  String get fieldLocation => 'Where it\'s kept';
+
+  @override
+  String get fieldUnitCost => 'Unit cost';
+
+  @override
+  String get unitCostHint => 'Only the owner and supervisors see this.';
+
+  @override
+  String receiveTitle(String item) {
+    return 'Receive $item';
+  }
+
+  @override
+  String takeOutTitle(String item) {
+    return 'Take out $item';
+  }
+
+  @override
+  String countTitle(String item) {
+    return 'Count $item';
+  }
+
+  @override
+  String get countedField => 'Counted on hand';
+
+  @override
+  String inStockNow(String qty) {
+    return 'In stock now: $qty';
+  }
+
+  @override
+  String afterThis(String qty) {
+    return 'After this: $qty';
+  }
+
+  @override
+  String get movementNoteIn => 'From whom? (optional)';
+
+  @override
+  String get movementNoteOut => 'What for? (optional)';
+
+  @override
+  String get movementNoteCount => 'Why the difference? (optional)';
+
+  @override
+  String get stockRecorded => 'Stock updated';
+
+  @override
+  String get countMatches => 'The count matches. Nothing to record.';
+
+  @override
+  String get itemSaved => 'Item saved';
+
+  @override
+  String get itemArchived => 'Item archived';
+
+  @override
+  String get itemRestored => 'Item restored';
+
+  @override
+  String get recentMovements => 'Recent movements';
+
+  @override
+  String get noStockItems => 'No stock items yet';
+
+  @override
+  String get noStockItemsHint =>
+      'Add the materials you keep, such as paper, ink and cups, then record what comes in and goes out.';
+
+  @override
+  String get noStockMatch => 'No items match';
+
+  @override
+  String get noMovements => 'No movements yet.';
+
+  @override
+  String byName(String name) {
+    return 'by $name';
+  }
+
+  @override
+  String itemHistoryTitle(String item) {
+    return '$item: history';
+  }
+
+  @override
+  String get expensesTitle => 'Expenses';
+
+  @override
+  String get expensesSubtitle =>
+      'What the shop spends, day to day and every month.';
+
+  @override
+  String get addExpense => 'Add expense';
+
+  @override
+  String get editExpense => 'Edit expense';
+
+  @override
+  String get spentThisMonth => 'Spent';
+
+  @override
+  String get monthlyFixed => 'Monthly fixed';
+
+  @override
+  String get dayToDay => 'Day-to-day';
+
+  @override
+  String get receivedThisMonth => 'Received';
+
+  @override
+  String get netThisMonth => 'Net';
+
+  @override
+  String get netHint => 'Payments received minus expenses';
+
+  @override
+  String get byCategory => 'By category';
+
+  @override
+  String get copyMonthly => 'Copy monthly costs';
+
+  @override
+  String copyMonthlyTitle(String month) {
+    return 'Monthly costs from $month';
+  }
+
+  @override
+  String copyMonthlyBody(String month) {
+    return 'Check the amounts, untick anything that doesn\'t apply, then add them to $month.';
+  }
+
+  @override
+  String copyMonthlyNone(String month) {
+    return 'No monthly costs were recorded in $month.';
+  }
+
+  @override
+  String copyMonthlyAdd(int count) {
+    return 'Add $count';
+  }
+
+  @override
+  String expensesAdded(int count) {
+    return '$count expenses added';
+  }
+
+  @override
+  String get fieldDate => 'Date';
+
+  @override
+  String get fieldPaidTo => 'Paid to';
+
+  @override
+  String get fieldDescription => 'Description';
+
+  @override
+  String get fieldMethod => 'Paid by';
+
+  @override
+  String get monthlyCost => 'Monthly fixed cost';
+
+  @override
+  String get monthlyCostHint =>
+      'Rent, salaries, utilities: costs that repeat every month.';
+
+  @override
+  String get monthlyBadge => 'Monthly';
+
+  @override
+  String get expenseRecorded => 'Expense recorded';
+
+  @override
+  String get expenseUpdated => 'Expense updated';
+
+  @override
+  String get voidExpense => 'Void';
+
+  @override
+  String get voidExpenseTitle => 'Void this expense?';
+
+  @override
+  String get voidExpenseBody =>
+      'It stays on record, crossed out, and stops counting in totals. Say why.';
+
+  @override
+  String get voidReason => 'Reason';
+
+  @override
+  String get expenseVoided => 'Expense voided';
+
+  @override
+  String get voidBadge => 'Void';
+
+  @override
+  String get showVoided => 'Show voided';
+
+  @override
+  String get noExpenses => 'No expenses this month';
+
+  @override
+  String get noExpensesHint =>
+      'Record what the shop spends, such as rent, materials and fuel, to see where the money goes.';
+
+  @override
+  String get expenseCategoryDefaults =>
+      'Rent|Salaries|Utilities|Materials|Transport|Maintenance|Marketing|Government fees|Other';
+
+  @override
+  String get unitDefaults => 'pcs|sheets|rolls|boxes|packs|m|kg|L';
+
+  @override
+  String get staffTitle => 'Staff';
+
+  @override
+  String get staffSubtitle => 'Who can sign in, and what they can do.';
+
+  @override
+  String get addStaff => 'Add staff member';
+
+  @override
+  String editStaff(String name) {
+    return 'Edit $name';
+  }
+
+  @override
+  String get fieldRole => 'Role';
+
+  @override
+  String get temporaryPassword => 'Temporary password';
+
+  @override
+  String get newPasswordButton => 'New password';
+
+  @override
+  String get accountReadyTitle => 'Account ready';
+
+  @override
+  String accountReadyBody(String name) {
+    return 'Give $name these details. They can sign in on any office computer, and you can reset the password here at any time.';
+  }
+
+  @override
+  String get resetPassword => 'Reset password';
+
+  @override
+  String resetPasswordTitle(String name) {
+    return 'Reset $name\'s password?';
+  }
+
+  @override
+  String get resetPasswordBody =>
+      'Their old password stops working. Give them the new one shown next.';
+
+  @override
+  String passwordResetTitle(String name) {
+    return 'New password for $name';
+  }
+
+  @override
+  String get removeAccess => 'Remove access';
+
+  @override
+  String get restoreAccess => 'Restore access';
+
+  @override
+  String removeAccessTitle(String name) {
+    return 'Remove $name\'s access?';
+  }
+
+  @override
+  String get removeAccessBody =>
+      'They won\'t be able to see or change anything. Their name stays on the history of the work they did, and you can restore access later.';
+
+  @override
+  String get accessRemoved => 'Access removed';
+
+  @override
+  String get accessRestored => 'Access restored';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String deleteAccountTitle(String name) {
+    return 'Delete $name\'s account?';
+  }
+
+  @override
+  String get deleteAccountBody =>
+      'Only possible for an account that has never been used. Anyone who appears in the history can only have their access removed.';
+
+  @override
+  String get accountDeleted => 'Account deleted';
+
+  @override
+  String get accountCreated => 'Account created';
+
+  @override
+  String get staffSaved => 'Saved';
+
+  @override
+  String get noAccess => 'No access';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get whatEachRoleCan => 'What each role can do';
+
+  @override
+  String get roleOwnerHint => 'Everything, including money and owner accounts.';
+
+  @override
+  String get roleSupervisorHint =>
+      'Runs requests, prices, payments, expenses and staff.';
+
+  @override
+  String get roleDesignerHint => 'Their own work and new requests. No prices.';
+
+  @override
+  String get roleProductionHint =>
+      'Their own work, and stock in and out. No prices.';
+
+  @override
+  String get ownerAccountLocked => 'Only the owner can manage owner accounts.';
+
+  @override
+  String get passwordMin => 'At least 8 characters';
+
+  @override
+  String get reportsSubtitleNew =>
+      'Look at the numbers, shape them, then print or export.';
+
+  @override
+  String get reportSales => 'Sales by product';
+
+  @override
+  String get reportSalesHint => 'One row per product requested';
+
+  @override
+  String get reportRequests => 'Requests';
+
+  @override
+  String get reportRequestsHint => 'One row per request, with what\'s owed';
+
+  @override
+  String get reportPayments => 'Payments received';
+
+  @override
+  String get reportPaymentsHint => 'Money in, by the day it came in';
+
+  @override
+  String get reportExpenses => 'Expenses';
+
+  @override
+  String get reportExpensesHint => 'Money out';
+
+  @override
+  String get reportStock => 'Stock';
+
+  @override
+  String get reportStockHint => 'What\'s on hand and what it\'s worth';
+
+  @override
+  String get reportIncome => 'Income vs expenses';
+
+  @override
+  String get reportIncomeHint => 'Money in and out, month by month';
+
+  @override
+  String get reportTitleField => 'Report title';
+
+  @override
+  String get reportNote => 'Note';
+
+  @override
+  String get reportNoteHint => 'Optional. Printed under the title.';
+
+  @override
+  String get columnsButton => 'Columns';
+
+  @override
+  String get columnsTitle => 'Columns to show';
+
+  @override
+  String get columnsHint => 'Tick to show. Use the arrows to change the order.';
+
+  @override
+  String get groupBy => 'Group by';
+
+  @override
+  String get noGrouping => 'No grouping';
+
+  @override
+  String hiddenRows(int count) {
+    return '$count left out';
+  }
+
+  @override
+  String get showAllRows => 'Put back';
+
+  @override
+  String get hideRow => 'Leave out of the report';
+
+  @override
+  String rowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count rows',
+      one: '1 row',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get subtotal => 'Subtotal';
+
+  @override
+  String get printReport => 'Print';
+
+  @override
+  String get savePdf => 'PDF';
+
+  @override
+  String get exportExcel => 'Excel';
+
+  @override
+  String get excelThisReport => 'This report, as shown';
+
+  @override
+  String get excelWorkbook => 'Accountant\'s workbook (products + requests)';
+
+  @override
+  String get pdfSaved => 'PDF saved';
+
+  @override
+  String get excelSaved => 'Excel file saved';
+
+  @override
+  String get businessDetails => 'Business details';
+
+  @override
+  String get businessDetailsHint => 'Printed at the top of every report.';
+
+  @override
+  String get fieldBusinessName => 'Business name';
+
+  @override
+  String get fieldTagline => 'Tagline';
+
+  @override
+  String get fieldAddress => 'Address';
+
+  @override
+  String get fieldCrNumber => 'CR number';
+
+  @override
+  String get fieldWebsite => 'Website';
+
+  @override
+  String get businessSaved => 'Business details saved';
+
+  @override
+  String get preparedBy => 'Prepared by';
+
+  @override
+  String get generatedOn => 'Generated';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get allTime => 'All time';
+
+  @override
+  String pageOf(int page, int pages) {
+    return 'Page $page of $pages';
+  }
+
+  @override
+  String get noRowsReport => 'Nothing to show';
+
+  @override
+  String get noRowsReportHint => 'Try a wider date range or fewer filters.';
+
+  @override
+  String get includeArchived => 'Include archived';
+
+  @override
+  String get colRequestNo => 'Request #';
+
+  @override
+  String get colDate => 'Date';
+
+  @override
+  String get colCustomer => 'Customer';
+
+  @override
+  String get colCompany => 'Company';
+
+  @override
+  String get colPhone => 'Phone';
+
+  @override
+  String get colProduct => 'Product';
+
+  @override
+  String get colQty => 'Qty';
+
+  @override
+  String get colUnit => 'Unit';
+
+  @override
+  String get colSpec => 'Spec';
+
+  @override
+  String get colUnitPrice => 'Unit price';
+
+  @override
+  String get colLineTotal => 'Line total';
+
+  @override
+  String get colItemStatus => 'Product status';
+
+  @override
+  String get colWaitingOn => 'Waiting on';
+
+  @override
+  String get colNeededBy => 'Needed by';
+
+  @override
+  String get colCompleted => 'Completed';
+
+  @override
+  String get colApproved => 'Approved';
+
+  @override
+  String get colPaid => 'Paid';
+
+  @override
+  String get colBalance => 'Balance';
+
+  @override
+  String get colAmount => 'Amount';
+
+  @override
+  String get colMethod => 'Method';
+
+  @override
+  String get colKind => 'Payment';
+
+  @override
+  String get colReference => 'Reference';
+
+  @override
+  String get colRecordedBy => 'Recorded by';
+
+  @override
+  String get colCategory => 'Category';
+
+  @override
+  String get colDescription => 'Description';
+
+  @override
+  String get colPaidTo => 'Paid to';
+
+  @override
+  String get colType => 'Type';
+
+  @override
+  String get colMonth => 'Month';
+
+  @override
+  String get colMoneyIn => 'Money in';
+
+  @override
+  String get colMoneyOut => 'Money out';
+
+  @override
+  String get colNet => 'Net';
+
+  @override
+  String get colCode => 'Code';
+
+  @override
+  String get colOnHand => 'On hand';
+
+  @override
+  String get colStockStatus => 'Status';
+
+  @override
+  String get stockOk => 'OK';
+
+  @override
+  String get typeMonthly => 'Monthly';
+
+  @override
+  String get typeDayToDay => 'Day-to-day';
+
+  @override
+  String get tourInventoryTitle => 'Inventory';
+
+  @override
+  String get tourInventoryBody =>
+      'What\'s in stock. Record what comes in and goes out, and see what\'s running low.';
+
+  @override
+  String get tourExpensesTitle => 'Expenses';
+
+  @override
+  String get tourExpensesBody =>
+      'What the shop spends, day to day and every month, against what came in.';
+
+  @override
+  String get tourStaffTitle => 'Staff';
+
+  @override
+  String get tourStaffBody =>
+      'Add accounts, change roles, reset passwords and remove access.';
+
+  @override
+  String get resetToDefault => 'Reset';
 }

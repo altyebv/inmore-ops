@@ -1578,4 +1578,757 @@ class L10nAr extends L10n {
 
   @override
   String get quotationUpdated => 'حُدّث عرض السعر';
+
+  @override
+  String get navInventory => 'المخزون';
+
+  @override
+  String get navExpenses => 'المصروفات';
+
+  @override
+  String get navStaff => 'الموظفون';
+
+  @override
+  String get edit => 'تعديل';
+
+  @override
+  String get copy => 'نسخ';
+
+  @override
+  String get you => 'أنت';
+
+  @override
+  String get searchHint => 'بحث';
+
+  @override
+  String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get previousMonth => 'الشهر السابق';
+
+  @override
+  String get nextMonth => 'الشهر التالي';
+
+  @override
+  String get lowBadge => 'منخفض';
+
+  @override
+  String get outBadge => 'نفد';
+
+  @override
+  String get inventoryTitle => 'المخزون';
+
+  @override
+  String get inventorySubtitle => 'ما هو متوفر، وما أوشك على النفاد.';
+
+  @override
+  String get addStockItem => 'إضافة صنف';
+
+  @override
+  String get editStockItem => 'تعديل الصنف';
+
+  @override
+  String get stockItemsCount => 'الأصناف';
+
+  @override
+  String get runningLow => 'أوشك على النفاد';
+
+  @override
+  String get outOfStock => 'نفد من المخزون';
+
+  @override
+  String get stockValue => 'قيمة المخزون';
+
+  @override
+  String get allCategories => 'كل الفئات';
+
+  @override
+  String get lowStockOnly => 'المنخفض فقط';
+
+  @override
+  String get showArchived => 'إظهار المؤرشفة';
+
+  @override
+  String get archived => 'مؤرشف';
+
+  @override
+  String get colItem => 'الصنف';
+
+  @override
+  String get colInStock => 'المتوفر';
+
+  @override
+  String get colReorderAt => 'حد إعادة الطلب';
+
+  @override
+  String get colLocation => 'المكان';
+
+  @override
+  String get colUnitCost => 'تكلفة الوحدة';
+
+  @override
+  String get colValue => 'القيمة';
+
+  @override
+  String get colLastMovement => 'آخر حركة';
+
+  @override
+  String get receiveStock => 'استلام';
+
+  @override
+  String get takeOutStock => 'صرف';
+
+  @override
+  String get stockCount => 'جرد';
+
+  @override
+  String get stockHistory => 'السجل';
+
+  @override
+  String get archiveItem => 'أرشفة';
+
+  @override
+  String get restoreItem => 'استعادة';
+
+  @override
+  String get fieldCode => 'الرمز';
+
+  @override
+  String get fieldCategory => 'الفئة';
+
+  @override
+  String get fieldReorderLevel => 'حد إعادة الطلب';
+
+  @override
+  String get fieldReorderHint =>
+      'يظهر كمنخفض عند هذا الحد أو أقل. صفر يعني أبدًا.';
+
+  @override
+  String get fieldLocation => 'مكان التخزين';
+
+  @override
+  String get fieldUnitCost => 'تكلفة الوحدة';
+
+  @override
+  String get unitCostHint => 'يراها المالك والمشرفون فقط.';
+
+  @override
+  String receiveTitle(String item) {
+    return 'استلام $item';
+  }
+
+  @override
+  String takeOutTitle(String item) {
+    return 'صرف $item';
+  }
+
+  @override
+  String countTitle(String item) {
+    return 'جرد $item';
+  }
+
+  @override
+  String get countedField => 'الكمية الفعلية بعد العدّ';
+
+  @override
+  String inStockNow(String qty) {
+    return 'المتوفر الآن: $qty';
+  }
+
+  @override
+  String afterThis(String qty) {
+    return 'بعد ذلك: $qty';
+  }
+
+  @override
+  String get movementNoteIn => 'من أين؟ (اختياري)';
+
+  @override
+  String get movementNoteOut => 'لأي غرض؟ (اختياري)';
+
+  @override
+  String get movementNoteCount => 'سبب الفرق؟ (اختياري)';
+
+  @override
+  String get stockRecorded => 'تم تحديث المخزون';
+
+  @override
+  String get countMatches => 'العدّ مطابق. لا شيء لتسجيله.';
+
+  @override
+  String get itemSaved => 'تم حفظ الصنف';
+
+  @override
+  String get itemArchived => 'تمت أرشفة الصنف';
+
+  @override
+  String get itemRestored => 'تمت استعادة الصنف';
+
+  @override
+  String get recentMovements => 'آخر الحركات';
+
+  @override
+  String get noStockItems => 'لا توجد أصناف بعد';
+
+  @override
+  String get noStockItemsHint =>
+      'أضف المواد التي تحتفظ بها، مثل الورق والحبر والأكواب، ثم سجّل ما يدخل وما يخرج.';
+
+  @override
+  String get noStockMatch => 'لا توجد أصناف مطابقة';
+
+  @override
+  String get noMovements => 'لا توجد حركات بعد.';
+
+  @override
+  String byName(String name) {
+    return 'بواسطة $name';
+  }
+
+  @override
+  String itemHistoryTitle(String item) {
+    return 'سجل $item';
+  }
+
+  @override
+  String get expensesTitle => 'المصروفات';
+
+  @override
+  String get expensesSubtitle => 'ما ينفقه المحل، يوميًا وكل شهر.';
+
+  @override
+  String get addExpense => 'إضافة مصروف';
+
+  @override
+  String get editExpense => 'تعديل المصروف';
+
+  @override
+  String get spentThisMonth => 'المصروف';
+
+  @override
+  String get monthlyFixed => 'ثابتة شهرية';
+
+  @override
+  String get dayToDay => 'يومية';
+
+  @override
+  String get receivedThisMonth => 'المستلم';
+
+  @override
+  String get netThisMonth => 'الصافي';
+
+  @override
+  String get netHint => 'المدفوعات المستلمة ناقص المصروفات';
+
+  @override
+  String get byCategory => 'حسب الفئة';
+
+  @override
+  String get copyMonthly => 'نسخ المصروفات الشهرية';
+
+  @override
+  String copyMonthlyTitle(String month) {
+    return 'المصروفات الشهرية من $month';
+  }
+
+  @override
+  String copyMonthlyBody(String month) {
+    return 'راجع المبالغ، وألغِ تحديد ما لا ينطبق، ثم أضفها إلى $month.';
+  }
+
+  @override
+  String copyMonthlyNone(String month) {
+    return 'لم تُسجَّل مصروفات شهرية في $month.';
+  }
+
+  @override
+  String copyMonthlyAdd(int count) {
+    return 'إضافة $count';
+  }
+
+  @override
+  String expensesAdded(int count) {
+    return 'تمت إضافة $count من المصروفات';
+  }
+
+  @override
+  String get fieldDate => 'التاريخ';
+
+  @override
+  String get fieldPaidTo => 'المدفوع له';
+
+  @override
+  String get fieldDescription => 'الوصف';
+
+  @override
+  String get fieldMethod => 'طريقة الدفع';
+
+  @override
+  String get monthlyCost => 'مصروف شهري ثابت';
+
+  @override
+  String get monthlyCostHint =>
+      'الإيجار والرواتب والخدمات: مصروفات تتكرر كل شهر.';
+
+  @override
+  String get monthlyBadge => 'شهري';
+
+  @override
+  String get expenseRecorded => 'تم تسجيل المصروف';
+
+  @override
+  String get expenseUpdated => 'تم تحديث المصروف';
+
+  @override
+  String get voidExpense => 'إلغاء';
+
+  @override
+  String get voidExpenseTitle => 'إلغاء هذا المصروف؟';
+
+  @override
+  String get voidExpenseBody =>
+      'يبقى في السجل مشطوبًا، ولا يُحتسب في الإجماليات. اذكر السبب.';
+
+  @override
+  String get voidReason => 'السبب';
+
+  @override
+  String get expenseVoided => 'تم إلغاء المصروف';
+
+  @override
+  String get voidBadge => 'ملغى';
+
+  @override
+  String get showVoided => 'إظهار الملغاة';
+
+  @override
+  String get noExpenses => 'لا توجد مصروفات هذا الشهر';
+
+  @override
+  String get noExpensesHint =>
+      'سجّل ما ينفقه المحل، مثل الإيجار والمواد والوقود، لترى أين يذهب المال.';
+
+  @override
+  String get expenseCategoryDefaults =>
+      'إيجار|رواتب|كهرباء وماء وإنترنت|مواد|مواصلات|صيانة|تسويق|رسوم حكومية|أخرى';
+
+  @override
+  String get unitDefaults => 'قطعة|ورقة|لفة|علبة|رزمة|متر|كجم|لتر';
+
+  @override
+  String get staffTitle => 'الموظفون';
+
+  @override
+  String get staffSubtitle => 'من يمكنه تسجيل الدخول، وما الذي يمكنه فعله.';
+
+  @override
+  String get addStaff => 'إضافة موظف';
+
+  @override
+  String editStaff(String name) {
+    return 'تعديل $name';
+  }
+
+  @override
+  String get fieldRole => 'الدور';
+
+  @override
+  String get temporaryPassword => 'كلمة مرور مؤقتة';
+
+  @override
+  String get newPasswordButton => 'كلمة مرور جديدة';
+
+  @override
+  String get accountReadyTitle => 'الحساب جاهز';
+
+  @override
+  String accountReadyBody(String name) {
+    return 'أعطِ $name هذه البيانات. يمكنه تسجيل الدخول من أي جهاز في المكتب، ويمكنك إعادة تعيين كلمة المرور من هنا في أي وقت.';
+  }
+
+  @override
+  String get resetPassword => 'إعادة تعيين كلمة المرور';
+
+  @override
+  String resetPasswordTitle(String name) {
+    return 'إعادة تعيين كلمة مرور $name؟';
+  }
+
+  @override
+  String get resetPasswordBody =>
+      'تتوقف كلمة المرور القديمة عن العمل. أعطه الكلمة الجديدة التي ستظهر بعد ذلك.';
+
+  @override
+  String passwordResetTitle(String name) {
+    return 'كلمة المرور الجديدة لـ $name';
+  }
+
+  @override
+  String get removeAccess => 'إيقاف الوصول';
+
+  @override
+  String get restoreAccess => 'إعادة الوصول';
+
+  @override
+  String removeAccessTitle(String name) {
+    return 'إيقاف وصول $name؟';
+  }
+
+  @override
+  String get removeAccessBody =>
+      'لن يتمكن من رؤية أي شيء أو تغييره. يبقى اسمه في سجل الأعمال التي قام بها، ويمكنك إعادة الوصول لاحقًا.';
+
+  @override
+  String get accessRemoved => 'تم إيقاف الوصول';
+
+  @override
+  String get accessRestored => 'تمت إعادة الوصول';
+
+  @override
+  String get deleteAccount => 'حذف الحساب';
+
+  @override
+  String deleteAccountTitle(String name) {
+    return 'حذف حساب $name؟';
+  }
+
+  @override
+  String get deleteAccountBody =>
+      'ممكن فقط لحساب لم يُستخدم قط. من يظهر اسمه في السجل يمكن إيقاف وصوله فقط.';
+
+  @override
+  String get accountDeleted => 'تم حذف الحساب';
+
+  @override
+  String get accountCreated => 'تم إنشاء الحساب';
+
+  @override
+  String get staffSaved => 'تم الحفظ';
+
+  @override
+  String get noAccess => 'بلا وصول';
+
+  @override
+  String get activeStatus => 'نشط';
+
+  @override
+  String get whatEachRoleCan => 'صلاحيات كل دور';
+
+  @override
+  String get roleOwnerHint => 'كل شيء، بما في ذلك المال وحسابات المالك.';
+
+  @override
+  String get roleSupervisorHint =>
+      'يدير الطلبات والأسعار والمدفوعات والمصروفات والموظفين.';
+
+  @override
+  String get roleDesignerHint => 'أعماله والطلبات الجديدة. لا يرى الأسعار.';
+
+  @override
+  String get roleProductionHint =>
+      'أعماله، واستلام المخزون وصرفه. لا يرى الأسعار.';
+
+  @override
+  String get ownerAccountLocked => 'المالك وحده يدير حسابات المالك.';
+
+  @override
+  String get passwordMin => '8 أحرف على الأقل';
+
+  @override
+  String get reportsSubtitleNew =>
+      'اطّلع على الأرقام ونظّمها، ثم اطبعها أو صدّرها.';
+
+  @override
+  String get reportSales => 'المبيعات حسب المنتج';
+
+  @override
+  String get reportSalesHint => 'صف لكل منتج مطلوب';
+
+  @override
+  String get reportRequests => 'الطلبات';
+
+  @override
+  String get reportRequestsHint => 'صف لكل طلب، مع المبلغ المستحق';
+
+  @override
+  String get reportPayments => 'المدفوعات المستلمة';
+
+  @override
+  String get reportPaymentsHint => 'المال الوارد، حسب يوم استلامه';
+
+  @override
+  String get reportExpenses => 'المصروفات';
+
+  @override
+  String get reportExpensesHint => 'المال الصادر';
+
+  @override
+  String get reportStock => 'المخزون';
+
+  @override
+  String get reportStockHint => 'المتوفر وقيمته';
+
+  @override
+  String get reportIncome => 'الإيرادات مقابل المصروفات';
+
+  @override
+  String get reportIncomeHint => 'المال الوارد والصادر، شهرًا بشهر';
+
+  @override
+  String get reportTitleField => 'عنوان التقرير';
+
+  @override
+  String get reportNote => 'ملاحظة';
+
+  @override
+  String get reportNoteHint => 'اختيارية. تُطبع تحت العنوان.';
+
+  @override
+  String get columnsButton => 'الأعمدة';
+
+  @override
+  String get columnsTitle => 'الأعمدة الظاهرة';
+
+  @override
+  String get columnsHint => 'حدّد ما يظهر، واستخدم الأسهم لتغيير الترتيب.';
+
+  @override
+  String get groupBy => 'تجميع حسب';
+
+  @override
+  String get noGrouping => 'بدون تجميع';
+
+  @override
+  String hiddenRows(int count) {
+    return '$count مستبعد';
+  }
+
+  @override
+  String get showAllRows => 'إعادتها';
+
+  @override
+  String get hideRow => 'استبعاد من التقرير';
+
+  @override
+  String rowsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count صف',
+      few: '$count صفوف',
+      two: 'صفان',
+      one: 'صف واحد',
+      zero: 'لا صفوف',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get subtotal => 'المجموع الفرعي';
+
+  @override
+  String get printReport => 'طباعة';
+
+  @override
+  String get savePdf => 'PDF';
+
+  @override
+  String get exportExcel => 'Excel';
+
+  @override
+  String get excelThisReport => 'هذا التقرير كما يظهر';
+
+  @override
+  String get excelWorkbook => 'ملف المحاسب (المنتجات + الطلبات)';
+
+  @override
+  String get pdfSaved => 'تم حفظ ملف PDF';
+
+  @override
+  String get excelSaved => 'تم حفظ ملف Excel';
+
+  @override
+  String get businessDetails => 'بيانات المنشأة';
+
+  @override
+  String get businessDetailsHint => 'تُطبع أعلى كل تقرير.';
+
+  @override
+  String get fieldBusinessName => 'اسم المنشأة';
+
+  @override
+  String get fieldTagline => 'الشعار النصي';
+
+  @override
+  String get fieldAddress => 'العنوان';
+
+  @override
+  String get fieldCrNumber => 'رقم السجل التجاري';
+
+  @override
+  String get fieldWebsite => 'الموقع الإلكتروني';
+
+  @override
+  String get businessSaved => 'تم حفظ بيانات المنشأة';
+
+  @override
+  String get preparedBy => 'أعدّه';
+
+  @override
+  String get generatedOn => 'تاريخ الإنشاء';
+
+  @override
+  String get period => 'الفترة';
+
+  @override
+  String get allTime => 'كل الفترات';
+
+  @override
+  String pageOf(int page, int pages) {
+    return 'صفحة $page من $pages';
+  }
+
+  @override
+  String get noRowsReport => 'لا شيء لعرضه';
+
+  @override
+  String get noRowsReportHint => 'جرّب فترة أوسع أو عوامل تصفية أقل.';
+
+  @override
+  String get includeArchived => 'تضمين المؤرشفة';
+
+  @override
+  String get colRequestNo => 'رقم الطلب';
+
+  @override
+  String get colDate => 'التاريخ';
+
+  @override
+  String get colCustomer => 'العميل';
+
+  @override
+  String get colCompany => 'الشركة';
+
+  @override
+  String get colPhone => 'الهاتف';
+
+  @override
+  String get colProduct => 'المنتج';
+
+  @override
+  String get colQty => 'الكمية';
+
+  @override
+  String get colUnit => 'الوحدة';
+
+  @override
+  String get colSpec => 'المواصفات';
+
+  @override
+  String get colUnitPrice => 'سعر الوحدة';
+
+  @override
+  String get colLineTotal => 'إجمالي السطر';
+
+  @override
+  String get colItemStatus => 'حالة المنتج';
+
+  @override
+  String get colWaitingOn => 'بانتظار';
+
+  @override
+  String get colNeededBy => 'مطلوب بتاريخ';
+
+  @override
+  String get colCompleted => 'تاريخ الإكمال';
+
+  @override
+  String get colApproved => 'المعتمد';
+
+  @override
+  String get colPaid => 'المدفوع';
+
+  @override
+  String get colBalance => 'المتبقي';
+
+  @override
+  String get colAmount => 'المبلغ';
+
+  @override
+  String get colMethod => 'طريقة الدفع';
+
+  @override
+  String get colKind => 'نوع الدفعة';
+
+  @override
+  String get colReference => 'المرجع';
+
+  @override
+  String get colRecordedBy => 'سجّله';
+
+  @override
+  String get colCategory => 'الفئة';
+
+  @override
+  String get colDescription => 'الوصف';
+
+  @override
+  String get colPaidTo => 'المدفوع له';
+
+  @override
+  String get colType => 'النوع';
+
+  @override
+  String get colMonth => 'الشهر';
+
+  @override
+  String get colMoneyIn => 'الوارد';
+
+  @override
+  String get colMoneyOut => 'الصادر';
+
+  @override
+  String get colNet => 'الصافي';
+
+  @override
+  String get colCode => 'الرمز';
+
+  @override
+  String get colOnHand => 'المتوفر';
+
+  @override
+  String get colStockStatus => 'الحالة';
+
+  @override
+  String get stockOk => 'جيد';
+
+  @override
+  String get typeMonthly => 'شهري';
+
+  @override
+  String get typeDayToDay => 'يومي';
+
+  @override
+  String get tourInventoryTitle => 'المخزون';
+
+  @override
+  String get tourInventoryBody =>
+      'ما هو متوفر. سجّل ما يدخل وما يخرج، واعرف ما أوشك على النفاد.';
+
+  @override
+  String get tourExpensesTitle => 'المصروفات';
+
+  @override
+  String get tourExpensesBody =>
+      'ما ينفقه المحل، يوميًا وكل شهر، مقابل ما استُلم.';
+
+  @override
+  String get tourStaffTitle => 'الموظفون';
+
+  @override
+  String get tourStaffBody =>
+      'أضف الحسابات، وغيّر الأدوار، وأعد تعيين كلمات المرور، وأوقف الوصول.';
+
+  @override
+  String get resetToDefault => 'إعادة الضبط';
 }
